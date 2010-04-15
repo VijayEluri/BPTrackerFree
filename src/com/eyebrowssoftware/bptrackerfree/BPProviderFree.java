@@ -23,13 +23,13 @@ import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
  * Provides access to a database of notes. Each note has a title, the note
  * itself, a creation date and a modified data.
  */
-public class BPProvider extends ContentProvider {
+public class BPProviderFree extends ContentProvider {
 	private static final String TAG = "BPProvider";
 
-	public static final String AUTHORITY = "com.eyebrowssoftware.bptracker.bp";
+	public static final String AUTHORITY = "com.eyebrowssoftware.bptrackerfree.bp";
 	public static final String URI_STRING = "content://" + AUTHORITY;
 
-	private static final String DATABASE_NAME = "bptracker.db";
+	private static final String DATABASE_NAME = "bptrackerfree.db";
 	private static final int DATABASE_VERSION = 1;
 
 	private static final String BP_RECORDS_TABLE_NAME = "bp_records";

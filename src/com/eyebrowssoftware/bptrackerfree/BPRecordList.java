@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -60,8 +59,7 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		BPRecord.CREATED_DATE, 
 		BPRecord.SYSTOLIC, 
 		BPRecord.DIASTOLIC,
-		BPRecord.PULSE,
-		BPRecord.SYSTOLIC
+		BPRecord.PULSE
 	};
 
 	private static final int[] IDS = { 
@@ -70,7 +68,6 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		R.id.sys_value,
 		R.id.dia_value, 
 		R.id.pulse_value,
-		R.id.image
 	};
 
 	private LinearLayout mEmptyContent;
@@ -135,10 +132,6 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		}
 	}
 	
-	private void setTextView(TextView tv, int val) {
-		tv.setText(String.valueOf(val));
-	}
-
 	private class MyViewBinder implements SimpleCursorAdapter.ViewBinder {
 		String val;
 
@@ -149,7 +142,7 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 			case R.id.sys_value:
 			case R.id.dia_value:
 			case R.id.pulse_value: // Pulse
-				setTextView((TextView) view, cursor.getInt(columnIndex));
+				((TextView) view).setText(String.valueOf(cursor.getInt(columnIndex)));
 				return true;
 			case R.id.date: // Date
 			case R.id.time: // Time -- these use the same cursor column
@@ -158,9 +151,6 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 						DateFormat.SHORT) : BPTracker.getTimeString(datetime,
 						DateFormat.SHORT);
 				((TextView)view).setText(val);
-				return true;
-			case R.id.image:
-				((ImageView)view).setImageResource(R.color.normal_text_background);
 				return true;
 			default:
 				return false;

@@ -13,7 +13,7 @@ public final class BPRecords {
 	/**
 	 * The content:// style URL for this table
 	 */
-	public static final Uri CONTENT_URI = BPProvider.CONTENT_URI.buildUpon()
+	public static final Uri CONTENT_URI = BPProviderFree.CONTENT_URI.buildUpon()
 		.appendPath("bp_records").build();
 
 	/**

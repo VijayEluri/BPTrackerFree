@@ -35,7 +35,6 @@
 	
 	<!-- These values are for the BPRecordList activity -->
 	<string name="msg_add">Hier Erstellen</string>
-	<string name="menu_insert">Erstellen</string>
 	<string name="menu_edit">Edieren</string>
 	<string name="menu_send">@string/label_send</string>
 	<string name="list_label_date">Datum:</string>

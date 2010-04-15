@@ -34,7 +34,6 @@
 	<string name="msg_future_date">Future date!</string>
 	
 	<!-- These values are for the BPRecordList activity -->
-	<string name="menu_insert">Add</string>
 	<string name="menu_edit">Edit</string>
 	<string name="menu_send">@string/label_send</string>
 	<string name="list_label_date">Date:</string>
@@ -55,6 +54,7 @@
 	<string name="msg_choose_send_method">Send to where?</string>
 	
 	<!-- These are the column names for the BPSend Activity, so we can send localized names -->
+	<string name="bp_send_delimiter">,</string>
 	<string name="bp_send_date">@string/label_date</string>
 	<string name="bp_send_time">@string/label_time</string>
 	<string name="bp_send_sys">@string/label_systolic</string>

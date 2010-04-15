@@ -40,8 +40,8 @@
 			android:label="@string/title_send" 
 		/>
 	    <provider 
-	    	android:name=".BPProvider"
-	    	android:authorities="com.eyebrowssoftware.bptracker.bp" 
+	    	android:name=".BPProviderFree"
+	    	android:authorities="com.eyebrowssoftware.bptrackerfree.bp" 
 	    	android:label="@string/title_provider" 
 	    	android:icon="@drawable/icon"
 			android:readPermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"

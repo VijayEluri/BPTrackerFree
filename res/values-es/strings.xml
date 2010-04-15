@@ -34,7 +34,6 @@
 	<string name="msg_future_date">Fecha de futuro!</string>
 	
 	<!-- These values are for the BPRecordList activity -->
-	<string name="menu_insert">Agregar</string>
 	<string name="menu_edit">Editar</string>
 	<string name="menu_send">@string/label_send</string>
 	<string name="list_label_date">Fecha:</string>
