@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+	package="com.eyebrowssoftware.bptrackerfree"
+	android:versionCode="1"
+	android:versionName="1.0"
+>
+	<permission 
+		android:name="com.eyebrowssoftware.BPTracker.permission.MEDICAL" 
+		android:permissionGroup="android.permission-group.PERSONAL_INFO" 
+		android:label="@string/bp_permission_label" 
+		android:description="@string/bp_permission_description" 
+		android:protectionLevel="dangerous"
+	/>
+	
+	<uses-permission android:name="com.eyebrowssoftware.BPTracker.permission.MEDICAL" />
+	
+    <application
+    	android:name=".BPTracker"
+    	android:icon="@drawable/icon" 
+    	android:label="@string/app_name"
+    >
+        <activity 
+            android:name=".BPRecordList"
+        	android:label="@string/app_name"
+            android:theme="@android:style/Theme.Light"
+        >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity 
+	        android:name=".BPRecordEditor" 
+        	android:theme="@android:style/Theme.Light"
+            android:label="@string/title_edit"
+	    />
+		<activity 
+			android:name=".BPSend" 
+			android:theme="@android:style/Theme.Light"
+			android:label="@string/title_send" 
+		/>
+	    <provider 
+	    	android:name=".BPProvider"
+	    	android:authorities="com.eyebrowssoftware.bptracker.bp" 
+	    	android:label="@string/title_provider" 
+	    	android:icon="@drawable/icon"
+			android:readPermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
+			android:writePermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
+	    /> 
+	</application>
+    <uses-sdk 
+    	android:targetSdkVersion="4"
+    	android:minSdkVersion="3"
+    />
+	<supports-screens 
+		android:largeScreens="true"
+		android:smallScreens="true"
+		android:anyDensity="true"
+		android:resizeable="true"
+		android:normalScreens="true"
+	/>
+</manifest>

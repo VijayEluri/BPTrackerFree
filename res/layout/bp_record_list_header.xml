@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:stretchColumns="0,1"
+	android:shrinkColumns="0,1"
+>
+	<TableRow
+		android:layout_height="wrap_content"
+	>
+		<ImageView
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:src="@android:drawable/ic_menu_add"
+			android:layout_gravity="center_vertical|right"
+		/>
+		<TextView
+			android:layout_width="wrap_content"
+			android:layout_height="fill_parent"
+			android:text="@string/msg_add"
+			android:gravity="center_vertical"
+			android:layout_gravity="center_vertical|left"
+			style="@style/bp_list_header"
+		/>
+	</TableRow>
+</TableLayout>

@@ -1,0 +1,253 @@
+package com.eyebrowssoftware.bptrackerfree;
+
+import java.util.HashMap;
+
+import android.content.ContentProvider;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.UriMatcher;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteQueryBuilder;
+import android.net.Uri;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
+
+/**
+ * Provides access to a database of notes. Each note has a title, the note
+ * itself, a creation date and a modified data.
+ */
+public class BPProvider extends ContentProvider {
+	private static final String TAG = "BPProvider";
+
+	public static final String AUTHORITY = "com.eyebrowssoftware.bptracker.bp";
+	public static final String URI_STRING = "content://" + AUTHORITY;
+
+	private static final String DATABASE_NAME = "bptracker.db";
+	private static final int DATABASE_VERSION = 1;
+
+	private static final String BP_RECORDS_TABLE_NAME = "bp_records";
+
+	public static HashMap<String, String> sBPProjectionMap;
+
+	private static final UriMatcher sUriMatcher;
+
+	public static final Uri CONTENT_URI = Uri.parse(URI_STRING);
+
+	private ContentResolver mCR;
+
+	/**
+	 * This class helps open, create, and upgrade the database file.
+	 */
+	private static class DatabaseHelper extends SQLiteOpenHelper {
+
+		DatabaseHelper(Context context) {
+			super(context, DATABASE_NAME, null, DATABASE_VERSION);
+		}
+
+		@Override
+		public void onCreate(SQLiteDatabase db) {
+
+			db.execSQL("CREATE TABLE " + BP_RECORDS_TABLE_NAME + " ("
+					+ BPRecord._ID + " INTEGER PRIMARY KEY AUTOINCREMENT,"
+					+ BPRecord.SYSTOLIC + " INTEGER," + BPRecord.DIASTOLIC
+					+ " INTEGER," + BPRecord.PULSE + " INTEGER,"
+					+ BPRecord.CREATED_DATE + " INTEGER,"
+					+ BPRecord.MODIFIED_DATE + " INTEGER" + ");");
+		}
+
+		@Override
+		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
+					+ newVersion + ", which will destroy all old data");
+			db.execSQL("DROP TABLE IF EXISTS " + BP_RECORDS_TABLE_NAME);
+			onCreate(db);
+		}
+	}
+
+	private DatabaseHelper mOpenHelper;
+
+	@Override
+	public boolean onCreate() {
+		Context c = getContext();
+		mOpenHelper = new DatabaseHelper(c);
+		mCR = c.getContentResolver();
+		return true;
+	}
+
+	@Override
+	public void finalize() {
+		mOpenHelper.close();
+	}
+
+	@Override
+	public Cursor query(Uri uri, String[] projection, String selection,
+			String[] selectionArgs, String sortOrder) {
+
+		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
+		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
+
+		Cursor c;
+
+		switch (sUriMatcher.match(uri)) {
+		// Result is a page of breweries
+		case BP_RECORDS:
+			qb.setTables(BP_RECORDS_TABLE_NAME);
+			qb.setProjectionMap(sBPProjectionMap);
+			c = qb.query(db, projection, selection, selectionArgs, null, null,
+					sortOrder);
+			break;
+		// Result is a single Brewery
+		case BP_RECORD_ID:
+			qb.setTables(BP_RECORDS_TABLE_NAME);
+			qb.setProjectionMap(sBPProjectionMap);
+			qb.appendWhere(BPRecords.BPRecord._ID + "="
+					+ uri.getPathSegments().get(1));
+			c = qb.query(db, projection, selection, selectionArgs, null, null,
+					sortOrder);
+			break;
+		default:
+			throw new IllegalArgumentException("Unknown URI " + uri);
+		}
+		// Tell the cursor what uri to watch, so it knows when its source data
+		// changes
+		c.setNotificationUri(mCR, uri);
+		return c;
+	}
+
+	@Override
+	public String getType(Uri uri) {
+		switch (sUriMatcher.match(uri)) {
+		case BP_RECORDS:
+			return BPRecords.CONTENT_TYPE;
+		case BP_RECORD_ID:
+			return BPRecord.CONTENT_ITEM_TYPE;
+		default:
+			throw new IllegalArgumentException("Unknown URI " + uri);
+		}
+	}
+
+	@Override
+	public Uri insert(Uri uri, ContentValues initialValues) throws SQLException {
+
+		// Get the database and run the query
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		long item_id = -1;
+		ContentValues values = new ContentValues();
+		if (initialValues != null) {
+			values = initialValues;
+		} else {
+			values = new ContentValues();
+		}
+		Long now = Long.valueOf(System.currentTimeMillis());
+
+		switch (sUriMatcher.match(uri)) {
+		case BP_RECORDS:
+			if (values.containsKey(BPRecords.BPRecord.CREATED_DATE) == false)
+				values.put(BPRecords.BPRecord.CREATED_DATE, now);
+			if (values.containsKey(BPRecords.BPRecord.MODIFIED_DATE) == false)
+				values.put(BPRecords.BPRecord.MODIFIED_DATE, now);
+			if (values.containsKey(BPRecords.BPRecord.SYSTOLIC) == false)
+				values.put(BPRecords.BPRecord.SYSTOLIC, 120);
+			if (values.containsKey(BPRecords.BPRecord.DIASTOLIC) == false)
+				values.put(BPRecords.BPRecord.DIASTOLIC, 70);
+			if (values.containsKey(BPRecords.BPRecord.PULSE) == false) {
+				values.put(BPRecords.BPRecord.PULSE, 75);
+			}
+			item_id = db.insert(BP_RECORDS_TABLE_NAME,
+					BPRecords.BPRecord.CREATED_DATE, values);
+			break;
+		default:
+			throw new IllegalArgumentException("Unknown URI " + uri);
+		}
+		Uri ret = null;
+		if (item_id > 0) {
+			ret = ContentUris.withAppendedId(BPRecords.CONTENT_URI,
+					item_id);
+			mCR.notifyChange(ret, null);
+		}
+		return ret;
+	}
+
+	@Override
+	public int delete(Uri uri, String where, String[] whereArgs) {
+		int count = 0;
+		// Get the database and run the query
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		String recId;
+		String whereClause;
+
+		switch (sUriMatcher.match(uri)) {
+		case BP_RECORDS:
+			count = db.delete(BP_RECORDS_TABLE_NAME, where, whereArgs);
+			break;
+		case BP_RECORD_ID:
+			recId = uri.getPathSegments().get(1);
+			whereClause = BPRecord._ID + "=" + recId
+					+ (!TextUtils.isEmpty(where) ? " AND (" + where + ")" : "");
+			count = db.delete(BP_RECORDS_TABLE_NAME, whereClause, whereArgs);
+			break;
+		default:
+			throw new IllegalArgumentException("Unknown URI " + uri);
+		}
+		mCR.notifyChange(uri, null);
+		return count;
+	}
+
+	@Override
+	public int update(Uri uri, ContentValues values, String where,
+			String[] whereArgs) {
+		int count = 0;
+		// Get the database and run the query
+		SQLiteDatabase db = mOpenHelper.getWritableDatabase();
+		String recId;
+		String whereClause;
+
+		switch (sUriMatcher.match(uri)) {
+		case BP_RECORDS:
+			count = db.update(BP_RECORDS_TABLE_NAME, values, where, whereArgs);
+			break;
+		case BP_RECORD_ID:
+			recId = uri.getPathSegments().get(1);
+			whereClause = BPRecord._ID + "=" + recId
+					+ (!TextUtils.isEmpty(where) ? " AND (" + where + ")" : "");
+			count = db.update(BP_RECORDS_TABLE_NAME, values, whereClause, whereArgs);
+			break;
+		default:
+			throw new IllegalArgumentException("Unknown URI " + uri);
+		}
+		mCR.notifyChange(uri, null);
+		return count;
+	}
+
+	private static final int BP_RECORDS = 1;
+	private static final int BP_RECORD_ID = BP_RECORDS + 1;
+
+	static {
+		sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+		sUriMatcher.addURI(AUTHORITY, "bp_records", BP_RECORDS);
+		sUriMatcher.addURI(AUTHORITY, "bp_records/#", BP_RECORD_ID);
+
+		sBPProjectionMap = new HashMap<String, String>();
+		sBPProjectionMap.put(BPRecord._ID, BPRecord._ID);
+		sBPProjectionMap.put(BPRecord.SYSTOLIC, BPRecord.SYSTOLIC);
+		sBPProjectionMap.put(BPRecord.DIASTOLIC, BPRecord.DIASTOLIC);
+		sBPProjectionMap.put(BPRecord.PULSE, BPRecord.PULSE);
+		sBPProjectionMap.put(BPRecord.CREATED_DATE, BPRecord.CREATED_DATE);
+		sBPProjectionMap.put(BPRecord.MODIFIED_DATE, BPRecord.MODIFIED_DATE);
+		sBPProjectionMap.put(BPRecord.MAX_SYSTOLIC, String.format("max(%s)", BPRecord.SYSTOLIC));
+		sBPProjectionMap.put(BPRecord.MIN_SYSTOLIC, String.format("min(%s)", BPRecord.SYSTOLIC));
+		sBPProjectionMap.put(BPRecord.MAX_DIASTOLIC, String.format("max(%s)", BPRecord.DIASTOLIC));
+		sBPProjectionMap.put(BPRecord.MIN_DIASTOLIC, String.format("min(%s)", BPRecord.DIASTOLIC));
+		sBPProjectionMap.put(BPRecord.MAX_PULSE, String.format("max(%s)", BPRecord.PULSE));
+		sBPProjectionMap.put(BPRecord.MIN_PULSE, String.format("min(%s)", BPRecord.PULSE));
+		sBPProjectionMap.put(BPRecord.MAX_CREATED_DATE, String.format("max(%s)", BPRecord.CREATED_DATE));
+		sBPProjectionMap.put(BPRecord.MIN_CREATED_DATE, String.format("min(%s)", BPRecord.CREATED_DATE));
+	}
+}

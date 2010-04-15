@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pression Artérielle</string>
+
+    <string name="bp_permission_description">Lire et écrire l'accès à vos données de pression artérielle.</string>
+    <string name="bp_permission_label">données médicales personnelles</string>
+
+    <!-- Miscellaneous string for localization -->
+    <string name="empty">Non Pression Artérielle: Cliquez ici pour commencer.</string>
+	<string name="insert_error">Le défaut d\'insertion</string>
+
+	<!-- These are Window titles -->
+    <string name="title_list">PA Histoire</string>
+	<string name="title_provider">Fournisseur</string>
+	<string name="title_edit">Modifier le dossier</string>
+	<string name="title_create">Insérer un dossier</string>
+	<string name="title_error">Erreur interne</string>
+
+	<!-- These strings appear in the BPRecordEditor activity -->
+	<string name="menu_revert">Revenir</string>
+	<string name="menu_discard">Jeter</string>
+	<string name="menu_delete">Supprimer</string>
+	<string name="label_systolic">Systolique</string>
+	<string name="label_pulse">Pouls</string>
+	<string name="label_diastolic">Diastolique</string>
+	<string name="label_date">Date</string>
+	<string name="label_time">Heure</string>
+	<string name="really_delete">Supprimer ce?</string>
+	<string name="label_yes">Oui</string>
+	<string name="label_no">Non</string>
+	<string name="label_sys_spinner">Sélectionnez Systolique Valeur</string>
+	<string name="label_dia_spinner">Sélectionnez Diastolique Valeur</string>
+	<string name="label_pls_spinner">Sélectionnez Pouls Valeur</string>
+	<string name="msg_future_date">Date de la prochaine!</string>
+	
+	<!-- These values are for the BPRecordList activity -->
+	<string name="menu_insert">Ajouter</string>
+	<string name="menu_edit">Modifier</string>
+	<string name="menu_send">@string/label_send</string>
+	<string name="list_label_date">Date:</string>
+	<string name="list_label_time">Heure:</string>
+	<string name="list_label_bp">Sys/Dia:</string>
+	<string name="list_label_pulse">Pouls:</string>
+	<string name="msg_add">Cliquez sur Ajouter</string>
+	<string name="bp_separator">/</string>
+	
+	<!-- These strings are used on the BPSend Activity layout -->
+	<string name="title_send">@string/label_send</string>
+	<string name="label_send">Envoyer</string>
+	<string name="label_text">De Texte</string>
+	<string name="label_attach">En Pièce Jointe</string>
+	<string name="label_send_how">Comment l\'envoyer?</string>
+	<string name="label_message_format">Message Texte (%1$d octets)</string>
+	<string name="msg_nothing_to_send">Rien à envoyer!</string>
+	<string name="msg_choose_send_method">Envoyer à où?</string>
+	
+	<!-- These are the column names for the BPSend Activity, so we can send localized names -->
+	<string name="bp_send_delimiter">,</string>
+	<string name="bp_send_date">@string/label_date</string>
+	<string name="bp_send_time">@string/label_time</string>
+	<string name="bp_send_sys">@string/label_systolic</string>
+	<string name="bp_send_dia">@string/label_diastolic</string>
+	<string name="bp_send_pls">@string/label_pulse</string>
+
+	<!-- This is a plain old Java format string - default is Date Time -->
+	<string name="datetime_format">%1$s %2$s</string>
+</resources>
