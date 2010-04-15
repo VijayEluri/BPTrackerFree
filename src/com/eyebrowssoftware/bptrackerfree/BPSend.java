@@ -248,7 +248,7 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 				int columns = cnames.length;
 				
 				for (int j = 0; j < columns; ++j) {
-					if (j == COLUMN_ID_INDEX) { // we'll use this first column to put the overall status
+					if (j == COLUMN_ID_INDEX) { // put out nothing for the id column
 						continue;
 					}
 					else if (j == COLUMN_SYSTOLIC_INDEX) {
