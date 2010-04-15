@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Pression Artérielle</string>
+    <string name="app_name">BPEnregistreur sans frais</string>
 
     <string name="bp_permission_description">Lire et écrire l'accès à vos données de pression artérielle.</string>
     <string name="bp_permission_label">données médicales personnelles</string>

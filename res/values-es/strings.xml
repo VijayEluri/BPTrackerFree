@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Tensión Arterial</string>
+    <string name="app_name">BPRegistrar sin costo</string>
 
     <string name="bp_permission_description">¿Se permite el acceso a sus datos de la presión arterial?</string>
     <string name="bp_permission_label">información médica personal</string>

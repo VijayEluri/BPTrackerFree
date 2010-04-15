@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">BP Tracker</string>
+    <string name="app_name">BPTracker Free</string>
 
     <string name="bp_permission_description">Read and write access to your blood pressure data.</string>
     <string name="bp_permission_label">personal medical data</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Blutdruck-Record</string>
+    <string name="app_name">Blutdruck-Record kostlos</string>
 
     <string name="bp_permission_description">Zugriff auf Ihren Blutdruck Daten.</string>
     <string name="bp_permission_label">Blutdruck Daten</string>
