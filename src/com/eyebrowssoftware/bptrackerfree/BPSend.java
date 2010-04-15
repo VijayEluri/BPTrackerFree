@@ -273,15 +273,6 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 					for (int j = 0; j < columns; ++j) {
 						if (j == COLUMN_ID_INDEX) {
 							continue;
-						} else if (j == COLUMN_SYSTOLIC_INDEX) {
-							int value = cursor.getInt(j);
-							sb.append(String.valueOf(value));
-						} else if (j == COLUMN_DIASTOLIC_INDEX) {
-							int value = cursor.getInt(j);
-							sb.append(String.valueOf(value));
-						} else if (j == COLUMN_PULSE_INDEX) {
-							int value = cursor.getInt(j);
-							sb.append(String.valueOf(value));
 						} else if (j == COLUMN_CREATED_AT_INDEX) {
 							String date = BPTracker.getDateString(cursor
 									.getLong(j), DateFormat.SHORT);
