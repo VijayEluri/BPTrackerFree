@@ -274,9 +274,9 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 						if (j == COLUMN_ID_INDEX) {
 							continue;
 						} else if (j == COLUMN_CREATED_AT_INDEX) {
-							String date = BPTracker.getDateString(cursor
+							String date = BPTrackerFree.getDateString(cursor
 									.getLong(j), DateFormat.SHORT);
-							String time = BPTracker.getTimeString(cursor
+							String time = BPTrackerFree.getTimeString(cursor
 									.getLong(j), DateFormat.SHORT);
 							sb.append(date).append(delimiter).append(time);
 						} else

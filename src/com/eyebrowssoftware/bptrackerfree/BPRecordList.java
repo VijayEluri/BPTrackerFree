@@ -147,8 +147,8 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 			case R.id.date: // Date
 			case R.id.time: // Time -- these use the same cursor column
 				long datetime = cursor.getLong(columnIndex);
-				val = (id == R.id.date) ? BPTracker.getDateString(datetime,
-						DateFormat.SHORT) : BPTracker.getTimeString(datetime,
+				val = (id == R.id.date) ? BPTrackerFree.getDateString(datetime,
+						DateFormat.SHORT) : BPTrackerFree.getTimeString(datetime,
 						DateFormat.SHORT);
 				((TextView)view).setText(val);
 				return true;
@@ -192,9 +192,9 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		}
 		Cursor cursor = (Cursor) getListAdapter().getItem(info.position);
 		if (cursor != null && cursor.moveToFirst()) {
-			String date = BPTracker.getDateString(cursor
+			String date = BPTrackerFree.getDateString(cursor
 					.getLong(COLUMN_CREATED_AT_INDEX), DateFormat.SHORT);
-			String time = BPTracker.getTimeString(cursor
+			String time = BPTrackerFree.getTimeString(cursor
 					.getLong(COLUMN_CREATED_AT_INDEX), DateFormat.SHORT);
 			String fmt = getString(R.string.datetime_format);
 			menu.setHeaderTitle(String.format(fmt, date, time));

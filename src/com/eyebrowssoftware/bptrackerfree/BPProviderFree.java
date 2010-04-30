@@ -15,7 +15,6 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
@@ -24,13 +23,16 @@ import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
  * itself, a creation date and a modified data.
  */
 public class BPProviderFree extends ContentProvider {
-	private static final String TAG = "BPProvider";
+	@SuppressWarnings("unused")
+	private static final String TAG = "BPProviderFree";
 
 	public static final String AUTHORITY = "com.eyebrowssoftware.bptrackerfree.bp";
 	public static final String URI_STRING = "content://" + AUTHORITY;
 
 	private static final String DATABASE_NAME = "bptrackerfree.db";
-	private static final int DATABASE_VERSION = 1;
+	private static final int DB_VERSION_1 = 1;
+	private static final int DB_VERSION_2 = 2;
+	private static final int DATABASE_VERSION = DB_VERSION_2;
 
 	private static final String BP_RECORDS_TABLE_NAME = "bp_records";
 
@@ -64,10 +66,11 @@ public class BPProviderFree extends ContentProvider {
 
 		@Override
 		public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-			Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-					+ newVersion + ", which will destroy all old data");
-			db.execSQL("DROP TABLE IF EXISTS " + BP_RECORDS_TABLE_NAME);
-			onCreate(db);
+			if (oldVersion == DB_VERSION_1) {
+				if (newVersion == DB_VERSION_2) {
+					db.execSQL("ALTER TABLE " + BP_RECORDS_TABLE_NAME + " ADD COLUMN " + BPRecord.NOTE + " TEXT");
+				}
+			}
 		}
 	}
 
@@ -154,11 +157,11 @@ public class BPProviderFree extends ContentProvider {
 			if (values.containsKey(BPRecords.BPRecord.MODIFIED_DATE) == false)
 				values.put(BPRecords.BPRecord.MODIFIED_DATE, now);
 			if (values.containsKey(BPRecords.BPRecord.SYSTOLIC) == false)
-				values.put(BPRecords.BPRecord.SYSTOLIC, 120);
+				values.put(BPRecords.BPRecord.SYSTOLIC, BPTrackerFree.SYSTOLIC_DEFAULT);
 			if (values.containsKey(BPRecords.BPRecord.DIASTOLIC) == false)
-				values.put(BPRecords.BPRecord.DIASTOLIC, 70);
+				values.put(BPRecords.BPRecord.DIASTOLIC, BPTrackerFree.DIASTOLIC_DEFAULT);
 			if (values.containsKey(BPRecords.BPRecord.PULSE) == false) {
-				values.put(BPRecords.BPRecord.PULSE, 75);
+				values.put(BPRecords.BPRecord.PULSE, BPTrackerFree.PULSE_DEFAULT);
 			}
 			item_id = db.insert(BP_RECORDS_TABLE_NAME,
 					BPRecords.BPRecord.CREATED_DATE, values);

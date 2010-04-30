@@ -24,13 +24,6 @@ public final class BPRecords {
 			+ "/vnd.eyebrowssoftware.bp_record";
 
 	public static final class BPRecord implements BaseColumns {
-		public static final String[] COLUMN_NAMES = { BPRecords.BPRecord._ID, // 0
-				BPRecords.BPRecord.SYSTOLIC, // 1
-				BPRecords.BPRecord.DIASTOLIC, // 2
-				BPRecords.BPRecord.PULSE, // 3
-				BPRecords.BPRecord.CREATED_DATE, // 4
-				BPRecords.BPRecord.MODIFIED_DATE, // 5
-		};
 		/**
 		 * The MIME type of a {@link #CONTENT_URI} sub-directory of a single
 		 * note.
@@ -153,5 +146,15 @@ public final class BPRecords {
 		 * </P>
 		 */
 		public static final String MIN_CREATED_DATE = "min_date"; // String.format("min(%s)", BPRecord.CREATED_DATE);
+		
+		/**
+		 * The Note the user attached to this record
+		 * <P>
+		 * Type: TEXT
+		 * </P>
+		 */
+		public static final String NOTE = "note";
+
+
 	}
 }

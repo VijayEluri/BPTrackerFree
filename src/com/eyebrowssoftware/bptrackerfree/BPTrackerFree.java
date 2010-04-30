@@ -7,30 +7,21 @@ import android.app.Application;
 import android.content.res.Configuration;
 import android.widget.Spinner;
 
-public class BPTracker extends Application {
+public class BPTrackerFree extends Application {
 	
 	@SuppressWarnings("unused")
-	private static final String TAG = "BPTracker";
+	private static final String TAG = "BPTrackerFree";
 	
 	public static final boolean FREE_VERSION = true;
 
 	public static final int SYSTOLIC_MAX_DEFAULT = 280;
-	public static final int SYSTOLIC_RED_DEFAULT = 150;
-	public static final int SYSTOLIC_ORANGE_DEFAULT = 135;
 	public static final int SYSTOLIC_DEFAULT = 120;
-	public static final int SYSTOLIC_BLUE_DEFAULT = 80;
 	public static final int SYSTOLIC_MIN_DEFAULT = 20;
 	public static final int DIASTOLIC_MAX_DEFAULT = 280;
-	public static final int DIASTOLIC_RED_DEFAULT = 100;
-	public static final int DIASTOLIC_ORANGE_DEFAULT = 90;
 	public static final int DIASTOLIC_DEFAULT = 70;
-	public static final int DIASTOLIC_BLUE_DEFAULT = 40;
 	public static final int DIASTOLIC_MIN_DEFAULT = 20;
 	public static final int PULSE_MAX_DEFAULT = 200;
-	public static final int PULSE_RED_DEFAULT = 105;
-	public static final int PULSE_ORANGE_DEFAULT = 95;
 	public static final int PULSE_DEFAULT = 75;
-	public static final int PULSE_BLUE_DEFAULT = 55;
 	public static final int PULSE_MIN_DEFAULT = 40;
 
 	// Min difference between Systolic and Diastolic or between Max and Min
@@ -114,23 +105,6 @@ public class BPTracker extends Application {
 		return getTimeString(new Date(datetime), length);
 	}
 	
-	public static final int BLUE_RANGE = 0;
-	public static final int NORMAL_RANGE = BLUE_RANGE + 1;
-	public static final int ORANGE_RANGE = NORMAL_RANGE + 1;
-	public static final int RED_RANGE = ORANGE_RANGE + 1;
-
-	public static int getLimit(int val, int rlimit, int olimit, int blimit) {		
-		if (val < blimit) {
-			return  BLUE_RANGE;
-		} else if(val > rlimit) {
-			return RED_RANGE;
-		} else if (val > olimit) {
-			return ORANGE_RANGE;
-		} else {
-			return NORMAL_RANGE;
-		}
-	}
-
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
 		super.onConfigurationChanged(newConfig);

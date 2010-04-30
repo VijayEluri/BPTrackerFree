@@ -126,9 +126,9 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			mState = STATE_INSERT;
 			ContentValues cv = null;
 			cv = new ContentValues();
-			cv.put(BPRecord.SYSTOLIC, BPTracker.SYSTOLIC_DEFAULT);
-			cv.put(BPRecord.DIASTOLIC, BPTracker.DIASTOLIC_DEFAULT);
-			cv.put(BPRecord.PULSE, BPTracker.PULSE_DEFAULT);
+			cv.put(BPRecord.SYSTOLIC, BPTrackerFree.SYSTOLIC_DEFAULT);
+			cv.put(BPRecord.DIASTOLIC, BPTrackerFree.DIASTOLIC_DEFAULT);
+			cv.put(BPRecord.PULSE, BPTrackerFree.PULSE_DEFAULT);
 			mUri = this.getContentResolver().insert(intent.getData(), cv);
 		} else {
 			Log.e(TAG, "Unknown action, exiting");
@@ -138,11 +138,11 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 
 		mCursor = managedQuery(mUri, PROJECTION, null, null, null);
 		int[] sys_vals = {
-		    BPTracker.SYSTOLIC_MAX_DEFAULT,
+		    BPTrackerFree.SYSTOLIC_MAX_DEFAULT,
 			RangeAdapter.NO_ZONE,
 			RangeAdapter.NO_ZONE,
 			RangeAdapter.NO_ZONE,
-			BPTracker.SYSTOLIC_MIN_DEFAULT
+			BPTrackerFree.SYSTOLIC_MIN_DEFAULT
 		};
 		
 		mSpinners[SYS_IDX] = (Spinner) findViewById(R.id.systolic_spin);
@@ -151,11 +151,11 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 		mSpinners[SYS_IDX].setAdapter(new RangeAdapter(this, sys_vals, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
 		
 		int[] dia_vals = {
-			BPTracker.DIASTOLIC_MAX_DEFAULT,
+			BPTrackerFree.DIASTOLIC_MAX_DEFAULT,
 			RangeAdapter.NO_ZONE,
 			RangeAdapter.NO_ZONE,
 			RangeAdapter.NO_ZONE,
-			BPTracker.DIASTOLIC_MIN_DEFAULT
+			BPTrackerFree.DIASTOLIC_MIN_DEFAULT
 		};
 
 		mSpinners[DIA_IDX] = (Spinner) findViewById(R.id.diastolic_spin);
@@ -164,11 +164,11 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 		mSpinners[DIA_IDX].setAdapter(new RangeAdapter(this, dia_vals, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
 
 		int[] pls_vals = {
-			BPTracker.PULSE_MAX_DEFAULT, 
+			BPTrackerFree.PULSE_MAX_DEFAULT, 
 			RangeAdapter.NO_ZONE,
 			RangeAdapter.NO_ZONE,
 			RangeAdapter.NO_ZONE,
-			BPTracker.PULSE_MIN_DEFAULT
+			BPTrackerFree.PULSE_MIN_DEFAULT
 		};
 		
 		mSpinners[PLS_IDX] = (Spinner) findViewById(R.id.pulse_spin);
@@ -195,13 +195,13 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 				setTitle(getText(R.string.title_create));
 			}
 			int systolic = mCursor.getInt(COLUMN_SYSTOLIC_INDEX);
-			BPTracker.setSpinner(mSpinners[SYS_IDX], systolic);
+			BPTrackerFree.setSpinner(mSpinners[SYS_IDX], systolic);
 
 			int diastolic = mCursor.getInt(COLUMN_DIASTOLIC_INDEX);
-			BPTracker.setSpinner(mSpinners[DIA_IDX], diastolic);
+			BPTrackerFree.setSpinner(mSpinners[DIA_IDX], diastolic);
 
 			int pulse = mCursor.getInt(COLUMN_PULSE_INDEX);
-			BPTracker.setSpinner(mSpinners[PLS_IDX], pulse);
+			BPTrackerFree.setSpinner(mSpinners[PLS_IDX], pulse);
 
 			long datetime = mCursor.getLong(COLUMN_CREATED_AT_INDEX);
 			long mod_datetime = mCursor.getLong(COLUMN_MODIFIED_AT_INDEX);
@@ -224,9 +224,9 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 	}
 
 	public void updateDateTimeDisplay() {
-		mDateButton.setText(BPTracker.getDateString(mCalendar.getTime(),
+		mDateButton.setText(BPTrackerFree.getDateString(mCalendar.getTime(),
 				DateFormat.MEDIUM));
-		mTimeButton.setText(BPTracker.getTimeString(mCalendar.getTime(),
+		mTimeButton.setText(BPTrackerFree.getTimeString(mCalendar.getTime(),
 				DateFormat.SHORT));
 	}
 
@@ -412,14 +412,14 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 		if (sp.equals(mSpinners[SYS_IDX])) {
 			int systolic = (Integer) ((RangeAdapter) mSpinners[SYS_IDX].getAdapter()).getItem(pos);
 			int diastolic = (Integer) mSpinners[DIA_IDX].getSelectedItem();
-			if ((systolic - diastolic) < BPTracker.MIN_RANGE) {
-				BPTracker.setSpinner(mSpinners[DIA_IDX], systolic - BPTracker.MIN_RANGE);
+			if ((systolic - diastolic) < BPTrackerFree.MIN_RANGE) {
+				BPTrackerFree.setSpinner(mSpinners[DIA_IDX], systolic - BPTrackerFree.MIN_RANGE);
 			}
 		} else if (sp.equals(mSpinners[DIA_IDX])) {
 			int systolic = (Integer) mSpinners[SYS_IDX].getSelectedItem();
 			int diastolic = (Integer) ((RangeAdapter) mSpinners[DIA_IDX].getAdapter()).getItem(pos);
-			if ((systolic - diastolic) < BPTracker.MIN_RANGE) {
-				BPTracker.setSpinner(mSpinners[SYS_IDX], diastolic + BPTracker.MIN_RANGE);
+			if ((systolic - diastolic) < BPTrackerFree.MIN_RANGE) {
+				BPTrackerFree.setSpinner(mSpinners[SYS_IDX], diastolic + BPTrackerFree.MIN_RANGE);
 			}
 		}
 	}
@@ -427,11 +427,11 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 	public void onNothingSelected(AdapterView<?> parent) {
 		Spinner sp = (Spinner) parent;
 		if (sp.equals(mSpinners[SYS_IDX])) {
-			BPTracker.setSpinner(mSpinners[SYS_IDX], mOriginalValues.getInt(BPRecord.SYSTOLIC));
+			BPTrackerFree.setSpinner(mSpinners[SYS_IDX], mOriginalValues.getInt(BPRecord.SYSTOLIC));
 		} else if (sp.equals(mSpinners[DIA_IDX])) {
-			BPTracker.setSpinner(mSpinners[DIA_IDX], mOriginalValues.getInt(BPRecord.DIASTOLIC));
+			BPTrackerFree.setSpinner(mSpinners[DIA_IDX], mOriginalValues.getInt(BPRecord.DIASTOLIC));
 		} else if (sp.equals(mSpinners[PLS_IDX])) {
-			BPTracker.setSpinner(mSpinners[PLS_IDX], mOriginalValues.getInt(BPRecord.PULSE));
+			BPTrackerFree.setSpinner(mSpinners[PLS_IDX], mOriginalValues.getInt(BPRecord.PULSE));
 		}
 	}
 
