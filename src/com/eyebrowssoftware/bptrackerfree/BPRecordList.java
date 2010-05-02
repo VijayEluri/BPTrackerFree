@@ -36,7 +36,8 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		BPRecord.SYSTOLIC, 
 		BPRecord.DIASTOLIC, 
 		BPRecord.PULSE,
-		BPRecord.CREATED_DATE 
+		BPRecord.CREATED_DATE,
+		BPRecord.NOTE 
 	};
 
 	// private static final int COLUMN_ID_INDEX = 0;
@@ -44,7 +45,8 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 	// private static final int COLUMN_DIASTOLIC_INDEX = 2;
 	// private static final int COLUMN_PULSE_INDEX = 3;
 	private static final int COLUMN_CREATED_AT_INDEX = 4;
-
+	// private static final int COLUMN_NOTE = 5;
+	
 	private static final int RECORDS_QUERY = 0;
 
 	// Menu item ids
@@ -59,7 +61,8 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		BPRecord.CREATED_DATE, 
 		BPRecord.SYSTOLIC, 
 		BPRecord.DIASTOLIC,
-		BPRecord.PULSE
+		BPRecord.PULSE,
+		BPRecord.NOTE
 	};
 
 	private static final int[] IDS = { 
@@ -68,6 +71,7 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		R.id.sys_value,
 		R.id.dia_value, 
 		R.id.pulse_value,
+		R.id.note
 	};
 
 	private LinearLayout mEmptyContent;

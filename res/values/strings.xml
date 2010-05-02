@@ -40,6 +40,7 @@
 	<string name="list_label_time">Time:</string>
 	<string name="list_label_bp">Sys/Dia:</string>
 	<string name="list_label_pulse">Pulse:</string>
+	<string name="list_label_note">Note:</string>
 	<string name="msg_add">Click to Add</string>
 	<string name="bp_separator">/</string>
 	

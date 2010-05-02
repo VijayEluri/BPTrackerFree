@@ -13,8 +13,7 @@ public final class BPRecords {
 	/**
 	 * The content:// style URL for this table
 	 */
-	public static final Uri CONTENT_URI = BPProviderFree.CONTENT_URI.buildUpon()
-		.appendPath("bp_records").build();
+	public static final Uri CONTENT_URI = BPProviderFree.CONTENT_URI.buildUpon().appendPath("bp_records").build();
 
 	/**
 	 * The MIME type of {@link #CONTENT_URI} providing a directory of
@@ -70,7 +69,7 @@ public final class BPRecords {
 		/**
 		 * The DATETIME that the entry was created in the database
 		 * <P>
-		 * Type: LONG
+		 * Type: INTEGER
 		 * </P>
 		 */
 		public static final String CREATED_DATE = "created_at";
@@ -78,7 +77,7 @@ public final class BPRecords {
 		/**
 		 * The DATETIME that the entry was modified in the database
 		 * <P>
-		 * Type: LONG
+		 * Type: INTEGER
 		 * </P>
 		 */
 		public static final String MODIFIED_DATE = "modified_at";
@@ -134,7 +133,7 @@ public final class BPRecords {
 		/**
 		 * The Maximum queried value for Creation Date 
 		 * <P>
-		 * Type: LONG
+		 * Type: INTEGER
 		 * </P>
 		 */
 		public static final String MAX_CREATED_DATE = "max_date"; // String.format("max(%s)", BPRecord.CREATED_DATE);
@@ -142,7 +141,7 @@ public final class BPRecords {
 		/**
 		 * The Minimum queried value for Creation Date 
 		 * <P>
-		 * Type: LONG
+		 * Type: INTEGER
 		 * </P>
 		 */
 		public static final String MIN_CREATED_DATE = "min_date"; // String.format("min(%s)", BPRecord.CREATED_DATE);

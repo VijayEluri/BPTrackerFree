@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Blutdruck-Record kostlos</string>
+    <string name="app_name">BPTracker Free</string>
 
     <string name="bp_permission_description">Zugriff auf Ihren Blutdruck Daten.</string>
     <string name="bp_permission_label">Blutdruck Daten</string>
@@ -40,6 +40,7 @@
 	<string name="list_label_date">Datum:</string>
 	<string name="list_label_time">Zeit:</string>
 	<string name="list_label_bp">Sys/Dia:</string>
+	<string name="list_label_note">Note:</string>
 	<string name="list_label_pulse">Puls:</string>
 	<string name="bp_separator">/</string>
 	

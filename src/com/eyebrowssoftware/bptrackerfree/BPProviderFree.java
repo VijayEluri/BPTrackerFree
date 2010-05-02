@@ -61,7 +61,9 @@ public class BPProviderFree extends ContentProvider {
 					+ BPRecord.SYSTOLIC + " INTEGER," + BPRecord.DIASTOLIC
 					+ " INTEGER," + BPRecord.PULSE + " INTEGER,"
 					+ BPRecord.CREATED_DATE + " INTEGER,"
-					+ BPRecord.MODIFIED_DATE + " INTEGER" + ");");
+					+ BPRecord.MODIFIED_DATE + " INTEGER,"
+					+ BPRecord.NOTE + " TEXT" 
+					+ ");");
 		}
 
 		@Override
@@ -96,7 +98,7 @@ public class BPProviderFree extends ContentProvider {
 		SQLiteQueryBuilder qb = new SQLiteQueryBuilder();
 		SQLiteDatabase db = mOpenHelper.getReadableDatabase();
 
-		Cursor c;
+		Cursor c = null;
 
 		switch (sUriMatcher.match(uri)) {
 		// Result is a page of breweries
@@ -252,5 +254,6 @@ public class BPProviderFree extends ContentProvider {
 		sBPProjectionMap.put(BPRecord.MIN_PULSE, String.format("min(%s)", BPRecord.PULSE));
 		sBPProjectionMap.put(BPRecord.MAX_CREATED_DATE, String.format("max(%s)", BPRecord.CREATED_DATE));
 		sBPProjectionMap.put(BPRecord.MIN_CREATED_DATE, String.format("min(%s)", BPRecord.CREATED_DATE));
+		sBPProjectionMap.put(BPRecord.NOTE, BPRecord.NOTE);
 	}
 }

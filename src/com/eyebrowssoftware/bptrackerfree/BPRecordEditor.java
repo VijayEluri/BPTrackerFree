@@ -25,6 +25,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -45,7 +46,8 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 		BPRecord.DIASTOLIC, 
 		BPRecord.PULSE,
 		BPRecord.CREATED_DATE, 
-		BPRecord.MODIFIED_DATE
+		BPRecord.MODIFIED_DATE,
+		BPRecord.NOTE
 	};
 
 	// BP Record Indices
@@ -55,6 +57,7 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 	private static final int COLUMN_PULSE_INDEX = 3;
 	private static final int COLUMN_CREATED_AT_INDEX = 4;
 	private static final int COLUMN_MODIFIED_AT_INDEX = 5;
+	private static final int COLUMN_NOTE_INDEX = 6;
 
 	// Identifiers of our menu items
 	private static final int REVERT_ID = Menu.FIRST;
@@ -89,6 +92,7 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 
 	private Button mDateButton;
 	private Button mTimeButton;
+	private EditText mNoteText;
 
 	private Calendar mCalendar = GregorianCalendar.getInstance();
 
@@ -104,20 +108,6 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 		final String action = intent.getAction();
 
 		setContentView(R.layout.bp_record_editor);
-
-		mDateButton = (Button) findViewById(R.id.date_button);
-		mDateButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View arg0) {
-				showDialog(DATE_DIALOG_ID);
-			}
-		});
-
-		mTimeButton = (Button) findViewById(R.id.time_button);
-		mTimeButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View arg0) {
-				showDialog(TIME_DIALOG_ID);
-			}
-		});
 
 		if (Intent.ACTION_EDIT.equals(action)) {
 			mState = STATE_EDIT;
@@ -145,6 +135,20 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			BPTrackerFree.SYSTOLIC_MIN_DEFAULT
 		};
 		
+		mDateButton = (Button) findViewById(R.id.date_button);
+		mDateButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0) {
+				showDialog(DATE_DIALOG_ID);
+			}
+		});
+
+		mTimeButton = (Button) findViewById(R.id.time_button);
+		mTimeButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0) {
+				showDialog(TIME_DIALOG_ID);
+			}
+		});
+
 		mSpinners[SYS_IDX] = (Spinner) findViewById(R.id.systolic_spin);
 		mSpinners[SYS_IDX].setPromptId(R.string.label_sys_spinner);
 		mSpinners[SYS_IDX].setOnItemSelectedListener(this);
@@ -176,6 +180,8 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 		mSpinners[PLS_IDX].setOnItemSelectedListener(this);
 		mSpinners[PLS_IDX].setAdapter(new RangeAdapter(this, pls_vals, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
 
+		mNoteText = (EditText) findViewById(R.id.note);
+
 		if (icicle != null) {
 			mOriginalValues = new Bundle(icicle);
 		}
@@ -204,10 +210,14 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			BPTrackerFree.setSpinner(mSpinners[PLS_IDX], pulse);
 
 			long datetime = mCursor.getLong(COLUMN_CREATED_AT_INDEX);
-			long mod_datetime = mCursor.getLong(COLUMN_MODIFIED_AT_INDEX);
 			mCalendar.setTimeInMillis(datetime);
 			updateDateTimeDisplay();
+			
+			long mod_datetime = mCursor.getLong(COLUMN_MODIFIED_AT_INDEX);
 
+			String note = mCursor.getString(COLUMN_NOTE_INDEX);
+			mNoteText.setText(note);
+			
 			// If we hadn't previously retrieved the original text, do so
 			// now. This allows the user to revert their changes.
 			if(mOriginalValues == null) {
@@ -217,6 +227,7 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 				mOriginalValues.putInt(BPRecord.PULSE, pulse);
 				mOriginalValues.putLong(BPRecord.CREATED_DATE, datetime);
 				mOriginalValues.putLong(BPRecord.MODIFIED_DATE, mod_datetime);
+				mOriginalValues.putString(BPRecord.NOTE, note);
 			}
 		} else {
 			setTitle(getText(R.string.title_error));
@@ -247,6 +258,7 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			int diastolic = (Integer) mSpinners[DIA_IDX].getSelectedItem();
 			int pulse = (Integer) mSpinners[PLS_IDX].getSelectedItem();
 			long created = (Long) mCalendar.getTimeInMillis();
+			String note = (String) mNoteText.getText().toString();
 			
 			ContentValues values = new ContentValues();
 			values.put(BPRecord.SYSTOLIC, systolic);
@@ -254,6 +266,7 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			values.put(BPRecord.PULSE, pulse);
 			values.put(BPRecord.CREATED_DATE, created);
 			values.put(BPRecord.MODIFIED_DATE, System.currentTimeMillis());
+			values.put(BPRecord.NOTE, note);
 			getContentResolver().update(mUri, values, null, null);
 		}
 	}
@@ -312,6 +325,7 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			cv.put(BPRecord.PULSE, mOriginalValues.getInt(BPRecord.PULSE));
 			cv.put(BPRecord.CREATED_DATE, mOriginalValues.getLong(BPRecord.CREATED_DATE));
 			cv.put(BPRecord.MODIFIED_DATE, mOriginalValues.getLong(BPRecord.MODIFIED_DATE));
+			cv.put(BPRecord.NOTE, mOriginalValues.getString(BPRecord.NOTE));
 		}
 		return cv;
 	}

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">BPEnregistreur sans frais</string>
+    <string name="app_name">BPTracker Free</string>
 
     <string name="bp_permission_description">Lire et écrire l'accès à vos données de pression artérielle.</string>
     <string name="bp_permission_label">données médicales personnelles</string>
@@ -40,6 +40,7 @@
 	<string name="list_label_time">Heure:</string>
 	<string name="list_label_bp">Sys/Dia:</string>
 	<string name="list_label_pulse">Pouls:</string>
+	<string name="list_label_note">Note:</string>
 	<string name="msg_add">Cliquez sur Ajouter</string>
 	<string name="bp_separator">/</string>
 	
