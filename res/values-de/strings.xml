@@ -32,6 +32,7 @@
 	<string name="label_dia_spinner">Wahl den diastolischen Wert</string>
 	<string name="label_pls_spinner">Wahl den puls Wert</string>
 	<string name="msg_future_date">Späteren Zeitpunkt!</string>
+	<string name="label_note">Note</string>
 	
 	<!-- These values are for the BPRecordList activity -->
 	<string name="msg_add">Hier Erstellen</string>
@@ -40,7 +41,6 @@
 	<string name="list_label_date">Datum:</string>
 	<string name="list_label_time">Zeit:</string>
 	<string name="list_label_bp">Sys/Dia:</string>
-	<string name="list_label_note">Note:</string>
 	<string name="list_label_pulse">Puls:</string>
 	<string name="bp_separator">/</string>
 	

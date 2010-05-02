@@ -30,6 +30,7 @@
 	<string name="label_no">No</string>
 	<string name="label_sys_spinner">Pick Systolic Value</string>
 	<string name="label_dia_spinner">Pick Diastolic Value</string>
+	<string name="label_note">Note</string>
 	<string name="label_pls_spinner">Pick Pulse Value</string>
 	<string name="msg_future_date">Future date!</string>
 	
@@ -40,7 +41,6 @@
 	<string name="list_label_time">Time:</string>
 	<string name="list_label_bp">Sys/Dia:</string>
 	<string name="list_label_pulse">Pulse:</string>
-	<string name="list_label_note">Note:</string>
 	<string name="msg_add">Click to Add</string>
 	<string name="bp_separator">/</string>
 	

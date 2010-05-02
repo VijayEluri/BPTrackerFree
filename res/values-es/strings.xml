@@ -32,6 +32,7 @@
 	<string name="label_dia_spinner">Seleccione el valor de la diastólica</string>
 	<string name="label_pls_spinner">Seleccione el valor del pulso</string>
 	<string name="msg_future_date">Fecha de futuro!</string>
+	<string name="label_note">Nota</string>
 	
 	<!-- These values are for the BPRecordList activity -->
 	<string name="menu_edit">Editar</string>
@@ -40,7 +41,6 @@
 	<string name="list_label_time">Hora:</string>
 	<string name="list_label_bp">Sys/Dia:</string>
 	<string name="list_label_pulse">Pulso:</string>
-	<string name="list_label_note">Nota:</string>
 	<string name="msg_add">Haga clic para añadir</string>
 	<string name="bp_separator">/</string>
 	
