@@ -8,7 +8,6 @@ import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import android.app.Activity;
 import android.content.AsyncQueryHandler;
