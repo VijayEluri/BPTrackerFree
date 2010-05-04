@@ -61,6 +61,7 @@
 	<string name="bp_send_sys">@string/label_systolic</string>
 	<string name="bp_send_dia">@string/label_diastolic</string>
 	<string name="bp_send_pls">@string/label_pulse</string>
+	<string name="bp_send_note">@string/label_note</string>
 
 	<!-- This is a plain old Java format string - default is Date Time -->
 	<string name="datetime_format">%1$s %2$s</string>

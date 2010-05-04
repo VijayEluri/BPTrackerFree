@@ -1,8 +1,10 @@
 package com.eyebrowssoftware.bptrackerfree;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
@@ -26,21 +28,28 @@ import android.widget.CompoundButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.csvreader.CsvWriter;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
 public class BPSend extends Activity implements CompoundButton.OnCheckedChangeListener, OnClickListener {
 
 	private static final String TAG = "BPSend";
 
-	private static final String[] PROJECTION = { BPRecord._ID,
-			BPRecord.SYSTOLIC, BPRecord.DIASTOLIC, BPRecord.PULSE,
-			BPRecord.CREATED_DATE };
+	private static final String[] PROJECTION = { 
+		BPRecord._ID,
+		BPRecord.SYSTOLIC, 
+		BPRecord.DIASTOLIC, 
+		BPRecord.PULSE,
+		BPRecord.CREATED_DATE,
+		BPRecord.NOTE
+	};
 
 	private static final int COLUMN_ID_INDEX = 0;
 	private static final int COLUMN_SYSTOLIC_INDEX = 1;
 	private static final int COLUMN_DIASTOLIC_INDEX = 2;
 	private static final int COLUMN_PULSE_INDEX = 3;
 	private static final int COLUMN_CREATED_AT_INDEX = 4;
+	private static final int COLUMN_NOTE_INDEX = 5;
 
 
 	private static final int RECORDS_QUERY = 0; // for the async query handler
@@ -100,9 +109,6 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 
 		mMQH = new MyQueryHandler();
 
-		List<String> segments = mUri.getPathSegments();
-		if(segments.size() > 1) { // this is a single item query
-		}
 		querySendData();
 	}
 
@@ -223,7 +229,7 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 		String sys_localized;
 		String dia_localized;
 		String pls_localized;
-		String delimiter;
+		String note_localized;
 
 		@Override
 		protected void onPreExecute() {
@@ -233,66 +239,73 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 			sys_localized = res.getString(R.string.bp_send_sys);
 			dia_localized = res.getString(R.string.bp_send_dia);
 			pls_localized = res.getString(R.string.bp_send_pls);
-			delimiter = res.getString(R.string.bp_send_delimiter);
+			note_localized = res.getString(R.string.bp_send_note);
 		}
 
 		@Override
 		protected String doInBackground(Void... nada) {
 			
-			StringBuilder sb = new StringBuilder();
 			Cursor cursor = mRecordsCursor;
-			
-			if (cursor != null && cursor.moveToFirst()) {
-				
-				String[] cnames = cursor.getColumnNames();
-				int columns = cnames.length;
-				
-				for (int j = 0; j < columns; ++j) {
-					if (j == COLUMN_ID_INDEX) { // put out nothing for the id column
-						continue;
-					}
-					else if (j == COLUMN_SYSTOLIC_INDEX) {
-						// add two columns, for systolic_red and systolic_orange
-						sb.append(sys_localized);
-					} else if (j == COLUMN_DIASTOLIC_INDEX) {
-						// add two columns, for diastolic_red and
-						// diastolic_orange
-						sb.append(dia_localized);
-					} else if (j == COLUMN_PULSE_INDEX) {
-						// add two columns, for pulse_red and pulse_orange
-						sb.append(pls_localized);
-					} else if (j == COLUMN_CREATED_AT_INDEX) {
-						// This turns into two columns
-						sb.append(date_localized).append(delimiter).append(time_localized);
-					} else
-						sb.append(cnames[j]);
-					sb.append((j + 1 == columns) ? '\n' : delimiter);
-				}
-				do {
-					// the final separator of each field is put on at the end.
+			ByteArrayOutputStream baos = new ByteArrayOutputStream();
+			CsvWriter csvw = new CsvWriter(baos, ',', Charset.forName("UTF-8"));
+			try {
+				if (cursor != null && cursor.moveToFirst()) {
+					
+					String[] cnames = cursor.getColumnNames();
+					int columns = cnames.length;
+					
 					for (int j = 0; j < columns; ++j) {
-						if (j == COLUMN_ID_INDEX) {
+						if (j == COLUMN_ID_INDEX) { // put out nothing for the id column
 							continue;
+						}
+						else if (j == COLUMN_SYSTOLIC_INDEX) {
+							csvw.write(sys_localized);
+						} else if (j == COLUMN_DIASTOLIC_INDEX) {
+							csvw.write(dia_localized);
+						} else if (j == COLUMN_PULSE_INDEX) {
+							csvw.write(pls_localized);
 						} else if (j == COLUMN_CREATED_AT_INDEX) {
-							String date = BPTrackerFree.getDateString(cursor
-									.getLong(j), DateFormat.SHORT);
-							String time = BPTrackerFree.getTimeString(cursor
-									.getLong(j), DateFormat.SHORT);
-							sb.append(date).append(delimiter).append(time);
+							// This turns into two columns
+							csvw.write(date_localized);
+							csvw.write(time_localized);
+						} else if (j == COLUMN_NOTE_INDEX) {
+							csvw.write(note_localized);
 						} else
-							sb.append(String.valueOf(cursor.getInt(j)));
-						sb.append((j + 1 == columns) ? '\n' : delimiter);
+							csvw.write(cnames[j]);
 					}
-				} while (cursor.moveToNext());
+					csvw.endRecord();
+					do {
+						// the final separator of each field is put on at the end.
+						for (int j = 0; j < columns; ++j) {
+							if (j == COLUMN_ID_INDEX) {
+								continue;
+							} else if (j == COLUMN_CREATED_AT_INDEX) {
+								String date = BPTrackerFree.getDateString(cursor
+										.getLong(j), DateFormat.SHORT);
+								String time = BPTrackerFree.getTimeString(cursor
+										.getLong(j), DateFormat.SHORT);
+								csvw.write(date);
+								csvw.write(time);
+							} else if (j == COLUMN_NOTE_INDEX) { 
+								csvw.write(String.valueOf(cursor.getString(j)));
+							} else
+								csvw.write(String.valueOf(cursor.getInt(j)));
+						}
+						csvw.endRecord();
+					} while (cursor.moveToNext());
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				csvw.close();
 			}
-			return sb.toString();
+			return baos.toString();
 		}
 
 		@Override
 		protected void onPostExecute(String message) {
 			mMessage = message;
-			mMsgLabelView.setText(String.format(mMsgLabelString, message
-					.length()));
+			mMsgLabelView.setText(String.format(mMsgLabelString, message.length()));
 			mMsgView.setText(message);
 		}
 	}
