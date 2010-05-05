@@ -126,7 +126,6 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			return;
 		}
 
-		mCursor = managedQuery(mUri, PROJECTION, null, null, null);
 		int[] sys_vals = {
 		    BPTrackerFree.SYSTOLIC_MAX_DEFAULT,
 			RangeAdapter.NO_ZONE,
@@ -181,6 +180,8 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 		mSpinners[PLS_IDX].setAdapter(new RangeAdapter(this, pls_vals, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
 
 		mNoteText = (EditText) findViewById(R.id.note);
+
+		mCursor = managedQuery(mUri, PROJECTION, null, null, null);
 
 		if (icicle != null) {
 			mOriginalValues = new Bundle(icicle);

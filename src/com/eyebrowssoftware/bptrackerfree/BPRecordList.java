@@ -5,7 +5,6 @@ import java.text.DateFormat;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
-import android.content.AsyncQueryHandler;
 import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -46,8 +45,6 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 	// private static final int COLUMN_PULSE_INDEX = 3;
 	private static final int COLUMN_CREATED_AT_INDEX = 4;
 	// private static final int COLUMN_NOTE_INDEX = 5;
-	
-	private static final int RECORDS_QUERY = 0;
 
 	// Menu item ids
 	public static final int MENU_ITEM_DELETE = Menu.FIRST;
@@ -76,12 +73,8 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 
 	private LinearLayout mEmptyContent;
 	
-	private Cursor mCursor;
-
 	private SimpleCursorAdapter mAdapter;
 
-	private MyQueryHandler mMQH;
-	
 	/** Called when the activity is first created. */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -104,36 +97,14 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		lv.addHeaderView(v, null, true);
 		lv.setOnCreateContextMenuListener(this);
 		
-		mMQH = new MyQueryHandler();
-
-		mMQH.startQuery(RECORDS_QUERY, TAG, intent.getData(), PROJECTION, null,
-				null, BPRecord.CREATED_DATE + " DESC");
-
-		mAdapter = new SimpleCursorAdapter(this, R.layout.bp_record_list_item, 
-				null, VALS, IDS);
+		Cursor cursor = managedQuery(intent.getData(), PROJECTION, null, null, BPRecord.CREATED_DATE + " DESC");
+		
+		mAdapter = new SimpleCursorAdapter(this, R.layout.bp_record_list_item, cursor, VALS, IDS);
 		mAdapter.setViewBinder(new MyViewBinder());
+		if(cursor == null) {
+			setTitle(getText(R.string.title_error));
+		}
 		setListAdapter(mAdapter);
-	}
-
-	private class MyQueryHandler extends AsyncQueryHandler {
-
-		public MyQueryHandler() {
-			super(BPRecordList.this.getContentResolver());
-		}
-
-		protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-			BPRecordList.this.startManagingCursor(cursor);
-			switch (token) {
-			case RECORDS_QUERY:
-				mCursor = cursor;
-				if (mCursor != null) {
-					mAdapter.changeCursor(mCursor);
-				} else {
-					setTitle(getText(R.string.title_error));
-				}
-				break;
-			}
-		}
 	}
 	
 	private class MyViewBinder implements SimpleCursorAdapter.ViewBinder {
