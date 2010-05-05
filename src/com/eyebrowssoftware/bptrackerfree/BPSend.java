@@ -10,7 +10,6 @@ import java.util.Calendar;
 import java.util.GregorianCalendar;
 
 import android.app.Activity;
-import android.content.AsyncQueryHandler;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -50,11 +49,7 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 	private static final int COLUMN_CREATED_AT_INDEX = 4;
 	private static final int COLUMN_NOTE_INDEX = 5;
 
-
-	private static final int RECORDS_QUERY = 0; // for the async query handler
-
 	private Uri mUri;
-	private Cursor mRecordsCursor;
 
 	private TextView mMsgLabelView;
 	private TextView mMsgView;
@@ -69,8 +64,6 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 
 	// This may or may not be used
 	private boolean mReverse = true;
-
-	MyQueryHandler mMQH;
 
 	private String mMessage; // this is the message we construct to send
 
@@ -106,57 +99,40 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 		mSendButton = (Button) findViewById(R.id.send);
 		mSendButton.setOnClickListener(this);
 
-		mMQH = new MyQueryHandler();
-
 		querySendData();
 	}
-
-	private class MyQueryHandler extends AsyncQueryHandler {
-
-		public MyQueryHandler() {
-			super(BPSend.this.getContentResolver());
-		}
-
-		protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-			BPSend.this.startManagingCursor(cursor);
-			switch (token) {
-			case RECORDS_QUERY:
-				if (cursor != null && cursor.moveToFirst()) {
-					long mNewest;
-					long mOldest;
-					long first_time = cursor.getLong(COLUMN_CREATED_AT_INDEX);
-					cursor.moveToLast();
-					long last_time = cursor.getLong(COLUMN_CREATED_AT_INDEX);
-					if (mReverse) {
-						mNewest = first_time;
-						mOldest = last_time;
-					} else {
-						mOldest = first_time;
-						mNewest = last_time;
-					}
-					mToCalendar.setTimeInMillis(mNewest);
-					mFromCalendar.setTimeInMillis(mOldest);
-				} else {
-					long now = System.currentTimeMillis();
-					mToCalendar.setTimeInMillis(now);
-					mFromCalendar.setTimeInMillis(now);
-					Toast.makeText(BPSend.this,
-									R.string.msg_nothing_to_send,
-									Toast.LENGTH_LONG).show();
-				}
-				mRecordsCursor = cursor;
-				new UpdateMessageTask().execute();
-				break;
-			}
-		}
-	}
-
+	
 	private void querySendData() {
 		String where = null;
 		String[] whereArgs = null;
-
-		mMQH.startQuery(RECORDS_QUERY, TAG, mUri, PROJECTION, where, whereArgs,
-				BPRecord.CREATED_DATE + ((mReverse) ? " DESC" : "ASC"));
+		
+		Cursor cursor = this.managedQuery(mUri, PROJECTION, where, whereArgs, BPRecord.CREATED_DATE + ((mReverse) ? " DESC" : "ASC"));
+		if (cursor != null && cursor.moveToFirst()) {
+			long mNewest;
+			long mOldest;
+			long first_time = cursor.getLong(COLUMN_CREATED_AT_INDEX);
+			cursor.moveToLast();
+			long last_time = cursor.getLong(COLUMN_CREATED_AT_INDEX);
+			if (mReverse) {
+				mNewest = first_time;
+				mOldest = last_time;
+			} else {
+				mOldest = first_time;
+				mNewest = last_time;
+			}
+			mToCalendar.setTimeInMillis(mNewest);
+			mFromCalendar.setTimeInMillis(mOldest);
+		} else {
+			long now = System.currentTimeMillis();
+			mToCalendar.setTimeInMillis(now);
+			mFromCalendar.setTimeInMillis(now);
+			Toast.makeText(BPSend.this,
+							R.string.msg_nothing_to_send,
+							Toast.LENGTH_LONG).show();
+		}
+		mMessage = getMessage(cursor);
+        mMsgLabelView.setText(String.format(mMsgLabelString, mMessage.length()));
+        mMsgView.setText(mMessage);
 	}
 
 	public void onClick(View v) {
@@ -221,7 +197,7 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 
 
 	// Uses the member Cursor mRecordsCursor
-	private class UpdateMessageTask extends AsyncTask<Void, Integer, String> {
+	private String getMessage(Cursor cursor) {
 		
 		String date_localized;
 		String time_localized;
@@ -230,83 +206,68 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 		String pls_localized;
 		String note_localized;
 
-		@Override
-		protected void onPreExecute() {
-			Resources res = getResources();
-			date_localized = res.getString(R.string.bp_send_date);
-			time_localized = res.getString(R.string.bp_send_time);
-			sys_localized = res.getString(R.string.bp_send_sys);
-			dia_localized = res.getString(R.string.bp_send_dia);
-			pls_localized = res.getString(R.string.bp_send_pls);
-			note_localized = res.getString(R.string.bp_send_note);
-		}
+		Resources res = getResources();
+		date_localized = res.getString(R.string.bp_send_date);
+		time_localized = res.getString(R.string.bp_send_time);
+		sys_localized = res.getString(R.string.bp_send_sys);
+		dia_localized = res.getString(R.string.bp_send_dia);
+		pls_localized = res.getString(R.string.bp_send_pls);
+		note_localized = res.getString(R.string.bp_send_note);
 
-		@Override
-		protected String doInBackground(Void... nada) {
-			
-			Cursor cursor = mRecordsCursor;
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-			CsvWriter csvw = new CsvWriter(baos, ',', Charset.forName("UTF-8"));
-			try {
-				if (cursor != null && cursor.moveToFirst()) {
-					
-					String[] cnames = cursor.getColumnNames();
-					int columns = cnames.length;
-					
+		ByteArrayOutputStream baos = new ByteArrayOutputStream();
+		CsvWriter csvw = new CsvWriter(baos, ',', Charset.forName("UTF-8"));
+		try {
+			if (cursor != null && cursor.moveToFirst()) {
+				
+				String[] cnames = cursor.getColumnNames();
+				int columns = cnames.length;
+				
+				for (int j = 0; j < columns; ++j) {
+					if (j == COLUMN_ID_INDEX) { // put out nothing for the id column
+						continue;
+					}
+					else if (j == COLUMN_SYSTOLIC_INDEX) {
+						csvw.write(sys_localized);
+					} else if (j == COLUMN_DIASTOLIC_INDEX) {
+						csvw.write(dia_localized);
+					} else if (j == COLUMN_PULSE_INDEX) {
+						csvw.write(pls_localized);
+					} else if (j == COLUMN_CREATED_AT_INDEX) {
+						// This turns into two columns
+						csvw.write(date_localized);
+						csvw.write(time_localized);
+					} else if (j == COLUMN_NOTE_INDEX) {
+						csvw.write(note_localized);
+					} else
+						csvw.write(cnames[j]);
+				}
+				csvw.endRecord();
+				do {
+					// the final separator of each field is put on at the end.
 					for (int j = 0; j < columns; ++j) {
-						if (j == COLUMN_ID_INDEX) { // put out nothing for the id column
+						if (j == COLUMN_ID_INDEX) {
 							continue;
-						}
-						else if (j == COLUMN_SYSTOLIC_INDEX) {
-							csvw.write(sys_localized);
-						} else if (j == COLUMN_DIASTOLIC_INDEX) {
-							csvw.write(dia_localized);
-						} else if (j == COLUMN_PULSE_INDEX) {
-							csvw.write(pls_localized);
 						} else if (j == COLUMN_CREATED_AT_INDEX) {
-							// This turns into two columns
-							csvw.write(date_localized);
-							csvw.write(time_localized);
-						} else if (j == COLUMN_NOTE_INDEX) {
-							csvw.write(note_localized);
+							String date = BPTrackerFree.getDateString(cursor
+									.getLong(j), DateFormat.SHORT);
+							String time = BPTrackerFree.getTimeString(cursor
+									.getLong(j), DateFormat.SHORT);
+							csvw.write(date);
+							csvw.write(time);
+						} else if (j == COLUMN_NOTE_INDEX) { 
+							csvw.write(String.valueOf(cursor.getString(j)));
 						} else
-							csvw.write(cnames[j]);
+							csvw.write(String.valueOf(cursor.getInt(j)));
 					}
 					csvw.endRecord();
-					do {
-						// the final separator of each field is put on at the end.
-						for (int j = 0; j < columns; ++j) {
-							if (j == COLUMN_ID_INDEX) {
-								continue;
-							} else if (j == COLUMN_CREATED_AT_INDEX) {
-								String date = BPTrackerFree.getDateString(cursor
-										.getLong(j), DateFormat.SHORT);
-								String time = BPTrackerFree.getTimeString(cursor
-										.getLong(j), DateFormat.SHORT);
-								csvw.write(date);
-								csvw.write(time);
-							} else if (j == COLUMN_NOTE_INDEX) { 
-								csvw.write(String.valueOf(cursor.getString(j)));
-							} else
-								csvw.write(String.valueOf(cursor.getInt(j)));
-						}
-						csvw.endRecord();
-					} while (cursor.moveToNext());
-				}
-			} catch (IOException e) {
-				e.printStackTrace();
-			} finally {
-				csvw.close();
+				} while (cursor.moveToNext());
 			}
-			return baos.toString();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			csvw.close();
 		}
-
-		@Override
-		protected void onPostExecute(String message) {
-			mMessage = message;
-			mMsgLabelView.setText(String.format(mMsgLabelString, message.length()));
-			mMsgView.setText(message);
-		}
+		return baos.toString();
 	}
-	
+
 }
