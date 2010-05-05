@@ -45,7 +45,7 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 	// private static final int COLUMN_DIASTOLIC_INDEX = 2;
 	// private static final int COLUMN_PULSE_INDEX = 3;
 	private static final int COLUMN_CREATED_AT_INDEX = 4;
-	// private static final int COLUMN_NOTE = 5;
+	// private static final int COLUMN_NOTE_INDEX = 5;
 	
 	private static final int RECORDS_QUERY = 0;
 
@@ -156,6 +156,15 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 						DateFormat.SHORT);
 				((TextView)view).setText(val);
 				return true;
+			case R.id.note:
+				String note = cursor.getString(columnIndex);
+				if(note != null && note.length() > 0) {
+					((TextView)view).setText(note);
+					view.setVisibility(View.VISIBLE);
+				} else {
+					view.setVisibility(View.GONE);
+				}
+				return true;
 			default:
 				return false;
 			}
@@ -196,10 +205,9 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		}
 		Cursor cursor = (Cursor) getListAdapter().getItem(info.position);
 		if (cursor != null && cursor.moveToFirst()) {
-			String date = BPTrackerFree.getDateString(cursor
-					.getLong(COLUMN_CREATED_AT_INDEX), DateFormat.SHORT);
-			String time = BPTrackerFree.getTimeString(cursor
-					.getLong(COLUMN_CREATED_AT_INDEX), DateFormat.SHORT);
+			long datetime = cursor.getLong(COLUMN_CREATED_AT_INDEX);
+			String date = BPTrackerFree.getDateString(datetime, DateFormat.SHORT);
+			String time = BPTrackerFree.getTimeString(datetime, DateFormat.SHORT);
 			String fmt = getString(R.string.datetime_format);
 			menu.setHeaderTitle(String.format(fmt, date, time));
 		}
