@@ -15,7 +15,6 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -99,10 +98,6 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 		mSendButton = (Button) findViewById(R.id.send);
 		mSendButton.setOnClickListener(this);
 
-		querySendData();
-	}
-	
-	private void querySendData() {
 		String where = null;
 		String[] whereArgs = null;
 		
@@ -126,9 +121,7 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 			long now = System.currentTimeMillis();
 			mToCalendar.setTimeInMillis(now);
 			mFromCalendar.setTimeInMillis(now);
-			Toast.makeText(BPSend.this,
-							R.string.msg_nothing_to_send,
-							Toast.LENGTH_LONG).show();
+			Toast.makeText(BPSend.this, R.string.msg_nothing_to_send, Toast.LENGTH_LONG).show();
 		}
 		mMessage = getMessage(cursor);
         mMsgLabelView.setText(String.format(mMsgLabelString, mMessage.length()));
