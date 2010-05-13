@@ -141,26 +141,25 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 	}
 
 	private void sendData(String value) {
-		// We're going to send the data in two forms, as message text and as an
-		// attachment
-		FileOutputStream fos;
+		// We're going to send the data as message text and/or as an attachment
 		if (value == null || !(mSendText.isChecked() || mSendFile.isChecked())) {
 			Toast.makeText(this, R.string.msg_nothing_to_send,
 					Toast.LENGTH_LONG).show();
 			return;
 		}
 		try {
-			fos = this.openFileOutput("data.csv", Context.MODE_WORLD_READABLE);
-			fos.write(value.getBytes());
-			fos.close();
-			Uri fileUri = Uri.fromFile(getFileStreamPath("data.csv"));
-			// Log.d(TAG, "File Uri: " + fileUri.toString());
 			Intent i = new Intent(Intent.ACTION_SEND);
 			i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			if (mSendText.isChecked())
 				i.putExtra(Intent.EXTRA_TEXT, value);
-			if (mSendFile.isChecked())
+			if (mSendFile.isChecked()) {
+				FileOutputStream fos = this.openFileOutput("data.csv", Context.MODE_WORLD_READABLE);
+				fos.write(value.getBytes());
+				fos.close();
+				Uri fileUri = Uri.fromFile(getFileStreamPath("data.csv"));
+				// Log.d(TAG, "File Uri: " + fileUri.toString());
 				i.putExtra(Intent.EXTRA_STREAM, fileUri);
+			}
 			i.putExtra(Intent.EXTRA_TITLE, "bpdata.csv");
 			i.putExtra(Intent.EXTRA_SUBJECT, "bpdata.csv");
 			i.setType("text/plain");
