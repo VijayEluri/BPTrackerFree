@@ -64,8 +64,6 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 	// This may or may not be used
 	private boolean mReverse = true;
 
-	private String mMessage; // this is the message we construct to send
-
 	private Calendar mToCalendar = GregorianCalendar.getInstance();
 	private Calendar mFromCalendar = GregorianCalendar.getInstance();
 	
@@ -97,83 +95,93 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 
 		mSendButton = (Button) findViewById(R.id.send);
 		mSendButton.setOnClickListener(this);
-
+		querySendData();
+	}
+	
+	private void querySendData() {
 		String where = null;
 		String[] whereArgs = null;
+		long newest;
+		long oldest;
 		
-		Cursor cursor = this.managedQuery(mUri, PROJECTION, where, whereArgs, BPRecord.CREATED_DATE + ((mReverse) ? " DESC" : "ASC"));
-		if (cursor != null && cursor.moveToFirst()) {
-			long mNewest;
-			long mOldest;
-			long first_time = cursor.getLong(COLUMN_CREATED_AT_INDEX);
-			cursor.moveToLast();
-			long last_time = cursor.getLong(COLUMN_CREATED_AT_INDEX);
-			if (mReverse) {
-				mNewest = first_time;
-				mOldest = last_time;
-			} else {
-				mOldest = first_time;
-				mNewest = last_time;
-			}
-			mToCalendar.setTimeInMillis(mNewest);
-			mFromCalendar.setTimeInMillis(mOldest);
+		newest = oldest = System.currentTimeMillis();
+		
+		Cursor cursor = getContentResolver().query(mUri, PROJECTION, where, whereArgs, BPRecord.CREATED_DATE + ((mReverse) ? " DESC" : "ASC"));
+		String msg = getMessage(cursor);
+		
+		if (cursor == null) {
+			Toast.makeText(BPSend.this, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
 		} else {
-			long now = System.currentTimeMillis();
-			mToCalendar.setTimeInMillis(now);
-			mFromCalendar.setTimeInMillis(now);
-			Toast.makeText(BPSend.this, R.string.msg_nothing_to_send, Toast.LENGTH_LONG).show();
+			if(cursor.moveToFirst()) {
+
+				long first_time = cursor.getLong(COLUMN_CREATED_AT_INDEX);
+				cursor.moveToLast();
+				long last_time = cursor.getLong(COLUMN_CREATED_AT_INDEX);
+				if (mReverse) {
+					newest = first_time;
+					oldest = last_time;
+				} else {
+					oldest = first_time;
+					newest = last_time;
+				}
+			} else {
+				Toast.makeText(BPSend.this, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
+			}
+			cursor.close();
 		}
-		mMessage = getMessage(cursor);
-        mMsgLabelView.setText(String.format(mMsgLabelString, mMessage.length()));
-        mMsgView.setText(mMessage);
+		mToCalendar.setTimeInMillis(newest);
+		mFromCalendar.setTimeInMillis(oldest);
+        mMsgLabelView.setText(String.format(mMsgLabelString, msg.length()));
+        mMsgView.setText(msg);
 	}
 
 	public void onClick(View v) {
 		if (v.equals(mSendButton)) {
-			if (mMessage != null) {
-				sendData(mMessage);
+			String msg = mMsgView.getText().toString();
+			if (msg.length() > 0) {
+				sendData(msg);
 				finish();
 			} else {
-				Toast.makeText(this, R.string.msg_nothing_to_send,
-						Toast.LENGTH_LONG).show();
+				Toast.makeText(this, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
 			}
 		}
 	}
+	
+	private static final String FILENAME = "data.csv";
+	private static final String MSGNAME = "bpdata.csv";
 
-	private void sendData(String value) {
+	private void sendData(String msg) {
 		// We're going to send the data as message text and/or as an attachment
-		if (value == null || !(mSendText.isChecked() || mSendFile.isChecked())) {
-			Toast.makeText(this, R.string.msg_nothing_to_send,
-					Toast.LENGTH_LONG).show();
+		if (msg == null || !(mSendText.isChecked() || mSendFile.isChecked())) {
+			Toast.makeText(this, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
 			return;
 		}
 		try {
 			Intent i = new Intent(Intent.ACTION_SEND);
-			i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			if (mSendText.isChecked())
-				i.putExtra(Intent.EXTRA_TEXT, value);
+				i.putExtra(Intent.EXTRA_TEXT, msg);
 			if (mSendFile.isChecked()) {
-				FileOutputStream fos = this.openFileOutput("data.csv", Context.MODE_WORLD_READABLE);
-				fos.write(value.getBytes());
+				FileOutputStream fos = this.openFileOutput(FILENAME, Context.MODE_WORLD_READABLE);
+				fos.write(msg.getBytes());
 				fos.close();
-				Uri fileUri = Uri.fromFile(getFileStreamPath("data.csv"));
+				Uri fileUri = Uri.fromFile(getFileStreamPath(FILENAME));
 				// Log.d(TAG, "File Uri: " + fileUri.toString());
 				i.putExtra(Intent.EXTRA_STREAM, fileUri);
+				i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			}
-			i.putExtra(Intent.EXTRA_TITLE, "bpdata.csv");
-			i.putExtra(Intent.EXTRA_SUBJECT, "bpdata.csv");
+			i.putExtra(Intent.EXTRA_TITLE, MSGNAME);
+			i.putExtra(Intent.EXTRA_SUBJECT, MSGNAME);
 			i.setType("text/plain");
-			Intent ai = Intent.createChooser(i,
-					getString(R.string.msg_choose_send_method));
+			Intent ai = Intent.createChooser(i, getString(R.string.msg_choose_send_method));
 			ai.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 			startActivity(ai);
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, getString(R.string.title_error));
-			Toast.makeText(this, getString(R.string.title_error), Toast.LENGTH_LONG).show();
+			Toast.makeText(this, getString(R.string.title_error), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 		} catch (IOException e) {
 			Log.e(TAG, getString(R.string.title_error));
-			Toast.makeText(this, getString(R.string.title_error), Toast.LENGTH_LONG).show();
+			Toast.makeText(this, getString(R.string.title_error), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 		}
 	}
@@ -208,9 +216,8 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 
 		ByteArrayOutputStream baos = new ByteArrayOutputStream();
 		CsvWriter csvw = new CsvWriter(baos, ',', Charset.forName("UTF-8"));
-		try {
-			if (cursor != null && cursor.moveToFirst()) {
-				
+		if (cursor != null && cursor.moveToFirst()) {
+			try {
 				String[] cnames = cursor.getColumnNames();
 				int columns = cnames.length;
 				
@@ -253,11 +260,11 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 					}
 					csvw.endRecord();
 				} while (cursor.moveToNext());
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				csvw.close();
 			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			csvw.close();
 		}
 		return baos.toString();
 	}
