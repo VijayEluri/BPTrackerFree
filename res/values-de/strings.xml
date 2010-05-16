@@ -17,6 +17,8 @@
 	<string name="title_error">Interner Fehler</string>
 
 	<!-- These strings appear in the BPRecordEditor activity -->
+	<string name="menu_done">Vollständig</string>
+	<string name="menu_cancel">Abbrechen</string>
 	<string name="menu_revert">Rückgängig</string>
 	<string name="menu_discard">Verwerfen</string>
 	<string name="menu_delete">Löschen</string>

@@ -17,7 +17,9 @@
 	<string name="title_error">Internal Error</string>
 
 	<!-- These strings appear in the BPRecordEditor activity -->
+	<string name="menu_done">Done</string>
 	<string name="menu_revert">Revert</string>
+	<string name="menu_cancel">Cancel</string>
 	<string name="menu_discard">Discard</string>
 	<string name="menu_delete">Delete</string>
 	<string name="label_systolic">Systolic</string>

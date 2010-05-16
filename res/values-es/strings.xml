@@ -17,6 +17,8 @@
 	<string name="title_error">Error Interno</string>
 
 	<!-- These strings appear in the BPRecordEditor activity -->
+	<string name="menu_done">Completo</string>
+	<string name="menu_cancel">Cancelar</string>
 	<string name="menu_revert">Revertir</string>
 	<string name="menu_discard">Desechar</string>
 	<string name="menu_delete">Eliminar</string>

@@ -60,9 +60,10 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 	private static final int COLUMN_NOTE_INDEX = 6;
 
 	// Identifiers of our menu items
-	private static final int REVERT_ID = Menu.FIRST;
-	private static final int DISCARD_ID = Menu.FIRST + 1;
-	private static final int DELETE_ID = Menu.FIRST + 2;
+	private static final int DONE_ID = Menu.FIRST;
+	private static final int REVERT_ID = Menu.FIRST + 1;
+	private static final int DISCARD_ID = Menu.FIRST + 2;
+	private static final int DELETE_ID = Menu.FIRST + 3;
 
 	// The menu group, for grouped items
 	private static final int MENU_GROUP = Menu.NONE + 1;
@@ -92,6 +93,8 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 
 	private Button mDateButton;
 	private Button mTimeButton;
+	private Button mDoneButton;
+	private Button mRevertButton;
 	private EditText mNoteText;
 
 	private Calendar mCalendar = GregorianCalendar.getInstance();
@@ -148,6 +151,20 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			}
 		});
 
+		mDoneButton = (Button) findViewById(R.id.done_button);
+		mDoneButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0) {
+				finish();
+			}
+		});
+		
+		mRevertButton = (Button) findViewById(R.id.revert_button);
+		mRevertButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0) {
+				cancelRecord();
+			}
+		});
+		
 		mSpinners[SYS_IDX] = (Spinner) findViewById(R.id.systolic_spin);
 		mSpinners[SYS_IDX].setPromptId(R.string.label_sys_spinner);
 		mSpinners[SYS_IDX].setOnItemSelectedListener(this);
@@ -287,16 +304,12 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 
 		// Build the menus that are shown when editing.
 		if (mState == STATE_EDIT) {
-			menu.add(Menu.NONE, REVERT_ID, 0, R.string.menu_revert)
-				.setShortcut('0', 'r')
-				.setIcon(android.R.drawable.ic_menu_revert);
-			menu.add(MENU_GROUP, DELETE_ID, 0, R.string.menu_delete)
-				.setShortcut('1', 'd')
-				.setIcon(android.R.drawable.ic_menu_delete);
+			menu.add(MENU_GROUP, DONE_ID, 0, R.string.menu_done);
+			menu.add(MENU_GROUP, REVERT_ID, 1, R.string.menu_revert);
+			menu.add(MENU_GROUP, DELETE_ID, 2, R.string.menu_delete);
 		} else {
-			menu.add(Menu.NONE, DISCARD_ID, 0, R.string.menu_discard)
-				.setShortcut('0', 'd')
-				.setIcon(android.R.drawable.ic_menu_delete);
+			menu.add(MENU_GROUP, DONE_ID, 0, R.string.menu_done);
+			menu.add(MENU_GROUP, DISCARD_ID, 1, R.string.menu_discard);
 		}
 		return true;
 	}
@@ -313,6 +326,9 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			return true;
 		case REVERT_ID:
 			cancelRecord();
+			return true;
+		case DONE_ID:
+			finish();
 			return true;
 		}
 		return super.onOptionsItemSelected(item);

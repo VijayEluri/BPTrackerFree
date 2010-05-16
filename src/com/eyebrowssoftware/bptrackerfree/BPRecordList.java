@@ -146,9 +146,7 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 
-		menu.add(Menu.NONE, MENU_ITEM_SEND, 0, R.string.menu_send)
-			.setShortcut('1', 's')
-			.setIcon(android.R.drawable.ic_menu_send);
+		menu.add(Menu.NONE, MENU_ITEM_SEND, 0, R.string.menu_send);
 		return true;
 	}
 

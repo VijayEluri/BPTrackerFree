@@ -17,6 +17,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -55,6 +57,7 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 	private CheckBox mSendText;
 	private CheckBox mSendFile;
 	private Button mSendButton;
+	private Button mCancelButton;
 
 	private String mMsgLabelString;
 
@@ -95,6 +98,10 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 
 		mSendButton = (Button) findViewById(R.id.send);
 		mSendButton.setOnClickListener(this);
+
+		mCancelButton = (Button) findViewById(R.id.cancel);
+		mCancelButton.setOnClickListener(this);
+
 		querySendData();
 	}
 	
@@ -137,44 +144,42 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 
 	public void onClick(View v) {
 		if (v.equals(mSendButton)) {
-			String msg = mMsgView.getText().toString();
-			if (msg.length() > 0) {
-				sendData(msg);
+			if (sendData()) {
 				finish();
 			} else {
 				Toast.makeText(this, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
 			}
+		} else if (v.equals(mCancelButton)) {
+			finish();
 		}
 	}
 	
 	private static final String FILENAME = "data.csv";
 	private static final String MSGNAME = "bpdata.csv";
 
-	private void sendData(String msg) {
+	private boolean sendData() {
+		String msg = mMsgView.getText().toString();
 		// We're going to send the data as message text and/or as an attachment
 		if (msg == null || !(mSendText.isChecked() || mSendFile.isChecked())) {
 			Toast.makeText(this, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
-			return;
+			return false;
 		}
 		try {
-			Intent i = new Intent(Intent.ACTION_SEND);
+			Intent sendIntent = new Intent(Intent.ACTION_SEND);
+			sendIntent.putExtra(Intent.EXTRA_TITLE, MSGNAME);
+			sendIntent.putExtra(Intent.EXTRA_SUBJECT, MSGNAME);
+			sendIntent.setType("text/plain");
 			if (mSendText.isChecked())
-				i.putExtra(Intent.EXTRA_TEXT, msg);
+				sendIntent.putExtra(Intent.EXTRA_TEXT, msg);
 			if (mSendFile.isChecked()) {
 				FileOutputStream fos = this.openFileOutput(FILENAME, Context.MODE_WORLD_READABLE);
 				fos.write(msg.getBytes());
 				fos.close();
-				Uri fileUri = Uri.fromFile(getFileStreamPath(FILENAME));
-				// Log.d(TAG, "File Uri: " + fileUri.toString());
-				i.putExtra(Intent.EXTRA_STREAM, fileUri);
-				i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+				sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(getFileStreamPath(FILENAME)));
+				sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 			}
-			i.putExtra(Intent.EXTRA_TITLE, MSGNAME);
-			i.putExtra(Intent.EXTRA_SUBJECT, MSGNAME);
-			i.setType("text/plain");
-			Intent ai = Intent.createChooser(i, getString(R.string.msg_choose_send_method));
-			ai.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			startActivity(ai);
+			startActivity(Intent.createChooser(sendIntent, getString(R.string.msg_choose_send_method)));
+			return true;
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, getString(R.string.title_error));
 			Toast.makeText(this, getString(R.string.title_error), Toast.LENGTH_SHORT).show();
@@ -184,6 +189,7 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 			Toast.makeText(this, getString(R.string.title_error), Toast.LENGTH_SHORT).show();
 			e.printStackTrace();
 		}
+		return false;
 	}
 
 
@@ -268,5 +274,36 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 		}
 		return baos.toString();
 	}
+	
+	// Identifiers of our menu items
+	private static final int SEND_ID = Menu.FIRST;
+	private static final int CANCEL_ID = Menu.FIRST + 1;
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		super.onCreateOptionsMenu(menu);
+
+		// Build the menus that are shown when editing.
+		menu.add(Menu.NONE, SEND_ID, 0, R.string.menu_send);
+		menu.add(Menu.NONE, CANCEL_ID, 1, R.string.menu_cancel);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle all of the possible menu actions.
+		switch (item.getItemId()) {
+		case CANCEL_ID:
+			finish();
+			return true;
+		case SEND_ID:
+			if(sendData())
+				finish();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+	
 
 }
