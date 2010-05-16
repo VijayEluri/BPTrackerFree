@@ -23,6 +23,10 @@
 				<include layout="@layout/sys_spinner"/>
 				<include layout="@layout/dia_spinner"/>
 				<include layout="@layout/pls_spinner"/>
+				<EditText
+					android:id="@+id/note"
+					android:layout_height="wrap_content"
+				/>
 				<TableRow
 					android:layout_height="wrap_content"
 				>
@@ -60,18 +64,6 @@
 					/>
 				</TableRow>
 			</TableLayout>
-			<TextView
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/label_note"
-				style="@style/bp_label"
-				android:gravity="center_horizontal"
-			/>
-			<EditText
-				android:id="@+id/note"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-			/>
 		</LinearLayout>
 	</ScrollView>
 	<TableLayout
@@ -82,10 +74,7 @@
 		android:stretchColumns="0,1"
 		android:shrinkColumns="0,1"
 	>
-		<TableRow
-			android:layout_height="wrap_content"
-			android:layout_width="fill_parent"
-		>
+		<TableRow>
 			<Button
 				android:layout_width="wrap_content"
 				android:layout_height="wrap_content"
