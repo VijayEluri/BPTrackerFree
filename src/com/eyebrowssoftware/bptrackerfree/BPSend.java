@@ -168,16 +168,18 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 			Intent sendIntent = new Intent(Intent.ACTION_SEND);
 			sendIntent.putExtra(Intent.EXTRA_TITLE, MSGNAME);
 			sendIntent.putExtra(Intent.EXTRA_SUBJECT, MSGNAME);
-			sendIntent.setType("text/plain");
 			if (mSendText.isChecked())
 				sendIntent.putExtra(Intent.EXTRA_TEXT, msg);
 			if (mSendFile.isChecked()) {
+				sendIntent.setType("text/csv");
 				FileOutputStream fos = this.openFileOutput(FILENAME, Context.MODE_WORLD_READABLE);
 				fos.write(msg.getBytes());
 				fos.close();
 				sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(getFileStreamPath(FILENAME)));
 				sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-			}
+			} else
+				sendIntent.setType("text/plain");
+
 			startActivity(Intent.createChooser(sendIntent, getString(R.string.msg_choose_send_method)));
 			return true;
 		} catch (FileNotFoundException e) {
