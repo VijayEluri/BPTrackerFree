@@ -55,8 +55,6 @@
 	<string name="label_message_format">Nachrichtentext (%1$d bytes)</string>
 	<string name="msg_nothing_to_send">Nichts schicken!</string>
 	<string name="msg_choose_send_method">Wo Senden?</string>
-	<string name="msg_file_not_found_error">Fehler: Die Datei wurde nicht gefunden.</string>
-	<string name="msg_io_exception_error">Fehler: Schreiben von Datei.</string>
 
 	<!-- Localization fields for CSV file -->
 	<string name="bp_send_delimiter">,</string>

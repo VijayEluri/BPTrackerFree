@@ -55,9 +55,14 @@
 	<string name="label_message_format">Message Text (%1$d bytes)</string>
 	<string name="msg_nothing_to_send">Nothing to send!</string>
 	<string name="msg_choose_send_method">Send to where?</string>
-	<string name="msg_file_not_found_error">Error: File not found.</string>
-	<string name="msg_io_exception_error">Error: I/O Exception.</string>
-	
+	<string name="msg_file_not_found_error">Error: File not found. Your data is safe.</string>
+	<string name="msg_io_exception_error">Error: I/O Exception. Your data is safe.</string>
+	<string name="msg_directory_error">Error: Storage space. Your data is safe.</string>
+	<string name="msg_null_file_error">Error: Null file reference. Your data is safe.</string>
+	<string name="msg_no_file_error">Error: Non-existent file. Your data is safe.</string>
+	<string name="msg_zero_size_error">Error: Zero file size. Your data is safe.</string>
+	<string name="msg_twilight_zone">We have briefly entered the Twilight Zone. Your data is safe.</string>
+		
 	<!-- These are the column names for the BPSend Activity, so we can send localized names -->
 	<string name="bp_send_delimiter">,</string>
 	<string name="bp_send_date">@string/label_date</string>

@@ -55,8 +55,6 @@
 	<string name="label_message_format">Message Texte (%1$d octets)</string>
 	<string name="msg_nothing_to_send">Rien à envoyer!</string>
 	<string name="msg_choose_send_method">Envoyer à où?</string>
-	<string name="msg_file_not_found_error">Erreur: Fichier non trouvé.</string>
-	<string name="msg_io_exception_error">Erreur: Écriture dans le fichier.</string>
 	
 	<!-- These are the column names for the BPSend Activity, so we can send localized names -->
 	<string name="bp_send_delimiter">,</string>

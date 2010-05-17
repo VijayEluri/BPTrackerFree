@@ -1,6 +1,7 @@
 package com.eyebrowssoftware.bptrackerfree;
 
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -166,20 +167,34 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 		}
 		try {
 			Intent sendIntent = new Intent(Intent.ACTION_SEND);
+			sendIntent.setType("text/plain");
 			sendIntent.putExtra(Intent.EXTRA_TITLE, MSGNAME);
 			sendIntent.putExtra(Intent.EXTRA_SUBJECT, MSGNAME);
 			if (mSendText.isChecked())
 				sendIntent.putExtra(Intent.EXTRA_TEXT, msg);
 			if (mSendFile.isChecked()) {
-				sendIntent.setType("text/csv");
-				FileOutputStream fos = this.openFileOutput(FILENAME, Context.MODE_WORLD_READABLE);
-				fos.write(msg.getBytes());
-				fos.close();
-				sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(getFileStreamPath(FILENAME)));
-				sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-			} else
-				sendIntent.setType("text/plain");
+				File fileDir = getFilesDir();
+				if(fileDir.exists()) {
+					FileOutputStream fos = openFileOutput(FILENAME, Context.MODE_WORLD_READABLE);
+					fos.write(msg.getBytes());
+					fos.close();
+					File streamPath = getFileStreamPath(FILENAME);
+					if(streamPath != null && streamPath.exists() && streamPath.length() > 0) {
+						sendIntent.setType("text/csv");
+						sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(streamPath));
+						sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+					} else if (streamPath == null)
+						Toast.makeText(this, R.string.msg_null_file_error, Toast.LENGTH_SHORT).show();
+					else if (!streamPath.exists())
+						Toast.makeText(this, R.string.msg_no_file_error, Toast.LENGTH_SHORT).show();
+					else if(streamPath.length() == 0)
+						Toast.makeText(this, R.string.msg_zero_size_error, Toast.LENGTH_SHORT).show();
+					else
+						Toast.makeText(this, R.string.msg_twilight_zone, Toast.LENGTH_SHORT).show();
 
+				} else
+					Toast.makeText(this, R.string.msg_directory_error, Toast.LENGTH_SHORT).show();
+			}
 			startActivity(Intent.createChooser(sendIntent, getString(R.string.msg_choose_send_method)));
 			return true;
 		} catch (FileNotFoundException e) {
