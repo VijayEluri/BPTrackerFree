@@ -184,11 +184,11 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 			return true;
 		} catch (FileNotFoundException e) {
 			Log.e(TAG, getString(R.string.title_error));
-			Toast.makeText(this, getString(R.string.title_error), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.msg_file_not_found_error), Toast.LENGTH_LONG).show();
 			e.printStackTrace();
 		} catch (IOException e) {
 			Log.e(TAG, getString(R.string.title_error));
-			Toast.makeText(this, getString(R.string.title_error), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.msg_io_exception_error), Toast.LENGTH_LONG).show();
 			e.printStackTrace();
 		}
 		return false;
