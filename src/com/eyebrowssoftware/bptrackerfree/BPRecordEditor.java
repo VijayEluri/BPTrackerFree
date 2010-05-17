@@ -93,8 +93,6 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 
 	private Button mDateButton;
 	private Button mTimeButton;
-	private Button mDoneButton;
-	private Button mRevertButton;
 	private EditText mNoteText;
 
 	private Calendar mCalendar = GregorianCalendar.getInstance();
@@ -150,16 +148,20 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 				showDialog(TIME_DIALOG_ID);
 			}
 		});
+		
+		Button button;
 
-		mDoneButton = (Button) findViewById(R.id.done_button);
-		mDoneButton.setOnClickListener(new OnClickListener() {
+		button = (Button) findViewById(R.id.done_button);
+		button.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				finish();
 			}
 		});
 		
-		mRevertButton = (Button) findViewById(R.id.revert_button);
-		mRevertButton.setOnClickListener(new OnClickListener() {
+		button = (Button) findViewById(R.id.revert_button);
+		if(mState == STATE_INSERT)
+			button.setText(R.string.menu_discard);
+		button.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				cancelRecord();
 			}
