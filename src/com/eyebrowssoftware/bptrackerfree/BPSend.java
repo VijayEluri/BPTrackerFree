@@ -158,6 +158,11 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 	private static final String FILENAME = "data.csv";
 	private static final String MSGNAME = "bpdata.csv";
 
+	private void logAndToast(int strResource) {
+		Toast.makeText(this, strResource, Toast.LENGTH_LONG).show();
+		Log.e(TAG, getString(strResource));
+	}
+
 	private boolean sendData() {
 		String msg = mMsgView.getText().toString();
 		// We're going to send the data as message text and/or as an attachment
@@ -182,28 +187,27 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 					if(streamPath != null && streamPath.exists() && streamPath.length() > 0) {
 						sendIntent.setType("text/csv");
 						sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(streamPath));
-						sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-					} else if (streamPath == null)
-						Toast.makeText(this, R.string.msg_null_file_error, Toast.LENGTH_SHORT).show();
-					else if (!streamPath.exists())
-						Toast.makeText(this, R.string.msg_no_file_error, Toast.LENGTH_SHORT).show();
-					else if(streamPath.length() == 0)
-						Toast.makeText(this, R.string.msg_zero_size_error, Toast.LENGTH_SHORT).show();
-					else
-						Toast.makeText(this, R.string.msg_twilight_zone, Toast.LENGTH_SHORT).show();
+					} else if (streamPath == null) {
+						logAndToast(R.string.msg_null_file_error);
+					} else if (!streamPath.exists()) {
+						logAndToast(R.string.msg_no_file_error);
+					} else if(streamPath.length() == 0) {
+						logAndToast(R.string.msg_zero_size_error);
+					} else {
+						logAndToast(R.string.msg_twilight_zone);
+					}
 
-				} else
-					Toast.makeText(this, R.string.msg_directory_error, Toast.LENGTH_SHORT).show();
+				} else {
+					logAndToast(R.string.msg_directory_error);
+				}
 			}
 			startActivity(Intent.createChooser(sendIntent, getString(R.string.msg_choose_send_method)));
 			return true;
 		} catch (FileNotFoundException e) {
-			Log.e(TAG, getString(R.string.title_error));
-			Toast.makeText(this, getString(R.string.msg_file_not_found_error), Toast.LENGTH_LONG).show();
+			logAndToast(R.string.msg_file_not_found_error);
 			e.printStackTrace();
 		} catch (IOException e) {
-			Log.e(TAG, getString(R.string.title_error));
-			Toast.makeText(this, getString(R.string.msg_io_exception_error), Toast.LENGTH_LONG).show();
+			logAndToast(R.string.msg_io_exception_error);
 			e.printStackTrace();
 		}
 		return false;
