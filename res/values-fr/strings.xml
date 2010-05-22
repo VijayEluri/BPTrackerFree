@@ -2,7 +2,7 @@
 <resources>
     <string name="app_name">BPTracker Free</string>
 
-    <string name="bp_permission_description">Lire et écrire l'accès à vos données de pression artérielle.</string>
+    <string name="bp_permission_description">Lire et écrire l\'accès à vos données de pression artérielle.</string>
     <string name="bp_permission_label">données médicales personnelles</string>
 
     <!-- Miscellaneous string for localization -->
