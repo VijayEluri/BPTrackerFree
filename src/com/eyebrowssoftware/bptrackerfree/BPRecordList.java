@@ -19,8 +19,8 @@ import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
@@ -71,8 +71,6 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		R.id.note
 	};
 
-	private LinearLayout mEmptyContent;
-	
 	private SimpleCursorAdapter mAdapter;
 
 	/** Called when the activity is first created. */
@@ -88,7 +86,7 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		
 		setTitle(R.string.title_list);
 		
-		mEmptyContent = (LinearLayout) findViewById(R.id.empty_content);
+		RelativeLayout mEmptyContent = (RelativeLayout) findViewById(R.id.empty_content);
 		mEmptyContent.setOnClickListener(this);
 		
 		View v = this.getLayoutInflater().inflate(R.layout.bp_record_list_header, null);
