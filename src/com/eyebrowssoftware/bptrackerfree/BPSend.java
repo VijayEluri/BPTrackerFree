@@ -17,7 +17,6 @@ import android.content.res.Resources;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -158,11 +157,6 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 	private static final String FILENAME = "data.csv";
 	private static final String MSGNAME = "bpdata.csv";
 
-	private void logAndToast(int strResource) {
-		Toast.makeText(this, strResource, Toast.LENGTH_LONG).show();
-		Log.e(TAG, getString(strResource));
-	}
-
 	private boolean sendData() {
 		String msg = mMsgView.getText().toString();
 		// We're going to send the data as message text and/or as an attachment
@@ -188,31 +182,30 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 						sendIntent.setType("text/csv");
 						sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(streamPath));
 					} else if (streamPath == null) {
-						logAndToast(R.string.msg_null_file_error);
+						BPTrackerFree.logErrorAndToast(this, TAG, R.string.msg_null_file_error);
 					} else if (!streamPath.exists()) {
-						logAndToast(R.string.msg_no_file_error);
+						BPTrackerFree.logErrorAndToast(this, TAG, R.string.msg_no_file_error);
 					} else if(streamPath.length() == 0) {
-						logAndToast(R.string.msg_zero_size_error);
+						BPTrackerFree.logErrorAndToast(this, TAG, R.string.msg_zero_size_error);
 					} else {
-						logAndToast(R.string.msg_twilight_zone);
+						BPTrackerFree.logErrorAndToast(this, TAG, R.string.msg_twilight_zone);
 					}
 
 				} else {
-					logAndToast(R.string.msg_directory_error);
+					BPTrackerFree.logErrorAndToast(this, TAG, R.string.msg_directory_error);
 				}
 			}
 			startActivity(Intent.createChooser(sendIntent, getString(R.string.msg_choose_send_method)));
 			return true;
 		} catch (FileNotFoundException e) {
-			logAndToast(R.string.msg_file_not_found_error);
+			BPTrackerFree.logErrorAndToast(this, TAG, R.string.msg_file_not_found_error);
 			e.printStackTrace();
 		} catch (IOException e) {
-			logAndToast(R.string.msg_io_exception_error);
+			BPTrackerFree.logErrorAndToast(this, TAG, R.string.msg_io_exception_error);
 			e.printStackTrace();
 		}
 		return false;
 	}
-
 
 	public void onCheckedChanged(CompoundButton check_box, boolean checked) {
 		if (check_box.equals(mSendText) && !checked && !mSendFile.isChecked())

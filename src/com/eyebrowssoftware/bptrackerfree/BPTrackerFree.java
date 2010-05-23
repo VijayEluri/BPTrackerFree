@@ -4,8 +4,11 @@ import java.text.DateFormat;
 import java.util.Date;
 
 import android.app.Application;
+import android.content.Context;
 import android.content.res.Configuration;
+import android.util.Log;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 public class BPTrackerFree extends Application {
 	
@@ -113,4 +116,16 @@ public class BPTrackerFree extends Application {
 		mShortTimeFormat = DateFormat.getTimeInstance(DateFormat.SHORT);
 		mMediumTimeFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM);
 	}
+	
+	public static void logErrorAndToast(Context context, String tag, int strResource) {
+		Toast.makeText(context, strResource, Toast.LENGTH_LONG).show();
+		Log.e(tag, context.getString(strResource));
+	}
+
+	public static void logErrorAndToast(Context context, String tag, String msg) {
+		Toast.makeText(context, msg, Toast.LENGTH_LONG).show();
+		Log.e(tag, msg);
+	}
+
+
 }

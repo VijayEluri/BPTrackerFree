@@ -84,6 +84,8 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 	private static final int SPINNER_ITEM_RESOURCE_ID = R.layout.bp_spinner_item;
 	private static final int SPINNER_ITEM_TEXT_VIEW_ID = android.R.id.text1;
 	
+	private static final String MURI = "mUri";
+	
 	// Member Variables
 	private int mState;
 
@@ -110,17 +112,23 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 
 		setContentView(R.layout.bp_record_editor);
 
+		if (icicle != null)
+			mOriginalValues = new Bundle(icicle);
+		
 		if (Intent.ACTION_EDIT.equals(action)) {
 			mState = STATE_EDIT;
 			mUri = intent.getData();
 		} else if (Intent.ACTION_INSERT.equals(action)) {
 			mState = STATE_INSERT;
-			ContentValues cv = null;
-			cv = new ContentValues();
-			cv.put(BPRecord.SYSTOLIC, BPTrackerFree.SYSTOLIC_DEFAULT);
-			cv.put(BPRecord.DIASTOLIC, BPTrackerFree.DIASTOLIC_DEFAULT);
-			cv.put(BPRecord.PULSE, BPTrackerFree.PULSE_DEFAULT);
-			mUri = this.getContentResolver().insert(intent.getData(), cv);
+			if (icicle != null)
+				mUri = Uri.parse(icicle.getString(MURI));
+			else {
+				ContentValues cv = new ContentValues();
+				cv.put(BPRecord.SYSTOLIC, BPTrackerFree.SYSTOLIC_DEFAULT);
+				cv.put(BPRecord.DIASTOLIC, BPTrackerFree.DIASTOLIC_DEFAULT);
+				cv.put(BPRecord.PULSE, BPTrackerFree.PULSE_DEFAULT);
+				mUri = this.getContentResolver().insert(intent.getData(), cv);
+			}
 		} else {
 			Log.e(TAG, "Unknown action, exiting");
 			finish();
@@ -202,16 +210,6 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 
 		mCursor = managedQuery(mUri, PROJECTION, null, null, null);
 
-		if (icicle != null) {
-			mOriginalValues = new Bundle(icicle);
-		}
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-		// If we didn't have any trouble retrieving the data, it is now
-		// time to get at the stuff.
 		if (mCursor != null && mCursor.moveToFirst()) {
 
 			// Modify our overall title depending on the mode we are running in.
@@ -254,16 +252,15 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 		}
 	}
 
-	public void updateDateTimeDisplay() {
-		mDateButton.setText(BPTrackerFree.getDateString(mCalendar.getTime(),
-				DateFormat.MEDIUM));
-		mTimeButton.setText(BPTrackerFree.getTimeString(mCalendar.getTime(),
-				DateFormat.SHORT));
+	@Override
+	protected void onResume() {
+		super.onResume();
 	}
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putAll(mOriginalValues);
+		outState.putString(MURI, mUri.toString());
 	}
 
 	@Override
@@ -298,6 +295,13 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			mCursor.close();
 			mCursor = null;
 		}
+	}
+
+	public void updateDateTimeDisplay() {
+		mDateButton.setText(BPTrackerFree.getDateString(mCalendar.getTime(),
+				DateFormat.MEDIUM));
+		mTimeButton.setText(BPTrackerFree.getTimeString(mCalendar.getTime(),
+				DateFormat.SHORT));
 	}
 
 	@Override
