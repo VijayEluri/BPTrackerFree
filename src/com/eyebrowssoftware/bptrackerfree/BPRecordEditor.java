@@ -209,7 +209,12 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 		mNoteText = (EditText) findViewById(R.id.note);
 
 		mCursor = managedQuery(mUri, PROJECTION, null, null, null);
-
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
 		if (mCursor != null && mCursor.moveToFirst()) {
 
 			// Modify our overall title depending on the mode we are running in.
@@ -250,11 +255,6 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 		} else {
 			setTitle(getText(R.string.title_error));
 		}
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
 	}
 
 	@Override
