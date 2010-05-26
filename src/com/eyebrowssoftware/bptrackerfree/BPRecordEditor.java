@@ -288,15 +288,6 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 		}
 	}
 	
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		if(mCursor != null) {
-			mCursor.close();
-			mCursor = null;
-		}
-	}
-
 	public void updateDateTimeDisplay() {
 		mDateButton.setText(BPTrackerFree.getDateString(mCalendar.getTime(),
 				DateFormat.MEDIUM));
