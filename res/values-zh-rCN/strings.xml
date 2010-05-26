@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">BPTracker Free</string>
+
+    <string name="bp_permission_description">读取和写入您的血压数据。</string>
+    <string name="bp_permission_label">个人医疗资料</string>
+
+    <!-- Miscellaneous string for localization -->
+    <string name="empty">无血压记录：点击这儿开始。</string>
+	<string name="insert_error">插入行失败</string>
+
+	<!-- These are Window titles -->
+    <string name="title_list">血压历史</string>
+	<string name="title_provider">血压提供者</string>
+	<string name="title_edit">编辑阅读资料</string>
+	<string name="title_create">添加新的阅读资料</string>
+	<string name="title_error">内部错误</string>
+
+	<!-- These strings appear in the BPRecordEditor activity -->
+	<string name="menu_done">完成</string>
+	<string name="menu_revert">恢复</string>
+	<string name="menu_cancel">取消</string>
+	<string name="menu_discard">取消</string>
+	<string name="menu_delete">删除</string>
+	<string name="label_systolic">心脏收缩</string>
+	<string name="label_diastolic">心脏舒张</string>
+	<string name="label_pulse">脉搏</string>
+	<string name="label_date">修改时间</string>
+	<string name="label_time">耗时</string>
+	<string name="really_delete">删除这个？</string>
+	<string name="label_yes">是</string>
+	<string name="label_no">否</string>
+	<string name="label_sys_spinner">获取心脏收缩值</string>
+	<string name="label_dia_spinner">获取心脏舒张值</string>
+	<string name="label_note">注释</string>
+	<string name="label_pls_spinner">获取脉搏值</string>
+	<string name="msg_future_date">将来的日期！</string>
+	
+	<!-- These values are for the BPRecordList activity -->
+	<string name="menu_edit">编辑</string>
+	<string name="menu_send">@string/label_send</string>
+	<string name="list_label_date">日期：</string>
+	<string name="list_label_time">时间：</string>
+	<string name="list_label_bp">心脏收缩/舒张：</string>
+	<string name="list_label_pulse">脉搏：</string>
+	<string name="msg_add">点击以添加</string>
+	<string name="bp_separator">/</string>
+	
+	<!-- These strings are used on the BPSend Activity layout -->
+	<string name="title_send">@string/label_send</string>
+	<string name="label_send">发送</string>
+	<string name="label_text">作为文本</string>
+	<string name="label_attach">作为附件</string>
+	<string name="label_send_how">如何发送？</string>
+	<string name="label_message_format">消息正文(%1$d 字节)</string>
+	<string name="msg_nothing_to_send">无任何东西供发送！</string>
+	<string name="msg_choose_send_method">发送到哪？</string>
+	<string name="msg_file_not_found_error">错误：未找到文件。您的数据是安全的。</string>
+	<string name="msg_io_exception_error">错误：I/O 异常。你的数据是安全的。</string>
+	<string name="msg_directory_error">错误：储存空间。你的数据是安全的。</string>
+	<string name="msg_null_file_error">错误：无效的文件引用。你的数据是安全的。</string>
+	<string name="msg_no_file_error">错误：不存在文件。你的数据是安全的。</string>
+	<string name="msg_zero_size_error">错误：文件大小为0。你的数据是安全的。</string>
+	<string name="msg_twilight_zone">我们暂时的进入了模糊状态。你的数据是安全的。</string>
+		
+	<!-- These are the column names for the BPSend Activity, so we can send localized names -->
+	<string name="bp_send_delimiter">,</string>
+	<string name="bp_send_date">@string/label_date</string>
+	<string name="bp_send_time">@string/label_time</string>
+	<string name="bp_send_sys">@string/label_systolic</string>
+	<string name="bp_send_dia">@string/label_diastolic</string>
+	<string name="bp_send_pls">@string/label_pulse</string>
+	<string name="bp_send_note">@string/label_note</string>
+
+	<!-- This is a plain old Java format string - default is Date Time -->
+	<string name="datetime_format">%1$s %2$s</string>
+</resources>
