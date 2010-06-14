@@ -101,14 +101,14 @@ public class BPProviderFree extends ContentProvider {
 		Cursor c = null;
 
 		switch (sUriMatcher.match(uri)) {
-		// Result is a page of breweries
+		// Result is a page of bp_records
 		case BP_RECORDS:
 			qb.setTables(BP_RECORDS_TABLE_NAME);
 			qb.setProjectionMap(sBPProjectionMap);
 			c = qb.query(db, projection, selection, selectionArgs, null, null,
 					sortOrder);
 			break;
-		// Result is a single Brewery
+		// Result is a single bp_record
 		case BP_RECORD_ID:
 			qb.setTables(BP_RECORDS_TABLE_NAME);
 			qb.setProjectionMap(sBPProjectionMap);
