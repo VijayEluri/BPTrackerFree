@@ -70,6 +70,10 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		R.id.pulse_value,
 		R.id.note
 	};
+	
+	private static final String CONTEXT_URI = "context_uri";
+	
+	private Uri mContextMenuUri; // set to the uri of the item with the context menu
 
 	private SimpleCursorAdapter mAdapter;
 
@@ -101,6 +105,9 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		mAdapter.setViewBinder(new MyViewBinder());
 		if(cursor == null) {
 			setTitle(getText(R.string.title_error));
+		}
+		if(savedInstanceState != null) {
+			mContextMenuUri = Uri.parse(savedInstanceState.getString(CONTEXT_URI));
 		}
 		setListAdapter(mAdapter);
 	}
@@ -139,6 +146,13 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 			}
 		}
 	}
+	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		outState.putString(CONTEXT_URI, mContextMenuUri.toString());
+	}
+
+
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
@@ -186,8 +200,6 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		menu.add(Menu.NONE, MENU_ITEM_SEND, 2, R.string.menu_send);
 	}
 	
-	private Uri mContextMenuUri; // set to the uri of the item with the context menu
-
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		AdapterView.AdapterContextMenuInfo info;
