@@ -73,7 +73,7 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 	
 	private static final String CONTEXT_URI = "context_uri";
 	
-	private Uri mContextMenuUri; // set to the uri of the item with the context menu
+	private long mContextMenuRecordId = 0;
 
 	private SimpleCursorAdapter mAdapter;
 
@@ -107,7 +107,7 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 			setTitle(getText(R.string.title_error));
 		}
 		if(savedInstanceState != null) {
-			mContextMenuUri = Uri.parse(savedInstanceState.getString(CONTEXT_URI));
+			mContextMenuRecordId = savedInstanceState.getLong(CONTEXT_URI);
 		}
 		setListAdapter(mAdapter);
 	}
@@ -149,7 +149,7 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		outState.putString(CONTEXT_URI, mContextMenuUri.toString());
+		outState.putLong(CONTEXT_URI, mContextMenuRecordId);
 	}
 
 
@@ -206,16 +206,17 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		try {
 			info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 			// Get the Uri of the record we're intending to operate on
-			mContextMenuUri = ContentUris.withAppendedId(getIntent().getData(), info.id);
+			mContextMenuRecordId = info.id;
+			Uri contextMenuUri = ContentUris.withAppendedId(getIntent().getData(), mContextMenuRecordId);
 			switch (item.getItemId()) {
 			case MENU_ITEM_DELETE:
 				showDialog(DELETE_DIALOG_ID);
 				return true;
 			case MENU_ITEM_EDIT:
-				startActivity(new Intent(Intent.ACTION_EDIT, mContextMenuUri, this, BPRecordEditor.class));
+				startActivity(new Intent(Intent.ACTION_EDIT, contextMenuUri, this, BPRecordEditor.class));
 				return true;
 			case MENU_ITEM_SEND:
-				startActivity(new Intent(Intent.ACTION_SEND, mContextMenuUri, this, BPSend.class));
+				startActivity(new Intent(Intent.ACTION_SEND, contextMenuUri, this, BPSend.class));
 				return true;
 			}
 			return false;
@@ -227,7 +228,8 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 	}
 	
 	private void deleteRecord() {
-		getContentResolver().delete(mContextMenuUri, null, null);
+		Uri contextMenuUri = ContentUris.withAppendedId(getIntent().getData(), mContextMenuRecordId);
+		getContentResolver().delete(contextMenuUri, null, null);
 	}
 
 	@Override
