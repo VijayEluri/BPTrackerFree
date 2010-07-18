@@ -64,6 +64,10 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 	public static final boolean ALL_DATES = true;
 	public static final String REVERSE = "reverse";
 
+	// These are key names for saving things in the icicle
+	private static final String SEND_TEXT = "tsend";
+	private static final String SEND_FILE = "fsend";
+	
 	// This may or may not be used
 	private boolean mReverse = true;
 
@@ -89,11 +93,9 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 		mMsgView = (TextView) findViewById(R.id.message);
 
 		mSendText = (CheckBox) findViewById(R.id.text);
-		mSendText.setChecked(true);
 		mSendText.setOnCheckedChangeListener(this);
 
 		mSendFile = (CheckBox) findViewById(R.id.attach);
-		mSendFile.setChecked(true);
 		mSendFile.setOnCheckedChangeListener(this);
 
 		mSendButton = (Button) findViewById(R.id.send);
@@ -102,7 +104,19 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 		mCancelButton = (Button) findViewById(R.id.cancel);
 		mCancelButton.setOnClickListener(this);
 
+		if(icicle != null) {
+			mSendText.setChecked(icicle.getBoolean(SEND_TEXT));
+			mSendFile.setChecked(icicle.getBoolean(SEND_FILE));
+		} else {
+			mSendText.setChecked(true);
+			mSendFile.setChecked(true);
+		}
 		querySendData();
+	}
+	
+	public void onSaveInstanceState(Bundle icicle) {
+		icicle.putBoolean(SEND_TEXT, mSendText.isChecked());
+		icicle.putBoolean(SEND_FILE, mSendFile.isChecked());
 	}
 	
 	private void querySendData() {
