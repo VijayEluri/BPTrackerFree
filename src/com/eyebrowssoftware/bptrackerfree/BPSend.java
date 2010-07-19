@@ -7,8 +7,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import android.app.Activity;
 import android.content.Context;
@@ -71,9 +69,6 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 	// This may or may not be used
 	private boolean mReverse = true;
 
-	private Calendar mToCalendar = GregorianCalendar.getInstance();
-	private Calendar mFromCalendar = GregorianCalendar.getInstance();
-	
 	@Override
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -122,36 +117,13 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 	private void querySendData() {
 		String where = null;
 		String[] whereArgs = null;
-		long newest;
-		long oldest;
-		
-		newest = oldest = System.currentTimeMillis();
-		
+
 		Cursor cursor = getContentResolver().query(mUri, PROJECTION, where, whereArgs, BPRecord.CREATED_DATE + ((mReverse) ? " DESC" : "ASC"));
 		String msg = getMessage(cursor);
 		
-		if (cursor == null) {
-			Toast.makeText(BPSend.this, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
-		} else {
-			if(cursor.moveToFirst()) {
-
-				long first_time = cursor.getLong(COLUMN_CREATED_AT_INDEX);
-				cursor.moveToLast();
-				long last_time = cursor.getLong(COLUMN_CREATED_AT_INDEX);
-				if (mReverse) {
-					newest = first_time;
-					oldest = last_time;
-				} else {
-					oldest = first_time;
-					newest = last_time;
-				}
-			} else {
-				Toast.makeText(BPSend.this, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
-			}
+		if (cursor != null)
 			cursor.close();
-		}
-		mToCalendar.setTimeInMillis(newest);
-		mFromCalendar.setTimeInMillis(oldest);
+		
         mMsgLabelView.setText(String.format(mMsgLabelString, msg.length()));
         mMsgView.setText(msg);
 	}
