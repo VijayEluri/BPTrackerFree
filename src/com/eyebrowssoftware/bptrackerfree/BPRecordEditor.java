@@ -89,7 +89,6 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 	private static final int SPINNER_ITEM_TEXT_VIEW_ID = android.R.id.text1;
 	
 	private static final String MURI = "mUri";
-	private static final String USER_TIME = "time";
 	
 	// Member Variables
 	private int mState;
@@ -242,7 +241,6 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			int diastolic = mCursor.getInt(COLUMN_DIASTOLIC_INDEX);
 			int pulse = mCursor.getInt(COLUMN_PULSE_INDEX);
 			long datetime = mCursor.getLong(COLUMN_CREATED_AT_INDEX);
-			long mod_datetime = mCursor.getLong(COLUMN_MODIFIED_AT_INDEX);
 			String note = mCursor.getString(COLUMN_NOTE_INDEX);
 			
 			BPTrackerFree.setSpinner(mSpinners[SYS_IDX], systolic);
