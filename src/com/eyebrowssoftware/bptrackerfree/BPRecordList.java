@@ -1,10 +1,13 @@
 package com.eyebrowssoftware.bptrackerfree;
 
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
+import android.content.AsyncQueryHandler;
+import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -75,7 +78,9 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 	
 	private long mContextMenuRecordId = 0;
 
-	private SimpleCursorAdapter mAdapter;
+	private MyAsyncQueryHandler mMAQH;
+	
+	private static final int BPRECORDS_TOKEN = 0;
 
 	/** Called when the activity is first created. */
 	@Override
@@ -99,17 +104,16 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		lv.addHeaderView(v, null, true);
 		lv.setOnCreateContextMenuListener(this);
 		
-		Cursor cursor = managedQuery(intent.getData(), PROJECTION, null, null, BPRecord.CREATED_DATE + " DESC");
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.bp_record_list_item, null, VALS, IDS);
+		adapter.setViewBinder(new MyViewBinder());
+
+		mMAQH = new MyAsyncQueryHandler(this.getContentResolver(), adapter);
+		mMAQH.startQuery(BPRECORDS_TOKEN, this, intent.getData(), PROJECTION, null, null, BPRecord.CREATED_DATE + " DESC");
 		
-		mAdapter = new SimpleCursorAdapter(this, R.layout.bp_record_list_item, cursor, VALS, IDS);
-		mAdapter.setViewBinder(new MyViewBinder());
-		if(cursor == null) {
-			setTitle(getText(R.string.title_error));
-		}
 		if(savedInstanceState != null) {
 			mContextMenuRecordId = savedInstanceState.getLong(CONTEXT_URI);
 		}
-		setListAdapter(mAdapter);
+		setListAdapter(adapter);
 	}
 	
 	private class MyViewBinder implements SimpleCursorAdapter.ViewBinder {
@@ -127,9 +131,8 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 			case R.id.date: // Date
 			case R.id.time: // Time -- these use the same cursor column
 				long datetime = cursor.getLong(columnIndex);
-				val = (id == R.id.date) ? BPTrackerFree.getDateString(datetime,
-						DateFormat.SHORT) : BPTrackerFree.getTimeString(datetime,
-						DateFormat.SHORT);
+				val = (id == R.id.date) ? BPTrackerFree.getDateString(datetime, DateFormat.SHORT) 
+						: BPTrackerFree.getTimeString(datetime, DateFormat.SHORT);
 				((TextView)view).setText(val);
 				return true;
 			case R.id.note:
@@ -147,12 +150,56 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		}
 	}
 	
+	private class MyAsyncQueryHandler extends AsyncQueryHandler {
+
+		private WeakReference<SimpleCursorAdapter> mAdapter;
+		
+		public MyAsyncQueryHandler(ContentResolver cr, SimpleCursorAdapter adapter) {
+			super(cr);
+			mAdapter = new WeakReference<SimpleCursorAdapter>(adapter);
+		}
+
+		@Override
+		protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
+			if (cursor != null) {
+				startManagingCursor(cursor);
+				SimpleCursorAdapter adapter = mAdapter.get();
+				if(adapter != null) {
+					adapter.changeCursor(cursor);
+				}
+			}
+		}
+	}
+
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putLong(CONTEXT_URI, mContextMenuRecordId);
 	}
 
+	@Override
+	protected void onDestroy() {
+		SimpleCursorAdapter adapter = (SimpleCursorAdapter) this.getListAdapter();
+		this.setListAdapter(null);
+		if(adapter != null) {
+			adapter.changeCursor(null);
+		}
+		super.onDestroy();
+	}
 
+
+	@Override
+	protected void finalize() {
+		try {
+			SimpleCursorAdapter adapter = (SimpleCursorAdapter) this.getListAdapter();
+			this.setListAdapter(null);
+			if(adapter != null) {
+				adapter.changeCursor(null);
+			}
+			super.finalize();
+		} catch (Throwable e) {
+			Log.e(TAG, "Finalize error", e);
+		}
+	}
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {

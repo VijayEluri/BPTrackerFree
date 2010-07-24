@@ -1,7 +1,9 @@
 package com.eyebrowssoftware.bptrackerfree;
 
+import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import android.app.Activity;
@@ -11,6 +13,8 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.AsyncQueryHandler;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -85,6 +89,7 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 	private static final int SPINNER_ITEM_TEXT_VIEW_ID = android.R.id.text1;
 	
 	private static final String MURI = "mUri";
+	private static final String USER_TIME = "time";
 	
 	// Member Variables
 	private int mState;
@@ -97,11 +102,19 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 	private Button mTimeButton;
 	private EditText mNoteText;
 
-	private Calendar mCalendar = GregorianCalendar.getInstance();
+	private Calendar mCalendar;
 
-	private Spinner[] mSpinners = new Spinner[SPINNER_ARRAY_SIZE];
+	private Spinner[] mSpinners = null;
 
 	private Bundle mOriginalValues = null;
+	
+	private Button mDoneButton;
+	
+	private Button mCancelButton;
+	
+	private MyAsyncQueryHandler mMAQH;
+	
+	private static final int BPRECORDS_TOKEN = 0;
 
 	@Override
 	protected void onCreate(Bundle icicle) {
@@ -127,6 +140,7 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 				cv.put(BPRecord.SYSTOLIC, BPTrackerFree.SYSTOLIC_DEFAULT);
 				cv.put(BPRecord.DIASTOLIC, BPTrackerFree.DIASTOLIC_DEFAULT);
 				cv.put(BPRecord.PULSE, BPTrackerFree.PULSE_DEFAULT);
+				cv.put(BPRecord.CREATED_DATE, GregorianCalendar.getInstance().getTimeInMillis());
 				mUri = this.getContentResolver().insert(intent.getData(), cv);
 			}
 		} else {
@@ -134,15 +148,8 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			finish();
 			return;
 		}
-
-		int[] sys_vals = {
-		    BPTrackerFree.SYSTOLIC_MAX_DEFAULT,
-			RangeAdapter.NO_ZONE,
-			RangeAdapter.NO_ZONE,
-			RangeAdapter.NO_ZONE,
-			BPTrackerFree.SYSTOLIC_MIN_DEFAULT
-		};
 		
+		mCalendar = new GregorianCalendar();
 		mDateButton = (Button) findViewById(R.id.date_button);
 		mDateButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
@@ -157,29 +164,30 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			}
 		});
 		
-		Button button;
-
-		button = (Button) findViewById(R.id.done_button);
-		button.setOnClickListener(new OnClickListener() {
+		mDoneButton = (Button) findViewById(R.id.done_button);
+		mDoneButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				finish();
 			}
 		});
 		
-		button = (Button) findViewById(R.id.revert_button);
+		mCancelButton = (Button) findViewById(R.id.revert_button);
 		if(mState == STATE_INSERT)
-			button.setText(R.string.menu_discard);
-		button.setOnClickListener(new OnClickListener() {
+			mCancelButton.setText(R.string.menu_discard);
+		mCancelButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				cancelRecord();
 			}
 		});
 		
-		mSpinners[SYS_IDX] = (Spinner) findViewById(R.id.systolic_spin);
-		mSpinners[SYS_IDX].setPromptId(R.string.label_sys_spinner);
-		mSpinners[SYS_IDX].setOnItemSelectedListener(this);
-		mSpinners[SYS_IDX].setAdapter(new RangeAdapter(this, sys_vals, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
-		
+		int[] sys_vals = {
+		    BPTrackerFree.SYSTOLIC_MAX_DEFAULT,
+			RangeAdapter.NO_ZONE,
+			RangeAdapter.NO_ZONE,
+			RangeAdapter.NO_ZONE,
+			BPTrackerFree.SYSTOLIC_MIN_DEFAULT
+		};
+			
 		int[] dia_vals = {
 			BPTrackerFree.DIASTOLIC_MAX_DEFAULT,
 			RangeAdapter.NO_ZONE,
@@ -187,11 +195,6 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			RangeAdapter.NO_ZONE,
 			BPTrackerFree.DIASTOLIC_MIN_DEFAULT
 		};
-
-		mSpinners[DIA_IDX] = (Spinner) findViewById(R.id.diastolic_spin);
-		mSpinners[DIA_IDX].setPromptId(R.string.label_dia_spinner);
-		mSpinners[DIA_IDX].setOnItemSelectedListener(this);
-		mSpinners[DIA_IDX].setAdapter(new RangeAdapter(this, dia_vals, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
 
 		int[] pls_vals = {
 			BPTrackerFree.PULSE_MAX_DEFAULT, 
@@ -201,6 +204,18 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 			BPTrackerFree.PULSE_MIN_DEFAULT
 		};
 		
+		mSpinners = new Spinner[SPINNER_ARRAY_SIZE];
+		
+		mSpinners[SYS_IDX] = (Spinner) findViewById(R.id.systolic_spin);
+		mSpinners[SYS_IDX].setPromptId(R.string.label_sys_spinner);
+		mSpinners[SYS_IDX].setOnItemSelectedListener(this);
+		mSpinners[SYS_IDX].setAdapter(new RangeAdapter(this, sys_vals, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
+		
+		mSpinners[DIA_IDX] = (Spinner) findViewById(R.id.diastolic_spin);
+		mSpinners[DIA_IDX].setPromptId(R.string.label_dia_spinner);
+		mSpinners[DIA_IDX].setOnItemSelectedListener(this);
+		mSpinners[DIA_IDX].setAdapter(new RangeAdapter(this, dia_vals, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
+
 		mSpinners[PLS_IDX] = (Spinner) findViewById(R.id.pulse_spin);
 		mSpinners[PLS_IDX].setPromptId(R.string.label_pls_spinner);
 		mSpinners[PLS_IDX].setOnItemSelectedListener(this);
@@ -208,55 +223,37 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 
 		mNoteText = (EditText) findViewById(R.id.note);
 
-		mCursor = managedQuery(mUri, PROJECTION, null, null, null);
+		mMAQH = new MyAsyncQueryHandler(this.getContentResolver(), mSpinners, mNoteText, 
+				mCalendar, mDateButton, mTimeButton);
+		mMAQH.startQuery(BPRECORDS_TOKEN, this, mUri, PROJECTION, null, null, null);
 	}
 	
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
-		if (mCursor != null && mCursor.moveToFirst()) {
-
-			// Modify our overall title depending on the mode we are running in.
-			if (mState == STATE_EDIT) {
-				setTitle(getText(R.string.title_edit));
-			} else if (mState == STATE_INSERT) {
-				setTitle(getText(R.string.title_create));
-			}
+		// Modify our overall title depending on the mode we are running in.
+		if (mState == STATE_EDIT) {
+			setTitle(getText(R.string.title_edit));
+		} else if (mState == STATE_INSERT) {
+			setTitle(getText(R.string.title_create));
+		}
+		if(mCursor != null && mCursor.moveToFirst()) {
 			int systolic = mCursor.getInt(COLUMN_SYSTOLIC_INDEX);
-			BPTrackerFree.setSpinner(mSpinners[SYS_IDX], systolic);
-
 			int diastolic = mCursor.getInt(COLUMN_DIASTOLIC_INDEX);
-			BPTrackerFree.setSpinner(mSpinners[DIA_IDX], diastolic);
-
 			int pulse = mCursor.getInt(COLUMN_PULSE_INDEX);
-			BPTrackerFree.setSpinner(mSpinners[PLS_IDX], pulse);
-
 			long datetime = mCursor.getLong(COLUMN_CREATED_AT_INDEX);
+			long mod_datetime = mCursor.getLong(COLUMN_MODIFIED_AT_INDEX);
+			String note = mCursor.getString(COLUMN_NOTE_INDEX);
+			
+			BPTrackerFree.setSpinner(mSpinners[SYS_IDX], systolic);
+			BPTrackerFree.setSpinner(mSpinners[DIA_IDX], diastolic);
+			BPTrackerFree.setSpinner(mSpinners[PLS_IDX], pulse);
+			mNoteText.setText(note);
 			mCalendar.setTimeInMillis(datetime);
 			updateDateTimeDisplay();
-			
-			long mod_datetime = mCursor.getLong(COLUMN_MODIFIED_AT_INDEX);
-
-			String note = mCursor.getString(COLUMN_NOTE_INDEX);
-			mNoteText.setText(note);
-			
-			// If we hadn't previously retrieved the original text, do so
-			// now. This allows the user to revert their changes.
-			if(mOriginalValues == null) {
-				mOriginalValues = new Bundle();
-				mOriginalValues.putInt(BPRecord.SYSTOLIC, systolic);
-				mOriginalValues.putInt(BPRecord.DIASTOLIC, diastolic);
-				mOriginalValues.putInt(BPRecord.PULSE, pulse);
-				mOriginalValues.putLong(BPRecord.CREATED_DATE, datetime);
-				mOriginalValues.putLong(BPRecord.MODIFIED_DATE, mod_datetime);
-				mOriginalValues.putString(BPRecord.NOTE, note);
-			}
-		} else {
-			setTitle(getText(R.string.title_error));
 		}
 	}
-
+	
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putAll(mOriginalValues);
@@ -266,6 +263,9 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 	@Override
 	protected void onPause() {
 		super.onPause();
+		// Try to cancel any async queries we may have started that have not completed
+		if(mMAQH != null)
+			mMAQH.cancelOperation(BPRECORDS_TOKEN);
 
 		// The user is going somewhere else, so make sure their current
 		// changes are safely saved away in the provider. We don't need
@@ -288,11 +288,101 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 		}
 	}
 	
+	@Override
+	protected void onDestroy() {
+		if(mCursor != null) {
+			stopManagingCursor(mCursor);
+			mCursor.close();
+			mCursor = null;
+		}
+		super.onDestroy();
+	}
+
+	@Override
+	protected void finalize() {
+		if(mCursor != null) {
+			stopManagingCursor(mCursor);
+			mCursor.close();
+			mCursor = null;
+		}
+	}
+
+	private class MyAsyncQueryHandler extends AsyncQueryHandler {
+
+		private WeakReference<Spinner[]> mSpinners;
+		private WeakReference<EditText> mNoteView;
+		private WeakReference<Calendar> mCalendar;
+		private WeakReference<Button> mDateButton;
+		private WeakReference<Button> mTimeButton;
+		
+		public MyAsyncQueryHandler(ContentResolver cr, Spinner[] spinners, EditText noteView, 
+				Calendar calendar, Button dateButton, Button timeButton) {
+			super(cr);
+			mSpinners = new WeakReference<Spinner[]>(spinners);
+			mNoteView = new WeakReference<EditText>(noteView);
+			mCalendar = new WeakReference<Calendar>(calendar);
+			mDateButton = new WeakReference<Button>(dateButton);
+			mTimeButton = new WeakReference<Button>(timeButton);
+		}
+		
+		@Override
+		protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
+			mCursor = cursor;
+			if(mCursor != null) {
+				startManagingCursor(mCursor);
+				if (mCursor.moveToFirst()) {
+					int systolic = mCursor.getInt(COLUMN_SYSTOLIC_INDEX);
+					int diastolic = mCursor.getInt(COLUMN_DIASTOLIC_INDEX);
+					int pulse = mCursor.getInt(COLUMN_PULSE_INDEX);
+					long datetime = mCursor.getLong(COLUMN_CREATED_AT_INDEX);
+					long mod_datetime = mCursor.getLong(COLUMN_MODIFIED_AT_INDEX);
+					String note = mCursor.getString(COLUMN_NOTE_INDEX);
+					
+					// If we hadn't previously retrieved the original text, do so
+					// now. This allows the user to revert their changes.
+					if(mOriginalValues == null) {
+						mOriginalValues = new Bundle();
+						mOriginalValues.putInt(BPRecord.SYSTOLIC, systolic);
+						mOriginalValues.putInt(BPRecord.DIASTOLIC, diastolic);
+						mOriginalValues.putInt(BPRecord.PULSE, pulse);
+						mOriginalValues.putLong(BPRecord.CREATED_DATE, datetime);
+						mOriginalValues.putLong(BPRecord.MODIFIED_DATE, mod_datetime);
+						mOriginalValues.putString(BPRecord.NOTE, note);
+					}
+					Spinner[] spinners = mSpinners.get();
+					EditText noteView = mNoteView.get();
+					Button dateButton = mDateButton.get();
+					Button timeButton = mTimeButton.get();
+					Calendar calendar = mCalendar.get();
+					if(spinners != null) {
+						BPTrackerFree.setSpinner(spinners[SYS_IDX], systolic);
+						BPTrackerFree.setSpinner(spinners[DIA_IDX], diastolic);
+						BPTrackerFree.setSpinner(spinners[PLS_IDX], pulse);
+					}
+					if(calendar != null) {
+						calendar.setTimeInMillis(datetime);
+					}
+					Date date = calendar.getTime();
+					if(dateButton != null) {
+						dateButton.setText(BPTrackerFree.getDateString(date, DateFormat.MEDIUM));
+					}
+					if(timeButton != null) {
+						timeButton.setText(BPTrackerFree.getTimeString(date, DateFormat.SHORT));
+					}
+					if(noteView != null) {
+						noteView.setText(note);
+					}
+					
+				}
+			}
+		}
+		
+	}
+	
 	public void updateDateTimeDisplay() {
-		mDateButton.setText(BPTrackerFree.getDateString(mCalendar.getTime(),
-				DateFormat.MEDIUM));
-		mTimeButton.setText(BPTrackerFree.getTimeString(mCalendar.getTime(),
-				DateFormat.SHORT));
+		Date date = mCalendar.getTime();
+		mDateButton.setText(BPTrackerFree.getDateString(date, DateFormat.MEDIUM));
+		mTimeButton.setText(BPTrackerFree.getTimeString(date, DateFormat.SHORT));
 	}
 
 	@Override
@@ -411,11 +501,9 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 
 	public void onDateSet(DatePicker view, int year, int month, int day) {
 		mCalendar.set(year, month, day);
-		long now = System.currentTimeMillis();
+		long now = new GregorianCalendar().getTimeInMillis();
 		if (mCalendar.getTimeInMillis() > now) {
-			Toast.makeText(BPRecordEditor.this,
-					getString(R.string.msg_future_date), Toast.LENGTH_LONG)
-					.show();
+			Toast.makeText(BPRecordEditor.this, getString(R.string.msg_future_date), Toast.LENGTH_LONG).show();
 			mCalendar.setTimeInMillis(now);
 		}
 		updateDateTimeDisplay();
@@ -424,11 +512,9 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 	public void onTimeSet(TimePicker view, int hour, int minute) {
 		mCalendar.set(Calendar.HOUR_OF_DAY, hour);
 		mCalendar.set(Calendar.MINUTE, minute);
-		long now = System.currentTimeMillis();
+		long now = new GregorianCalendar().getTimeInMillis();
 		if (mCalendar.getTimeInMillis() > now) {
-			Toast.makeText(BPRecordEditor.this,
-					getString(R.string.msg_future_date), Toast.LENGTH_LONG)
-					.show();
+			Toast.makeText(BPRecordEditor.this, getString(R.string.msg_future_date), Toast.LENGTH_LONG).show();
 			mCalendar.setTimeInMillis(now);
 		}
 		updateDateTimeDisplay();

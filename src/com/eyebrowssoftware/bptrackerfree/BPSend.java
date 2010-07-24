@@ -5,10 +5,13 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 
 import android.app.Activity;
+import android.content.AsyncQueryHandler;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -58,6 +61,8 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 	private Button mCancelButton;
 
 	private String mMsgLabelString;
+	
+	private MyAsyncQueryHandler mMAQH;
 
 	public static final boolean ALL_DATES = true;
 	public static final String REVERSE = "reverse";
@@ -99,6 +104,8 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 		mCancelButton = (Button) findViewById(R.id.cancel);
 		mCancelButton.setOnClickListener(this);
 
+		mMAQH = new MyAsyncQueryHandler(getContentResolver(), mMsgLabelView, mMsgView);
+		
 		if(icicle != null) {
 			mSendText.setChecked(icicle.getBoolean(SEND_TEXT));
 			mSendFile.setChecked(icicle.getBoolean(SEND_FILE));
@@ -115,17 +122,34 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 	}
 	
 	private void querySendData() {
-		String where = null;
-		String[] whereArgs = null;
-
-		Cursor cursor = getContentResolver().query(mUri, PROJECTION, where, whereArgs, BPRecord.CREATED_DATE + ((mReverse) ? " DESC" : "ASC"));
-		String msg = getMessage(cursor);
+		mMAQH.startQuery(0, this, mUri, PROJECTION, null, null, BPRecord.CREATED_DATE + ((mReverse) ? " DESC" : "ASC"));
+	}
+	
+	private class MyAsyncQueryHandler extends AsyncQueryHandler {
+		private WeakReference<TextView> mLabelView;
+		private WeakReference<TextView> mMsgView;
 		
-		if (cursor != null)
-			cursor.close();
+		public MyAsyncQueryHandler(ContentResolver cr, TextView labelView, TextView msgView) {
+			super(cr);
+			mLabelView = new WeakReference<TextView>(labelView);
+			mMsgView = new WeakReference<TextView>(msgView);
+		}
 		
-        mMsgLabelView.setText(String.format(mMsgLabelString, msg.length()));
-        mMsgView.setText(msg);
+		@Override
+		protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
+			if(cursor != null) {
+				TextView labelView = mLabelView.get();
+				TextView msgView = mMsgView.get();
+				if(labelView != null && msgView != null) {
+					String msg = getMessage(cursor);
+			        labelView.setText(String.format(mMsgLabelString, msg.length()));
+			        msgView.setText(msg);
+				}
+				cursor.close();
+			}
+		}
+		
+		
 	}
 
 	public void onClick(View v) {
