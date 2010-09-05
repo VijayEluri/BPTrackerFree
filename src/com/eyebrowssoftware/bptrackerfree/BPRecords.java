@@ -20,7 +20,7 @@ public final class BPRecords {
 	 * breweries.
 	 */
 	public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
-			+ "/vnd.eyebrowssoftware.bp_record";
+			+ "/vnd.eyebrowssoftware.free.bp_record";
 
 	public static final class BPRecord implements BaseColumns {
 		/**
@@ -28,7 +28,7 @@ public final class BPRecords {
 		 * note.
 		 */
 		public static final String CONTENT_ITEM_TYPE = ContentResolver.CURSOR_ITEM_BASE_TYPE
-				+ "/vnd.eyebrowssoftware.bp_record";
+				+ "/vnd.eyebrowssoftware.free.bp_record";
 
 		/**
 		 * The default sort order for this table

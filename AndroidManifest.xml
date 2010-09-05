@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
 	package="com.eyebrowssoftware.bptrackerfree"
-	android:versionName="1.2.5"
-	android:versionCode="8"
+	android:versionName="1.2.6"
+	android:versionCode="9"
 >
 	<permission 
 		android:name="com.eyebrowssoftware.BPTracker.permission.MEDICAL" 
@@ -32,11 +32,44 @@
 	        android:name=".BPRecordEditor" 
         	android:theme="@android:style/Theme.Light"
             android:label="@string/title_edit"
-	    />
+	    >
+	    	<intent-filter>
+	    		<action android:name="android.intent.action.EDIT" />
+	    		<category android:name="android.intent.category.DEFAULT" />
+	    		<data android:mimeType="vnd.android.cursor.item/vnd.eyebrowssoftware.free.bp_record" />
+	    	</intent-filter>
+	    	<intent-filter>
+	    		<action android:name="android.intent.action.INSERT" />
+	    		<category android:name="android.intent.category.DEFAULT" />
+	    		<data android:mimeType="vnd.android.cursor.dir/vnd.eyebrowssoftware.free.bp_record" />
+	    	</intent-filter>
+	    </activity>
+        <activity 
+	        android:name=".BPRecordEditorText" 
+        	android:theme="@android:style/Theme.Light"
+            android:label="@string/title_alternate_edit"
+	    >
+	    	<intent-filter>
+	    		<action android:name="android.intent.action.EDIT" />
+	    		<category android:name="android.intent.category.DEFAULT" />
+	    		<data android:mimeType="vnd.android.cursor.item/vnd.eyebrowssoftware.free.bp_record" />
+	    	</intent-filter>
+	    	<intent-filter>
+	    		<action android:name="android.intent.action.INSERT" />
+	    		<category android:name="android.intent.category.DEFAULT" />
+	    		<data android:mimeType="vnd.android.cursor.dir/vnd.eyebrowssoftware.free.bp_record" />
+	    	</intent-filter>
+	    </activity>
 		<activity 
 			android:name=".BPSend" 
 			android:theme="@android:style/Theme.Light"
 			android:label="@string/title_send" 
+		/>
+		<activity 
+			android:name=".BPDataManager"
+			android:theme="@android:style/Theme.Light" 
+			android:label="@string/label_delete_history"
+			android:icon="@drawable/icon"
 		/>
 	    <provider 
 	    	android:name=".BPProviderFree"
@@ -47,8 +80,8 @@
 			android:writePermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
 	    /> 
 	</application>
-    <uses-sdk 
+    <uses-sdk
+    	android:targetSdkVersion="9"
     	android:minSdkVersion="3"
-    	android:targetSdkVersion="4"
     />
 </manifest>

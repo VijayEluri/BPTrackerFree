@@ -74,4 +74,21 @@
 
 	<!-- This is a plain old Java format string - default is Date Time -->
 	<string name="datetime_format">%1$s %2$s</string>
+	
+	<!-- ******************VERSION_CODE 9 NEW STRINGS****************** -->
+	<!-- These strings appear exclusively in the BPRecordEditorText activity -->
+	<string name="sys_not_empty">Systolic field cannot be empty.</string>
+	<string name="sys_range_error">Systolic value must be between %1$d and %2$d.</string>
+	<string name="dia_not_empty">Diastolic field cannot be empty.</string>
+	<string name="dia_range_error">Diastolic value must be between %1$d and %2$d.</string>
+	<string name="pls_not_empty">Pulse field cannot be empty.</string>
+	<string name="pls_range_error">Pulse value must be between %1$d and %2$d.</string>
+	<string name="title_alternate_edit">Alternate Readings Editor</string>
+	
+	<!-- These strings appear in the data management activity -->
+	<string name="menu_data">Data</string>
+	<string name="label_delete_history">Delete History</string>
+	<string name="msg_delete">Deletion of Historical Data is permanent!</string>
+	<string name="msg_deleted">Deleted %s records</string>
+	
 </resources>

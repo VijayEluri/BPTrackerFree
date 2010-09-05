@@ -16,6 +16,8 @@ public class BPTrackerFree extends Application {
 	private static final String TAG = "BPTrackerFree";
 	
 	public static final boolean FREE_VERSION = true;
+	
+	public static final String MURI = "sUri";
 
 	public static final int SYSTOLIC_MAX_DEFAULT = 280;
 	public static final int SYSTOLIC_DEFAULT = 120;

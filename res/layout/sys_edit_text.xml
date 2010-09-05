@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TableRow xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_height="wrap_content" 
+>
+	<include android:id="@+id/systolic_label" layout="@layout/bp_edit_label" />
+	<include android:id="@+id/systolic_edit_text" layout="@layout/bp_edit_text" />
+</TableRow>

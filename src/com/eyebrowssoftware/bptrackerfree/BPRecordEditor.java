@@ -88,8 +88,6 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 	private static final int SPINNER_ITEM_RESOURCE_ID = R.layout.bp_spinner_item;
 	private static final int SPINNER_ITEM_TEXT_VIEW_ID = android.R.id.text1;
 	
-	private static final String MURI = "mUri";
-	
 	// Member Variables
 	private int mState;
 
@@ -133,7 +131,7 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 		} else if (Intent.ACTION_INSERT.equals(action)) {
 			mState = STATE_INSERT;
 			if (icicle != null)
-				mUri = Uri.parse(icicle.getString(MURI));
+				mUri = Uri.parse(icicle.getString(BPTrackerFree.MURI));
 			else {
 				ContentValues cv = new ContentValues();
 				cv.put(BPRecord.SYSTOLIC, BPTrackerFree.SYSTOLIC_DEFAULT);
@@ -255,7 +253,7 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
 		outState.putAll(mOriginalValues);
-		outState.putString(MURI, mUri.toString());
+		outState.putString(BPTrackerFree.MURI, mUri.toString());
 	}
 
 	@Override

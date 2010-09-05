@@ -74,4 +74,21 @@
 
 	<!-- This is a plain old Java format string - default is Date Time -->
 	<string name="datetime_format">%1$s %2$s</string>
+	
+	<!-- ******************VERSION_CODE 9 NEW STRINGS****************** -->
+	<!-- These strings appear exclusively in the BPRecordEditorText activity -->
+	<string name="sys_not_empty">收縮數據不能是空的。</string>
+	<string name="sys_range_error">收縮值必須介於 %1$d和%2$d。</string>
+	<string name="dia_not_empty">舒張數據不能是空的。</string>
+	<string name="dia_range_error">舒張值必須介於 %1$d和%2$d。</string>
+	<string name="pls_not_empty">脈衝數據不能是空的。</string>
+	<string name="pls_range_error">脈衝值必須介於 %1$d和%2$d。</string>
+	<string name="title_alternate_edit">備用數據編輯器</string>
+
+	<!-- These strings appear in the data management activity -->
+	<string name="menu_data">數據</string>
+	<string name="label_delete_history">刪除歷史記錄</string>
+	<string name="msg_delete">刪除歷史數據是永久性的！</string>
+	<string name="msg_deleted">刪除％s紀錄</string>
+
 </resources>

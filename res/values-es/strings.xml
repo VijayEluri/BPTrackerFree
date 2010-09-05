@@ -66,4 +66,21 @@
 
 	<!-- This is a plain old Java format string - default is Date Time -->
 	<string name="datetime_format">%1$s %2$s</string>
+	
+	<!-- ******************VERSION_CODE 9 NEW STRINGS****************** -->
+	<!-- These strings appear exclusively in the BPRecordEditorText activity -->
+	<string name="sys_not_empty">Entrada de sistólica no puede estar vacío.</string>
+	<string name="sys_range_error">Valor de sistólica debe estar entre %1$d y %2$d.</string>
+	<string name="dia_not_empty">Entrada de diastólica no puede estar vacío.</string>
+	<string name="dia_range_error">Valor de diastólica debe estar entre %1$d y %2$d.</string>
+	<string name="pls_not_empty">Entrada de pulso no puede estar vacío.</string>
+	<string name="pls_range_error">Valor de pulso debe estar entre %1$d y %2$d.</string>
+	<string name="title_alternate_edit">Alternativa editar los valores</string>
+	
+	<!-- These strings apply to the data management activity -->
+	<string name="menu_data">Los Datos</string>
+	<string name="label_delete_history">Borrar los datos históricos</string>
+	<string name="msg_delete">Supresión de los datos históricos es permanente!</string>
+	<string name="msg_deleted">%s Registros Eliminados</string>
+	
 </resources>

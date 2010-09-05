@@ -66,4 +66,21 @@
 
 	<!-- This is a plain old Java format string - default is Date Time -->
 	<string name="datetime_format">%1$s %2$s</string>
+	
+	<!-- ******************VERSION_CODE 9 NEW STRINGS****************** -->
+	<!-- These strings appear exclusively in the BPRecordEditorText activity -->
+	<string name="sys_not_empty">Valeur systolique ne peut pas être vide.</string>
+	<string name="sys_range_error">Valeur systolique doit être comprise entre %1$d et %2$d.</string>
+	<string name="dia_not_empty">Valeur diastolique ne peut pas être vide.</string>
+	<string name="dia_range_error">Valeur diastolique doit être comprise entre %1$d et %2$d.</string>
+	<string name="pls_not_empty">Valeur pulse ne peut pas être vide.</string>
+	<string name="pls_range_error">Valeur pulse doit être comprise entre %1$d et %2$d.</string>
+	<string name="title_alternate_edit">Autres valeurs éditeur</string>
+
+	<!-- These strings apply to the data management activity -->
+	<string name="menu_data">Informations</string>
+	<string name="label_delete_history">Supprimez les données historiques</string>
+	<string name="msg_delete">Suppression des données historiques est permanente!</string>
+	<string name="msg_deleted">Supprimé %s records</string>
+
 </resources>

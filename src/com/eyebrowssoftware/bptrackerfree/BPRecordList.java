@@ -53,6 +53,7 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 	public static final int MENU_ITEM_DELETE = Menu.FIRST;
 	public static final int MENU_ITEM_EDIT = Menu.FIRST + 1;
 	public static final int MENU_ITEM_SEND = Menu.FIRST + 2;
+	public static final int MENU_DATA_MANAGER = Menu.FIRST + 3;
 	
 	private static final int DELETE_DIALOG_ID = 0;
 
@@ -206,6 +207,7 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		super.onCreateOptionsMenu(menu);
 
 		menu.add(Menu.NONE, MENU_ITEM_SEND, 0, R.string.menu_send);
+		menu.add(Menu.NONE, MENU_DATA_MANAGER, 1, R.string.menu_data);
 		return true;
 	}
 
@@ -216,8 +218,12 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 		case MENU_ITEM_SEND:
 			startActivity(new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this, BPSend.class));
 			return true;
+		case MENU_DATA_MANAGER:
+			startActivity(new Intent(this, BPDataManager.class));
+			return true;
+		default:
+			return false;
 		}
-		return false;
 	}
 
 	@Override
@@ -260,7 +266,7 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 				showDialog(DELETE_DIALOG_ID);
 				return true;
 			case MENU_ITEM_EDIT:
-				startActivity(new Intent(Intent.ACTION_EDIT, contextMenuUri, this, BPRecordEditor.class));
+				startActivity(new Intent(Intent.ACTION_EDIT, contextMenuUri));
 				return true;
 			case MENU_ITEM_SEND:
 				startActivity(new Intent(Intent.ACTION_SEND, contextMenuUri, this, BPSend.class));
@@ -306,7 +312,7 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		if(id < 0) {
 			Uri data = getIntent().getData();
-			startActivity(new Intent(Intent.ACTION_INSERT, data, this, BPRecordEditor.class));
+			startActivity(new Intent(Intent.ACTION_INSERT, data));
 		} else {
 			Uri uri = ContentUris.withAppendedId(getIntent().getData(), id);
 			String action = getIntent().getAction();
@@ -317,13 +323,13 @@ public class BPRecordList extends ListActivity implements OnClickListener {
 				setResult(RESULT_OK, new Intent().setData(uri));
 			} else {
 				// Launch activity to view/edit the currently selected item
-				startActivity(new Intent(Intent.ACTION_EDIT, uri, this, BPRecordEditor.class));
+				startActivity(new Intent(Intent.ACTION_EDIT, uri));
 			}
 		}
 	}
 
 	public void onClick(View v) {
 		Uri data = getIntent().getData();
-		startActivity(new Intent(Intent.ACTION_INSERT, data, this, BPRecordEditor.class));
+		startActivity(new Intent(Intent.ACTION_INSERT, data));
 	}
 }
