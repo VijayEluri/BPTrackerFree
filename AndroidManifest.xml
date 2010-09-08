@@ -81,7 +81,7 @@
 	    /> 
 	</application>
     <uses-sdk
-    	android:targetSdkVersion="9"
+    	android:targetSdkVersion="8"
     	android:minSdkVersion="3"
     />
 </manifest>
