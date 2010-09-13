@@ -12,12 +12,10 @@
 		android:protectionLevel="dangerous"
 	/>
 	
-	<uses-permission android:name="com.eyebrowssoftware.BPTracker.permission.MEDICAL" />
-	
     <application
     	android:icon="@drawable/icon" 
     	android:label="@string/app_name"
-    android:name=".BPTrackerFree">
+    	android:name=".BPTrackerFree">
         <activity 
             android:name=".BPRecordList"
         	android:label="@string/app_name"
@@ -78,10 +76,15 @@
 	    	android:icon="@drawable/icon"
 			android:readPermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
 			android:writePermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
-	    /> 
+	    />
+	    <!-- This is my developer id from AdMob -->
+	    <meta-data android:value="a14c8e85cf9b475" android:name="ADMOB_PUBLISHER_ID" /> 
 	</application>
     <uses-sdk
     	android:targetSdkVersion="8"
     	android:minSdkVersion="3"
     />
+	<uses-permission android:name="com.eyebrowssoftware.BPTracker.permission.MEDICAL" />
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />	
 </manifest>
