@@ -75,7 +75,9 @@
 	<!-- This is a plain old Java format string - default is Date Time -->
 	<string name="datetime_format">%1$s %2$s</string>
 	
-	<!-- ******************VERSION_CODE 9 NEW STRINGS****************** -->
+	<!-- *********************************************************************** -->
+	<!-- ******************VERSION_CODE 9 (v1.2.6) NEW STRINGS****************** -->
+	
 	<!-- These strings appear exclusively in the BPRecordEditorText activity -->
 	<string name="sys_not_empty">Systolic field cannot be empty.</string>
 	<string name="sys_range_error">Systolic value must be between %1$d and %2$d.</string>
@@ -90,5 +92,8 @@
 	<string name="label_delete_history">Delete History</string>
 	<string name="msg_delete">Deletion of Historical Data is permanent!</string>
 	<string name="msg_deleted">Deleted %s records</string>
+	
+	<!-- ******************VERSION_CODE 9 (v1.2.6) NEW STRINGS****************** -->
+	<!-- *********************************************************************** -->
 	
 </resources>
