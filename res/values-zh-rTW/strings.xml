@@ -79,21 +79,21 @@
 	<!-- ******************VERSION_CODE 9 (v1.2.6) NEW STRINGS****************** -->
 	
 	<!-- These strings appear exclusively in the BPRecordEditorText activity -->
-	<string name="sys_not_empty">收縮數據不能是空的。</string>
-	<string name="sys_range_error">收縮值必須介於 %1$d和%2$d。</string>
-	<string name="dia_not_empty">舒張數據不能是空的。</string>
-	<string name="dia_range_error">舒張值必須介於 %1$d和%2$d。</string>
-	<string name="pls_not_empty">脈衝數據不能是空的。</string>
-	<string name="pls_range_error">脈衝值必須介於 %1$d和%2$d。</string>
-	<string name="title_alternate_edit">備用數據編輯器</string>
-
+	<string name="sys_not_empty">收縮值欄位必須輸入。</string>
+	<string name="sys_range_error">收縮值必須介於 %1$d 和 %2$d 之間。</string>
+	<string name="dia_not_empty">舒張值欄位必須輸入。</string>
+	<string name="dia_range_error">舒張值必須介於 %1$d 和 %2$d 之間。</string>
+	<string name="pls_not_empty">脈搏值欄位必須輸入。</string>
+	<string name="pls_range_error">脈搏值必須介於 %1$d 和 %2$d 之間。</string>
+	<string name="title_alternate_edit">可選閱讀資料編輯器</string>
+	
 	<!-- These strings appear in the data management activity -->
-	<string name="menu_data">數據</string>
-	<string name="label_delete_history">刪除歷史記錄</string>
-	<string name="msg_delete">刪除歷史數據是永久性的！</string>
-	<string name="msg_deleted">刪除％s紀錄</string>
-
+	<string name="menu_data">資料</string>
+	<string name="label_delete_history">刪除歷史資料</string>
+	<string name="msg_delete">對於歷史資料的刪除將是永久性的！</string>
+	<string name="msg_deleted">已刪除 %s 條記錄</string>
+	
 	<!-- ******************VERSION_CODE 9 (v1.2.6) NEW STRINGS****************** -->
 	<!-- *********************************************************************** -->
-
+	
 </resources>
