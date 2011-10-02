@@ -10,8 +10,8 @@
     	android:layout_height="match_parent"
     	android:layout_weight="1" 
     />
-    <fragment android:name="com.eyebrowssoftware.bptrackerfree.BPRecordEditorFragment"
-    	android:id="@+id/editor_fragment"
+    <fragment android:name="com.eyebrowssoftware.bptrackerfree.BPSendFragment"
+    	android:id="@+id/send_fragment"
     	android:layout_width="match_parent"
     	android:layout_height="match_parent"
     	android:layout_weight="1"

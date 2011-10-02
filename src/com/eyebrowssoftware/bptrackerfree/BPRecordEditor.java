@@ -1,46 +1,19 @@
 package com.eyebrowssoftware.bptrackerfree;
 
-import java.lang.ref.WeakReference;
-import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DatePickerDialog;
 import android.app.Dialog;
-import android.app.TimePickerDialog;
-import android.app.DatePickerDialog.OnDateSetListener;
-import android.app.TimePickerDialog.OnTimeSetListener;
-import android.content.AsyncQueryHandler;
-import android.content.ContentResolver;
-import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.EditText;
-import android.widget.Spinner;
-import android.widget.TimePicker;
-import android.widget.Toast;
-import android.widget.AdapterView.OnItemSelectedListener;
-
-import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
 public class BPRecordEditor extends Activity {
 
 	// Static constants
 	
+	@SuppressWarnings("unused")
 	private static final String TAG = "BPRecordEditor";
 
 	// Identifiers of our menu items
@@ -64,9 +37,6 @@ public class BPRecordEditor extends Activity {
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
-		final Intent intent = getIntent();
-		final String action = intent.getAction();
-
 		setContentView(R.layout.bp_record_editor);
 	}
 	
@@ -75,7 +45,8 @@ public class BPRecordEditor extends Activity {
 		super.onCreateOptionsMenu(menu);
 
 		// Build the menus that are shown when editing.
-		if (mState == STATE_EDIT) {
+		mState = (Intent.ACTION_EDIT.equals(getIntent().getAction()) ? STATE_EDIT : STATE_INSERT); 
+		if(mState == STATE_EDIT) {
 			menu.add(MENU_GROUP, DONE_ID, 0, R.string.menu_done);
 			menu.add(MENU_GROUP, REVERT_ID, 1, R.string.menu_revert);
 			menu.add(MENU_GROUP, DELETE_ID, 2, R.string.menu_delete);
