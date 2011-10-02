@@ -127,7 +127,7 @@ public class BPRecordEditorFragment extends Fragment implements OnDateSetListene
 			Bundle savedInstanceState) {
 		
 		// Inflate the layout for this fragment
-		View layout = inflater.inflate(R.layout.bp_list_fragment, container, false);
+		View layout = inflater.inflate(R.layout.bp_record_editor_fragment, container, false);
 		
 		mCalendar = new GregorianCalendar();
 		
@@ -151,7 +151,8 @@ public class BPRecordEditorFragment extends Fragment implements OnDateSetListene
 		mDoneButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View arg0) {
 				// XXX: this is highly dubious
-				BPRecordEditorFragment.this.getActivity().finish();
+				// BPRecordEditorFragment.this.getActivity().finish();
+				Log.wtf(TAG, "This needs to do something");
 			}
 		});
 		
@@ -232,8 +233,6 @@ public class BPRecordEditorFragment extends Fragment implements OnDateSetListene
 			}
 		} else {
 			Log.e(TAG, "Unknown action, exiting");
-			// XXX: See how this works for fragments
-			activity.finish();
 			return;
 		}
 		
@@ -446,7 +445,8 @@ public class BPRecordEditorFragment extends Fragment implements OnDateSetListene
 		Activity activity = getActivity();
 		activity.setResult(Activity.RESULT_CANCELED);
 		// XXX: More dubiosity
-		activity.finish();
+		// activity.finish();
+		Log.wtf(TAG, "Something needs to happen here");
 	}
 
 	/**
