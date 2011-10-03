@@ -6,13 +6,13 @@
 >
     <fragment android:name="com.eyebrowssoftware.bptrackerfree.BPListFragment" 
     	android:id="@+id/list_fragment" 
-    	android:layout_width="match_parent" 
+    	android:layout_width="0px" 
     	android:layout_height="match_parent"
     	android:layout_weight="1" 
     />
-    <fragment android:name="com.eyebrowssoftware.bptrackerfree.BPSendFragment"
-    	android:id="@+id/send_fragment"
-    	android:layout_width="match_parent"
+    <FrameLayout 
+    	android:id="@+id/details_fragment"
+    	android:layout_width="0px"
     	android:layout_height="match_parent"
     	android:layout_weight="1"
     />

@@ -1,38 +1,13 @@
 package com.eyebrowssoftware.bptrackerfree;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.nio.charset.Charset;
-import java.text.DateFormat;
-
 import android.app.Activity;
-import android.content.AsyncQueryHandler;
-import android.content.ContentResolver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.res.Resources;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import com.csvreader.CsvWriter;
-import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
 public class BPSend extends Activity {
 
+	@SuppressWarnings("unused")
 	private static final String TAG = "BPSend";
 
 	@Override

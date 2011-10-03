@@ -78,19 +78,22 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 	};
 	
 	private static final String CONTEXT_URI = "context_uri";
+	private static final String SELECTION = "selection";
 	
+	// The state that needs to be saved and stored
+	private int mCurrentCheckPosition = 0;
 	private long mContextMenuRecordId = 0;
 
 	private MyAsyncQueryHandler mMAQH;
 	
 	private static final int BPRECORDS_TOKEN = 0;
 	
-	private Intent mIntent = null; // The intent that started the activity that this fragment is associated with
-	
+	boolean mDualPane = false;
+	Uri mStartUri;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+		Bundle savedInstanceState) {
 		
 		// Inflate the layout for this fragment
 		View layout = inflater.inflate(R.layout.bp_list_fragment, container, false);
@@ -110,10 +113,8 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
-		
 	}
 	
-		
 	/** Called when the fragment is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -134,23 +135,87 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		mIntent = getActivity().getIntent();
-
-		if (mIntent.getData() == null) {
-			mIntent.setData(BPRecords.CONTENT_URI);
-		}
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), R.layout.bp_record_list_item, null, VALS, IDS);
-		adapter.setViewBinder(new MyViewBinder());
-
-		mMAQH = new MyAsyncQueryHandler(getActivity().getContentResolver(), adapter);
-		mMAQH.startQuery(BPRECORDS_TOKEN, this, getActivity().getIntent().getData(), PROJECTION, null, null, BPRecord.CREATED_DATE + " DESC");
-		
 		if(savedInstanceState != null) {
 			mContextMenuRecordId = savedInstanceState.getLong(CONTEXT_URI);
+			mCurrentCheckPosition = savedInstanceState.getInt(SELECTION);
 		}
+		Intent intent = getActivity().getIntent();
+		mStartUri = intent.getData();
+		if(mStartUri == null) {
+			mStartUri = BPRecords.CONTENT_URI;
+		}
+		// No cursor yet. Will be assigned when the asynchronous query is complete
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), R.layout.bp_record_list_item, null, VALS, IDS);
+		adapter.setViewBinder(new MyViewBinder());
 		setListAdapter(adapter);
+
+		mMAQH = new MyAsyncQueryHandler(getActivity().getContentResolver(), adapter);
+		mMAQH.startQuery(BPRECORDS_TOKEN, this, mStartUri, PROJECTION, null, null, BPRecord.CREATED_DATE + " DESC");
+		
+        // Check to see if we have a frame in which to embed the details
+        // fragment directly in the containing UI.
+        View detailsFrame = getActivity().findViewById(R.id.details_fragment);
+        mDualPane = detailsFrame != null
+                && detailsFrame.getVisibility() == View.VISIBLE;
+
+        if (mDualPane) {
+            // In dual-pane mode, list view highlights selected item.
+            getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            // Make sure our UI is in the correct state.
+            showDetails(mCurrentCheckPosition);
+        }
 	}
 	
+	@Override
+	public void onListItemClick(ListView l, View v, int position, long id) {
+		showDetails(position);
+	}
+	
+	void showDetails(int position) {
+		Uri data = mStartUri;
+		long id = this.getListAdapter().getItemId(position);
+		if(mDualPane) {
+			getListView().setItemChecked(position, true);
+			
+			// Check which fragment is shown and get the editor 
+			if(id < 0) {
+				startActivity(new Intent(Intent.ACTION_INSERT, data));
+			} else {
+				Uri uri = ContentUris.withAppendedId(data, id);
+				String action = getActivity().getIntent().getAction();
+				if (Intent.ACTION_PICK.equals(action)
+						|| Intent.ACTION_GET_CONTENT.equals(action)) {
+					// The caller is waiting for us to return a note selected by
+					// the user. The have clicked on one, so return it now.
+					getActivity().setResult(Activity.RESULT_OK, new Intent().setData(uri));
+				} else {
+					// Launch activity to view/edit the currently selected item
+					startActivity(new Intent(Intent.ACTION_EDIT, uri));
+				}
+			}
+		} else {
+			if(id < 0) {
+				startActivity(new Intent(Intent.ACTION_INSERT, data));
+			} else {
+				Uri uri = ContentUris.withAppendedId(data, id);
+				String action = getActivity().getIntent().getAction();
+				if (Intent.ACTION_PICK.equals(action)
+						|| Intent.ACTION_GET_CONTENT.equals(action)) {
+					// The caller is waiting for us to return a note selected by
+					// the user. The have clicked on one, so return it now.
+					getActivity().setResult(Activity.RESULT_OK, new Intent().setData(uri));
+				} else {
+					// Launch activity to view/edit the currently selected item
+					startActivity(new Intent(Intent.ACTION_EDIT, uri));
+				}
+			}
+		}
+	}
+
+	public void onClick(View v) {
+		Uri data = null; //TODO: getIntent().getData();
+		startActivity(new Intent(Intent.ACTION_INSERT, data));
+	}
 	
 	private class MyViewBinder implements SimpleCursorAdapter.ViewBinder {
 		String val;
@@ -211,6 +276,7 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		outState.putLong(CONTEXT_URI, mContextMenuRecordId);
+		outState.putInt(SELECTION, mCurrentCheckPosition);
 	}
 
 	@Override
@@ -263,7 +329,7 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 			info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
 			// Get the Uri of the record we're intending to operate on
 			mContextMenuRecordId = info.id;
-			Uri contextMenuUri = ContentUris.withAppendedId(mIntent.getData(), mContextMenuRecordId);
+			Uri contextMenuUri = ContentUris.withAppendedId(mStartUri, mContextMenuRecordId);
 			switch (item.getItemId()) {
 			case MENU_ITEM_DELETE:
 				DeleteDialogFragment diagFrag = new DeleteDialogFragment();
@@ -285,7 +351,7 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 	}
 	
 	private void deleteRecord() {
-		Uri contextMenuUri = ContentUris.withAppendedId(mIntent.getData(), mContextMenuRecordId);
+		Uri contextMenuUri = ContentUris.withAppendedId(mStartUri, mContextMenuRecordId);
 		getActivity().getContentResolver().delete(contextMenuUri, null, null);
 	}
 	
@@ -311,27 +377,4 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 
 	}
 
-	@Override
-	public void onListItemClick(ListView l, View v, int position, long id) {
-		Uri data = mIntent.getData();
-		if(id < 0) {
-			startActivity(new Intent(Intent.ACTION_INSERT, data));
-		} else {
-			Uri uri = ContentUris.withAppendedId(data, id);
-			String action = mIntent.getAction();
-			if (Intent.ACTION_PICK.equals(action)
-					|| Intent.ACTION_GET_CONTENT.equals(action)) {
-				// The caller is waiting for us to return a note selected by
-				// the user. The have clicked on one, so return it now.
-				getActivity().setResult(Activity.RESULT_OK, new Intent().setData(uri));
-			} else {
-				// Launch activity to view/edit the currently selected item
-				startActivity(new Intent(Intent.ACTION_EDIT, uri));
-			}
-		}
-	}
-	public void onClick(View v) {
-		Uri data = null; //TODO: getIntent().getData();
-		startActivity(new Intent(Intent.ACTION_INSERT, data));
-	}
 }
