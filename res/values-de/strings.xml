@@ -70,11 +70,11 @@
 	<!-- ******************VERSION_CODE 9 NEW STRINGS****************** -->
 	<!-- These strings appear exclusively in the BPRecordEditorText activity -->
 	<string name="sys_not_empty">Systolischer Feld darf nicht leer sein.</string>
-	<string name="sys_range_error">Der Systolischer muss zwischen %1$d und %2d werden.</string>
+	<string name="sys_range_error">Der Systolischer muss zwischen %1$d und %2$d werden.</string>
 	<string name="dia_not_empty">Diastolische Feld darf nicht leer sein.</string>
-	<string name="dia_range_error">Die Diastolische muss zwischen %1$d und %2d werden.</string>
+	<string name="dia_range_error">Die Diastolische muss zwischen %1$d und %2$d werden.</string>
 	<string name="pls_not_empty">Puls Feld darf nicht leer sein.</string>
-	<string name="pls_range_error">Puls muss zwischen %1$d und %2d werden.</string>
+	<string name="pls_range_error">Puls muss zwischen %1$d und %2$d werden.</string>
 	<string name="title_alternate_edit">Alternativ Bearbeiten von Daten</string>
 	
 	<!-- These strings apply to the data management activity -->
