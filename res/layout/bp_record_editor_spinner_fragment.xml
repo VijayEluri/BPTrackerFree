@@ -1,51 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
-	android:stretchColumns="1"
-	android:shrinkColumns="0,1" 
+	android:orientation="vertical"
 >
 	<include layout="@layout/sys_spinner"/>
 	<include layout="@layout/dia_spinner"/>
 	<include layout="@layout/pls_spinner"/>
-	<EditText
-		android:id="@+id/note"
-		android:layout_height="wrap_content"
-	/>
-	<TableRow
-		android:layout_height="wrap_content"
-	>
-		<TextView
-			android:id="@+id/date_label"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/label_date"
-			android:layout_gravity="center_vertical|right"
-			style="@style/bp_label" 
-		/>
-		<Button
-			android:id="@+id/date_button"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_vertical|left"
-		/>
-	</TableRow>
-	<TableRow
-		android:layout_height="wrap_content"
-	>
-		<TextView
-			android:id="@+id/time_label"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:text="@string/label_time"
-			android:layout_gravity="center_vertical|right" 
-			style="@style/bp_label" 
-		/>
-		<Button
-			android:id="@+id/time_button"
-			android:layout_width="wrap_content"
-			android:layout_height="wrap_content"
-			android:layout_gravity="center_vertical|left" 
-		/>
-	</TableRow>
-</TableLayout>
+</LinearLayout>

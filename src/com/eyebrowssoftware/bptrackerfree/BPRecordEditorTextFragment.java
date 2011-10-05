@@ -2,8 +2,6 @@ package com.eyebrowssoftware.bptrackerfree;
 
 
 import java.text.DateFormat;
-import java.util.Calendar;
-import java.util.GregorianCalendar;
 
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -12,8 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
-import android.widget.Button;
+import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -28,11 +25,6 @@ public class BPRecordEditorTextFragment extends BPRecordEditorFragment {
 
 	private Cursor mCursor;
 
-	private Button mDateButton;
-	private Button mTimeButton;
-
-	private Calendar mCalendar = GregorianCalendar.getInstance();
-
 	private TextView mSysLabel;
 	private TextView mDiaLabel;
 	private TextView mPlsLabel;
@@ -41,8 +33,6 @@ public class BPRecordEditorTextFragment extends BPRecordEditorFragment {
 	
 	private EditText mNote;
 
-	private Bundle mOriginalValues = null;
-	
     public static BPRecordEditorFragment newInstance(long id) {
         BPRecordEditorTextFragment f = new BPRecordEditorTextFragment();
 
@@ -56,50 +46,24 @@ public class BPRecordEditorTextFragment extends BPRecordEditorFragment {
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,	Bundle savedInstanceState) {
-		super.onCreateView(inflater, container, savedInstanceState);
+		View layout = super.onCreateView(inflater, container, savedInstanceState);
 
-		View layout = inflater.inflate(R.layout.bp_record_editor_text, container, false);
+		View myView = ((ViewStub) layout.findViewById(R.id.text_stub)).inflate();
 		
-		mDateButton = (Button) layout.findViewById(R.id.date_button);
-		mDateButton.setOnClickListener(new DateOnClickListener());
-
-		mTimeButton = (Button) layout.findViewById(R.id.time_button);
-		mTimeButton.setOnClickListener(new TimeOnClickListener());
-
-		Button button;
-		
-		button = (Button) layout.findViewById(R.id.done_button);
-		button.setOnClickListener(new OnClickListener() {
-			public void onClick(View arg0) {
-				// TODO: Figure this out / onBackPressed();
-			}
-		});
-		
-		button = (Button) layout.findViewById(R.id.revert_button);
-		if(mState == STATE_INSERT)
-			button.setText(R.string.menu_discard);
-		button.setOnClickListener(new OnClickListener() {
-			public void onClick(View arg0) {
-				cancelRecord();
-			}
-		});
-		
-		mSysLabel = (TextView) layout.findViewById(R.id.systolic_label);
+		mSysLabel = (TextView) myView.findViewById(R.id.systolic_label);
 		mSysLabel.setText(R.string.label_systolic);
 		
 		mEditValues[SYS_IDX] = (EditText) layout.findViewById(R.id.systolic_edit_text);
 
-		mDiaLabel = (TextView) layout.findViewById(R.id.diastolic_label);
+		mDiaLabel = (TextView) myView.findViewById(R.id.diastolic_label);
 		mDiaLabel.setText(R.string.label_diastolic);
 		
 		mEditValues[DIA_IDX] = (EditText) layout.findViewById(R.id.diastolic_edit_text);
 
-		mPlsLabel = (TextView) layout.findViewById(R.id.pulse_label);
+		mPlsLabel = (TextView) myView.findViewById(R.id.pulse_label);
 		mPlsLabel.setText(R.string.label_pulse);
 		
 		mEditValues[PLS_IDX] = (EditText) layout.findViewById(R.id.pulse_edit_text);
-		
-		mNote = (EditText) layout.findViewById(R.id.note);
 		
 		return layout;
 	}

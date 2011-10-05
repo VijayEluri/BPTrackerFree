@@ -18,12 +18,12 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
+import android.view.ViewStub;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
@@ -35,16 +35,6 @@ public class BPRecordEditorSpinnerFragment extends BPRecordEditorFragment implem
 
 	private Bundle mOriginalValues = null;
 
-	private Button mDateButton;
-	
-	private Button mTimeButton;
-	
-	private Button mDoneButton;
-	
-	private Button mCancelButton;
-	
-	private EditText mNoteText;
-	
 	private static final String ID_KEY = "_id";
 	
 	private MyAsyncQueryHandler mMAQH;
@@ -66,51 +56,24 @@ public class BPRecordEditorSpinnerFragment extends BPRecordEditorFragment implem
 		if(container == null) {
 			return null;
 		}
-		super.onCreateView(inflater, container, savedInstanceState);
+		View layout = super.onCreateView(inflater, container, savedInstanceState);
 
 		// Inflate the layout for this fragment
-		View layout = inflater.inflate(R.layout.bp_record_editor_spinner_fragment, container, false);
-		
-		mDateButton = (Button) layout.findViewById(R.id.date_button);
-		mDateButton.setOnClickListener(new DateOnClickListener());
-
-		mTimeButton = (Button) layout.findViewById(R.id.time_button);
-		mTimeButton.setOnClickListener(new TimeOnClickListener());
-		
-		mDoneButton = (Button) layout.findViewById(R.id.done_button);
-		mDoneButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View arg0) {
-				// TODO: communicate through a callback that we've saved and done 
-				Log.wtf(TAG, "This needs to do something");
-			}
-		});
-		
-		mCancelButton = (Button) layout.findViewById(R.id.revert_button);
-		if(mState == STATE_INSERT)
-			mCancelButton.setText(R.string.menu_discard);
-		mCancelButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View arg0) {
-				cancelRecord();
-				// TODO: communicate through a callback that we've cancelled and are done
-				Log.wtf(TAG, "This needs to do something");
-			}
-		});
+		View myView = ((ViewStub) layout.findViewById(R.id.spinner_stub)).inflate();
 		
 		mSpinners = new Spinner[VALUES_ARRAY_SIZE];
 		
-		mSpinners[SYS_IDX] = (Spinner) layout.findViewById(R.id.systolic_spin);
+		mSpinners[SYS_IDX] = (Spinner) myView.findViewById(R.id.systolic_spin);
 		mSpinners[SYS_IDX].setPromptId(R.string.label_sys_spinner);
 		mSpinners[SYS_IDX].setOnItemSelectedListener(this);
 		
-		mSpinners[DIA_IDX] = (Spinner) layout.findViewById(R.id.diastolic_spin);
+		mSpinners[DIA_IDX] = (Spinner) myView.findViewById(R.id.diastolic_spin);
 		mSpinners[DIA_IDX].setPromptId(R.string.label_dia_spinner);
 		mSpinners[DIA_IDX].setOnItemSelectedListener(this);
 
-		mSpinners[PLS_IDX] = (Spinner) layout.findViewById(R.id.pulse_spin);
+		mSpinners[PLS_IDX] = (Spinner) myView.findViewById(R.id.pulse_spin);
 		mSpinners[PLS_IDX].setPromptId(R.string.label_pls_spinner);
 		mSpinners[PLS_IDX].setOnItemSelectedListener(this);
-
-		mNoteText = (EditText) layout.findViewById(R.id.note);
 
 		return layout;
 	}

@@ -5,11 +5,11 @@ import java.util.GregorianCalendar;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.TimePickerDialog;
-import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -19,9 +19,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -97,6 +99,16 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 
 	protected Bundle mOriginalValues = null;
 	
+	protected EditText mNoteText;
+	
+	protected Button mDateButton;
+	
+	protected Button mTimeButton;
+	
+	protected Button mDoneButton;
+	
+	protected Button mCancelButton;
+	
 	protected static final int BPRECORDS_TOKEN = 0;
 	protected static final String ID_KEY = BPRecord._ID;
 	
@@ -105,6 +117,33 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 
 		View layout = inflater.inflate(R.layout.bp_record_editor_fragment, container, false);
 		mCalendar = new GregorianCalendar();
+		
+		mDateButton = (Button) layout.findViewById(R.id.date_button);
+		mDateButton.setOnClickListener(new DateOnClickListener());
+
+		mTimeButton = (Button) layout.findViewById(R.id.time_button);
+		mTimeButton.setOnClickListener(new TimeOnClickListener());
+		
+		mDoneButton = (Button) layout.findViewById(R.id.done_button);
+		mDoneButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0) {
+				// TODO: communicate through a callback that we've saved and done 
+				Log.wtf(TAG, "This needs to do something");
+			}
+		});
+		
+		mCancelButton = (Button) layout.findViewById(R.id.revert_button);
+		if(mState == STATE_INSERT)
+			mCancelButton.setText(R.string.menu_discard);
+		mCancelButton.setOnClickListener(new OnClickListener() {
+			public void onClick(View arg0) {
+				cancelRecord();
+				// TODO: communicate through a callback that we've cancelled and are done
+				Log.wtf(TAG, "This needs to do something");
+			}
+		});
+
+		mNoteText = (EditText) layout.findViewById(R.id.note);
 
 		return layout;
 	}
@@ -156,7 +195,6 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	
 	protected class DateOnClickListener implements OnClickListener {
 
-		@Override
 		public void onClick(View arg0) {
 			DateEditDialogFragment dialog = new DateEditDialogFragment();
 			dialog.show(BPRecordEditorFragment.this.getFragmentManager(), "date_edit");
@@ -166,7 +204,6 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 
 	protected class TimeOnClickListener implements OnClickListener {
 
-		@Override
 		public void onClick(View v) {
 			TimeEditDialogFragment dialog  = new TimeEditDialogFragment();
 			dialog.show(BPRecordEditorFragment.this.getFragmentManager(), "time_edit");
