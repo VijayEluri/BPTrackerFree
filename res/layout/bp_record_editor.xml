@@ -4,8 +4,8 @@
 	android:layout_height="match_parent"
 >
 	<fragment
-		android:name="com.eyebrowssoftware.BPRecordEditorFragment"
-		android:id="@+id/editor_fragment"
+		android:name="com.eyebrowssoftware.bptrackerfree.BPRecordEditorSpinnerFragment"
+		android:id="@+id/spinner_editor_fragment"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 	/>

@@ -5,11 +5,11 @@ import java.util.GregorianCalendar;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
-import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.DialogFragment;
 import android.app.Fragment;
 import android.app.TimePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -18,9 +18,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
@@ -53,43 +54,47 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	protected static final int COLUMN_NOTE_INDEX = 6;
 
 	// The different distinct states the activity can be run in.
-	protected static final int STATE_EDIT = 0;
-	protected static final int STATE_INSERT = 1;
+	public static final int STATE_EDIT = 0;
+	public static final int STATE_INSERT = 1;
 	
 	protected static final int SYS_IDX = 0;
 	protected static final int DIA_IDX = 1;
 	protected static final int PLS_IDX = 2;
 	protected static final int VALUES_ARRAY_SIZE  = PLS_IDX + 1;
 
-	protected static final int SPINNER_ITEM_RESOURCE_ID = R.layout.bp_spinner_item;
-	protected static final int SPINNER_ITEM_TEXT_VIEW_ID = android.R.id.text1;
-	
 	protected static final int[] SYS_VALS = {
-		    BPTrackerFree.SYSTOLIC_MAX_DEFAULT,
-			RangeAdapter.NO_ZONE,
-			RangeAdapter.NO_ZONE,
-			RangeAdapter.NO_ZONE,
-			BPTrackerFree.SYSTOLIC_MIN_DEFAULT
-		};
+	    BPTrackerFree.SYSTOLIC_MAX_DEFAULT,
+		RangeAdapter.NO_ZONE,
+		RangeAdapter.NO_ZONE,
+		RangeAdapter.NO_ZONE,
+		BPTrackerFree.SYSTOLIC_MIN_DEFAULT
+	};
 			
 	protected static final int[] DIA_VALS = {
-			BPTrackerFree.DIASTOLIC_MAX_DEFAULT,
-			RangeAdapter.NO_ZONE,
-			RangeAdapter.NO_ZONE,
-			RangeAdapter.NO_ZONE,
-			BPTrackerFree.DIASTOLIC_MIN_DEFAULT
-		};
+		BPTrackerFree.DIASTOLIC_MAX_DEFAULT,
+		RangeAdapter.NO_ZONE,
+		RangeAdapter.NO_ZONE,
+		RangeAdapter.NO_ZONE,
+		BPTrackerFree.DIASTOLIC_MIN_DEFAULT
+	};
 
 	protected static final int[] PLS_VALS = {
-			BPTrackerFree.PULSE_MAX_DEFAULT, 
-			RangeAdapter.NO_ZONE,
-			RangeAdapter.NO_ZONE,
-			RangeAdapter.NO_ZONE,
-			BPTrackerFree.PULSE_MIN_DEFAULT
-		};
+		BPTrackerFree.PULSE_MAX_DEFAULT, 
+		RangeAdapter.NO_ZONE,
+		RangeAdapter.NO_ZONE,
+		RangeAdapter.NO_ZONE,
+		BPTrackerFree.PULSE_MIN_DEFAULT
+	};
+	
+	protected static final int MENU_GROUP = 0;
+	
+	protected static final int DONE_ID = Menu.FIRST;
+	protected static final int REVERT_ID = Menu.FIRST + 1;
+	protected static final int DELETE_ID = Menu.FIRST + 2;
+	protected static final int DISCARD_ID = Menu.FIRST + 3;
 		
 	// Member Variables
-	protected int mState;
+	protected int mState = STATE_INSERT;
 
 	protected Uri mUri;
 	
@@ -111,6 +116,11 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	
 	protected static final int BPRECORDS_TOKEN = 0;
 	protected static final String ID_KEY = BPRecord._ID;
+	
+	public interface Callback {
+		
+		void onComplete(int status);
+	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -152,8 +162,13 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		this.setHasOptionsMenu(true);
 	}
 
+	public int getState() {
+		return mState;
+	}
+	
     protected long getShownID() {
         return getArguments().getLong(ID_KEY, 0L);
     }
@@ -306,5 +321,17 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 		updateDateTimeDisplay();
 	}
 
+	public void onPrepareOptionsMenu(Menu menu) {
+		// Build the menus that are shown when editing.
+		if(mState == STATE_EDIT) {
+			menu.add(MENU_GROUP, DONE_ID, 0, R.string.menu_done);
+			menu.add(MENU_GROUP, REVERT_ID, 1, R.string.menu_revert);
+			menu.add(MENU_GROUP, DELETE_ID, 2, R.string.menu_delete);
+		} else {
+			menu.add(MENU_GROUP, DONE_ID, 0, R.string.menu_done);
+			menu.add(MENU_GROUP, DISCARD_ID, 1, R.string.menu_discard);
+		}
+
+	}
 	
 }

@@ -16,13 +16,13 @@
 		>
 			<ViewStub android:id="@+id/spinner_stub"
 				android:inflatedId="@+id/spinner_fragment"
-				layout="@layout/bp_record_editor_spinner_fragment"
+				android:layout="@layout/bp_record_editor_spinner_fragment"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 			/>
 			<ViewStub android:id="@+id/text_stub" 
 				android:inflatedId="@+id/text_fragment"
-				layout="@layout/bp_record_editor_text_fragment"
+				android:layout="@layout/bp_record_editor_text_fragment"
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 			/>

@@ -30,8 +30,9 @@ public class BPRecordList extends Activity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		super.onCreateOptionsMenu(menu);
-
+		if(!super.onPrepareOptionsMenu(menu)) {
+			return false; // vetoed by super
+		}
 		menu.add(Menu.NONE, MENU_ITEM_SEND, 0, R.string.menu_send);
 		menu.add(Menu.NONE, MENU_DATA_MANAGER, 1, R.string.menu_data);
 		return true;

@@ -35,6 +35,9 @@ public class BPRecordEditorSpinnerFragment extends BPRecordEditorFragment implem
 
 	private Bundle mOriginalValues = null;
 
+	private static final int SPINNER_ITEM_RESOURCE_ID = R.layout.bp_spinner_item;
+	private static final int SPINNER_ITEM_TEXT_VIEW_ID = android.R.id.text1;
+	
 	private static final String ID_KEY = "_id";
 	
 	private MyAsyncQueryHandler mMAQH;
@@ -53,14 +56,13 @@ public class BPRecordEditorSpinnerFragment extends BPRecordEditorFragment implem
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		if(container == null) {
-			return null;
-		}
 		View layout = super.onCreateView(inflater, container, savedInstanceState);
 
 		// Inflate the layout for this fragment
-		View myView = ((ViewStub) layout.findViewById(R.id.spinner_stub)).inflate();
-		
+		// View myView = ((ViewStub) layout.findViewById(R.id.spinner_stub)).inflate();
+		ViewStub myViewStub = (ViewStub) layout.findViewById(R.id.spinner_stub);
+		View myView = myViewStub.inflate();
+
 		mSpinners = new Spinner[VALUES_ARRAY_SIZE];
 		
 		mSpinners[SYS_IDX] = (Spinner) myView.findViewById(R.id.systolic_spin);

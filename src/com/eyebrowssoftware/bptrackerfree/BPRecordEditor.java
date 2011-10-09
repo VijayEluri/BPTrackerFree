@@ -3,8 +3,8 @@ package com.eyebrowssoftware.bptrackerfree;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.FragmentManager;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,50 +22,36 @@ public class BPRecordEditor extends Activity {
 	private static final int DISCARD_ID = Menu.FIRST + 2;
 	private static final int DELETE_ID = Menu.FIRST + 3;
 	
-	// The different distinct states the activity can be run in.
-	private static final int STATE_EDIT = 0;
-	private static final int STATE_INSERT = 1;
-
 	private static final int DELETE_DIALOG_ID = 0;
 	
-	// The menu group, for grouped items
-	private static final int MENU_GROUP = Menu.NONE + 1;
+	BPRecordEditorSpinnerFragment mEditorFragment;
 	
-	private int mState = 0; // XXX: Dubious temporary
 
 	@Override
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
 		setContentView(R.layout.bp_record_editor);
+		FragmentManager fMgr = this.getFragmentManager();
+		mEditorFragment = (BPRecordEditorSpinnerFragment) fMgr.findFragmentById(R.id.spinner_editor_fragment);
 	}
 	
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
-
-		// Build the menus that are shown when editing.
-		mState = (Intent.ACTION_EDIT.equals(getIntent().getAction()) ? STATE_EDIT : STATE_INSERT); 
-		if(mState == STATE_EDIT) {
-			menu.add(MENU_GROUP, DONE_ID, 0, R.string.menu_done);
-			menu.add(MENU_GROUP, REVERT_ID, 1, R.string.menu_revert);
-			menu.add(MENU_GROUP, DELETE_ID, 2, R.string.menu_delete);
-		} else {
-			menu.add(MENU_GROUP, DONE_ID, 0, R.string.menu_done);
-			menu.add(MENU_GROUP, DISCARD_ID, 1, R.string.menu_discard);
-		}
 		return true;
 	}
 	
 	@Override
 	protected void onResume() {
+		super.onResume();
 		// Modify our overall title depending on the mode we are running in.
-		if (mState == STATE_EDIT) {
+		int state = mEditorFragment.getState();
+		if (state == BPRecordEditorFragment.STATE_EDIT) {
 			setTitle(getText(R.string.title_edit));
-		} else if (mState == STATE_INSERT) {
+		} else if (state == BPRecordEditorFragment.STATE_INSERT) {
 			setTitle(getText(R.string.title_create));
 		}
-
 	}
 
 	@Override
@@ -95,21 +81,14 @@ public class BPRecordEditor extends Activity {
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle all of the possible menu actions.
-		switch (item.getItemId()) {
-		case DELETE_ID:
+		if (item.getItemId() == DELETE_ID) {
 			showDialog(DELETE_DIALOG_ID);
 			return true;
-		case DISCARD_ID:
-			// TODO: cancelRecord();
-			return true;
-		case REVERT_ID:
-			// TODO: cancelRecord();
-			return true;
-		case DONE_ID:
-			finish();
-			return true;
+		} else {
+			return super.onOptionsItemSelected(item);
 		}
-		return super.onOptionsItemSelected(item);
 	}
+	
+	
 	
 }

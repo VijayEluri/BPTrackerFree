@@ -3,11 +3,14 @@ package com.eyebrowssoftware.bptrackerfree;
 
 import java.text.DateFormat;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
@@ -70,13 +73,17 @@ public class BPRecordEditorTextFragment extends BPRecordEditorFragment {
 	
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
-		mCursor = getActivity().managedQuery(mUri, PROJECTION, null, null, null);
+		super.onActivityCreated(savedInstanceState);
+		// Intent startIntent = getActivity().getIntent();
+		// TODO: on second thought, this is a problem. We should be getting our action and Uri via the parameters
 	}
+	
 	
 	@Override
 	public void onResume() {
 		super.onResume();
 		
+		mCursor = this.getActivity().managedQuery(mUri, PROJECTION, null, null, null);
 		// If we didn't have any trouble retrieving the data, it is now
 		// time to get at the stuff.
 		if (mCursor != null && mCursor.moveToFirst()) {
@@ -185,4 +192,37 @@ public class BPRecordEditorTextFragment extends BPRecordEditorFragment {
 		closeRecordCursor();
 	}
 	
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+
+		// Build the menus that are shown when editing.
+		if (mState == STATE_EDIT) {
+			menu.add(MENU_GROUP, DONE_ID, 0, R.string.menu_done);
+			menu.add(MENU_GROUP, REVERT_ID, 1, R.string.menu_revert);
+			menu.add(MENU_GROUP, DELETE_ID, 2, R.string.menu_delete);
+		} else {
+			menu.add(MENU_GROUP, DONE_ID, 0, R.string.menu_done);
+			menu.add(MENU_GROUP, DISCARD_ID, 1, R.string.menu_discard);
+		}
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		// Handle all of the possible menu actions.
+		switch (item.getItemId()) {
+		case DISCARD_ID:
+			cancelRecord();
+			return true;
+		case REVERT_ID:
+			cancelRecord();
+			return true;
+		case DONE_ID:
+			// TODO: Figure something out here: onBackPressed();
+			return true;
+		default:
+			return super.onOptionsItemSelected(item);
+		}
+	}
+
 }
