@@ -3,7 +3,6 @@ package com.eyebrowssoftware.bptrackerfree;
 
 import java.text.DateFormat;
 
-import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.os.Bundle;

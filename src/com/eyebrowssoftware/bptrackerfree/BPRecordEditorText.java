@@ -9,6 +9,7 @@ import android.util.Log;
 public class BPRecordEditorText extends FragmentActivity implements BPRecordEditorFragment.CompleteCallback {
 	private static final String TAG = "BPRecordEditorText";
 	
+	@SuppressWarnings("unused")
 	private BPRecordEditorTextFragment mEditorFragment;
 
 	@Override
@@ -31,7 +32,7 @@ public class BPRecordEditorText extends FragmentActivity implements BPRecordEdit
 			finish();
 			return;
 		}
-		mEditorFragment = (BPRecordEditorTextFragment) this.getFragmentManager().findFragmentById(R.id.text_editor_fragment);
+		mEditorFragment = (BPRecordEditorTextFragment) this.getSupportFragmentManager().findFragmentById(R.id.text_editor_fragment);
 	}
 	
 	public void onEditComplete(int status) {

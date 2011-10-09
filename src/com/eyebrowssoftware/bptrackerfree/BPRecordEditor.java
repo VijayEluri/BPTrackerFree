@@ -8,6 +8,7 @@ import android.util.Log;
 public class BPRecordEditor extends FragmentActivity  implements BPRecordEditorFragment.CompleteCallback {
 	private static final String TAG = "BPRecordEditor";
 
+	@SuppressWarnings("unused")
 	private BPRecordEditorSpinnerFragment mEditorFragment;
 
 	@Override
@@ -30,7 +31,7 @@ public class BPRecordEditor extends FragmentActivity  implements BPRecordEditorF
 			finish();
 			return;
 		}
-		mEditorFragment = (BPRecordEditorSpinnerFragment) this.getFragmentManager().findFragmentById(R.id.spinner_editor_fragment);
+		mEditorFragment = (BPRecordEditorSpinnerFragment) this.getSupportFragmentManager().findFragmentById(R.id.spinner_editor_fragment);
 		
 	}
 	
