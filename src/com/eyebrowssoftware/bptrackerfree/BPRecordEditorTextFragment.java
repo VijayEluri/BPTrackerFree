@@ -74,8 +74,6 @@ public class BPRecordEditorTextFragment extends BPRecordEditorFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		// Intent startIntent = getActivity().getIntent();
-		// TODO: on second thought, this is a problem. We should be getting our action and Uri via the parameters
 	}
 	
 	
@@ -83,7 +81,6 @@ public class BPRecordEditorTextFragment extends BPRecordEditorFragment {
 	public void onResume() {
 		super.onResume();
 		
-		mCursor = this.getActivity().managedQuery(mUri, PROJECTION, null, null, null);
 		// If we didn't have any trouble retrieving the data, it is now
 		// time to get at the stuff.
 		if (mCursor != null && mCursor.moveToFirst()) {

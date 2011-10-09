@@ -19,9 +19,7 @@
     android:name=".BPTrackerFree">
         <activity 
             android:name=".BPRecordList"
-        	android:label="@string/app_name"
-            android:theme="@android:style/Theme.Light"
-        >
+        	android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -29,8 +27,7 @@
         </activity>
         <activity 
 	        android:name=".BPRecordEditor" 
-        	android:theme="@android:style/Theme.Light"
-            android:label="@string/title_edit"
+        	android:label="@string/title_edit"
 	    >
 	    	<intent-filter>
 	    		<action android:name="android.intent.action.EDIT" />
@@ -45,8 +42,7 @@
 	    </activity>
         <activity 
 	        android:name=".BPRecordEditorText" 
-        	android:theme="@android:style/Theme.Light"
-            android:label="@string/title_alternate_edit"
+        	android:label="@string/title_alternate_edit"
 	    >
 	    	<intent-filter>
 	    		<action android:name="android.intent.action.EDIT" />
@@ -61,12 +57,10 @@
 	    </activity>
 		<activity 
 			android:name=".BPSend" 
-			android:theme="@android:style/Theme.Light"
 			android:label="@string/title_send" 
 		/>
 		<activity 
 			android:name=".BPDataManager"
-			android:theme="@android:style/Theme.Light" 
 			android:label="@string/label_delete_history"
 			android:icon="@drawable/icon"
 		/>
@@ -77,7 +71,7 @@
 	    	android:icon="@drawable/icon"
 			android:readPermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
 			android:writePermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
-	    /> 
+		/>
 	</application>
     <uses-sdk
     	android:minSdkVersion="4"

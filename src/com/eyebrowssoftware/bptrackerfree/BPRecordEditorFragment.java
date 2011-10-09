@@ -117,9 +117,9 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	protected static final int BPRECORDS_TOKEN = 0;
 	protected static final String ID_KEY = BPRecord._ID;
 	
-	public interface Callback {
+	public interface CompleteCallback {
 		
-		void onComplete(int status);
+		void onEditComplete(int status);
 	}
 	
 	@Override
@@ -332,6 +332,11 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 			menu.add(MENU_GROUP, DISCARD_ID, 1, R.string.menu_discard);
 		}
 
+	}
+	
+	public void complete(int status) {
+		CompleteCallback callback = (CompleteCallback) getActivity();
+		callback.onEditComplete(status);
 	}
 	
 }

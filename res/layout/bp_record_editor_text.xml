@@ -5,7 +5,7 @@
 >
 	<fragment
 		android:name="com.eyebrowssoftware.bptrackerfree.BPRecordEditorTextFragment"
-		android:id="@+id/spinner_editor_fragment"
+		android:id="@+id/text_editor_fragment"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 	/>
