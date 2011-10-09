@@ -6,8 +6,6 @@ import java.text.DateFormat;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.DialogFragment;
-import android.app.ListFragment;
 import android.content.AsyncQueryHandler;
 import android.content.ContentResolver;
 import android.content.ContentUris;
@@ -16,6 +14,8 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.ListFragment;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -195,6 +195,9 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 			}
 		} else {
 			if(id < 0) {
+				if (data == null) {
+					data = BPRecords.CONTENT_URI; //TODO: getIntent().getData();
+				}
 				startActivity(new Intent(Intent.ACTION_INSERT, data));
 			} else {
 				Uri uri = ContentUris.withAppendedId(data, id);
@@ -213,7 +216,7 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 	}
 
 	public void onClick(View v) {
-		Uri data = null; //TODO: getIntent().getData();
+		Uri data = BPRecords.CONTENT_URI; //TODO: getIntent().getData();
 		startActivity(new Intent(Intent.ACTION_INSERT, data));
 	}
 	
