@@ -19,7 +19,6 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -106,6 +105,7 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	@Override
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
+		this.setHasOptionsMenu(true);
 	}
 	
 	@Override

@@ -88,7 +88,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	/// and the calendar
 	protected Calendar mCalendar;
 
-	//// and the original values TODO: decide whether to create the element after commit
+	// and the original values TODO: decide whether to create the element after commit
 	protected Bundle mOriginalValues = null;
 	
 	protected EditText mNoteText;
@@ -335,27 +335,24 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		// Build the menus that are shown when editing.
-		if(mState == STATE_EDIT) {
-			menu.add(MENU_GROUP, BPTrackerFree.MENU_ITEM_DONE, 0, R.string.menu_done);
-			menu.add(MENU_GROUP, BPTrackerFree.MENU_ITEM_REVERT, 1, R.string.menu_revert);
-		} else {
-			menu.add(MENU_GROUP, BPTrackerFree.MENU_ITEM_DONE, 0, R.string.menu_done);
-			menu.add(MENU_GROUP, BPTrackerFree.MENU_ITEM_DISCARD, 1, R.string.menu_discard);
-		}
-
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.bp_record_editor_fragment_menu, menu);
+	}
+	
+	public void onPrepareOptionsMenu(Menu menu) {
+		super.onPrepareOptionsMenu(menu);
+		menu.findItem(R.id.cancel).setTitle((mState == STATE_EDIT) ? R.string.menu_revert : R.string.menu_cancel);
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle all of the possible menu actions.
 		switch (item.getItemId()) {
-		case BPTrackerFree.MENU_ITEM_DISCARD:
-			// FALLTHROUGH
-		case BPTrackerFree.MENU_ITEM_REVERT:
+		case R.id.menu_cancel:
 			cancelRecord();
 			this.complete(Activity.RESULT_CANCELED);
 			return true;
-		case BPTrackerFree.MENU_ITEM_DONE:
+		case R.id.menu_done:
 			saveRecord();
 			this.complete(Activity.RESULT_OK);
 			return true;

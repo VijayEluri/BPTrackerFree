@@ -15,11 +15,15 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
+import android.support.v4.widget.CursorAdapter;
+import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +32,6 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
-import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
@@ -78,11 +81,10 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		RelativeLayout mEmptyContent = (RelativeLayout) layout.findViewById(R.id.empty_content);
 		mEmptyContent.setOnClickListener(this);
 		
-		ListView lv = (ListView) layout.findViewById(android.R.id.list);
-
 		View v = inflater.inflate(R.layout.bp_record_list_header, null);
-		lv.addHeaderView(v, null, true);
 
+		ListView lv = this.getListView();
+		lv.addHeaderView(v, null, true);
 		lv.setOnCreateContextMenuListener(this);
 
 		return layout;
@@ -91,12 +93,13 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	@Override
 	public void onDestroyView() {
 		super.onDestroyView();
+		this.getListView().setOnCreateContextMenuListener(null);
 	}
 	
-	/** Called when the fragment is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		this.setHasOptionsMenu(true);
 	}
 	
 	@Override
@@ -123,7 +126,10 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 			mStartUri = BPRecords.CONTENT_URI;
 		}
 		// No cursor yet. Will be assigned when the asynchronous query is complete
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), R.layout.bp_record_list_item, null, VALS, IDS);
+		// TODO: Upgrade this to use a cursor loader and get rid of the requery flag
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), R.layout.bp_record_list_item, null, 
+			VALS, IDS, CursorAdapter.FLAG_AUTO_REQUERY | CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		
 		adapter.setViewBinder(new MyViewBinder());
 		setListAdapter(adapter);
 
@@ -155,26 +161,24 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		if(mDualPane) {
 			getListView().setItemChecked(position, true);
 			
+			FragmentManager fMgr = this.getFragmentManager();
 			// Check which fragment is shown and get the editor 
+			BPRecordEditorSpinnerFragment mEditorFragment = new BPRecordEditorSpinnerFragment();
+			Bundle args = new Bundle();
 			if(id < 0) {
-				startActivity(new Intent(Intent.ACTION_INSERT, data));
+				args.putString(BPRecordEditorFragment.DATA_KEY, data.toString());
+				args.putString(BPRecordEditorFragment.ACTION_KEY, Intent.ACTION_INSERT);
 			} else {
 				Uri uri = ContentUris.withAppendedId(data, id);
-				String action = getActivity().getIntent().getAction();
-				if (Intent.ACTION_PICK.equals(action)
-						|| Intent.ACTION_GET_CONTENT.equals(action)) {
-					// The caller is waiting for us to return a note selected by
-					// the user. The have clicked on one, so return it now.
-					getActivity().setResult(Activity.RESULT_OK, new Intent().setData(uri));
-				} else {
-					// Launch activity to view/edit the currently selected item
-					startActivity(new Intent(Intent.ACTION_EDIT, uri));
-				}
+				args.putString(BPRecordEditorFragment.DATA_KEY, uri.toString());
+				args.putString(BPRecordEditorFragment.ACTION_KEY, Intent.ACTION_EDIT);
 			}
+			mEditorFragment.setArguments(args);
+			fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment).commit();
 		} else {
 			if(id < 0) {
 				if (data == null) {
-					data = BPRecords.CONTENT_URI; //TODO: getIntent().getData();
+					data = BPRecords.CONTENT_URI;
 				}
 				startActivity(new Intent(Intent.ACTION_INSERT, data));
 			} else {
@@ -194,7 +198,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	}
 
 	public void onClick(View v) {
-		Uri data = BPRecords.CONTENT_URI; //TODO: getIntent().getData();
+		Uri data = BPRecords.CONTENT_URI;
 		startActivity(new Intent(Intent.ACTION_INSERT, data));
 	}
 	
@@ -272,11 +276,35 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 
 
 	@Override
-	public void onDetach() {
-		super.onDetach();
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
+		inflater.inflate(R.menu.bp_record_list_fragment_menu, menu);
 	}
 
 	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		switch (item.getItemId()) {
+		case R.id.menu_send:
+			doSendAction();
+			return true;
+		case R.id.menu_data:
+			doDataManagerAction();
+			return true;
+		default:
+			return false;
+		}
+	}
+
+	private void doSendAction() {
+		this.startActivity(new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this.getActivity(), BPSend.class));
+	}
+	
+	private void doDataManagerAction() {
+		this.startActivity(new Intent(this.getActivity(), BPDataManager.class));
+	}
+	
+@Override
 	public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
 		
 		AdapterView.AdapterContextMenuInfo info;

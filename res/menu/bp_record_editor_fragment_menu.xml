@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/menu_done" android:title="R.string.menu_done"></item><item android:id="@+id/menu_cancel" android:title="R.string.menu_revert"></item>
+    
+</menu>

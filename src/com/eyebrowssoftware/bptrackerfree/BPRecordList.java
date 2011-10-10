@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
-import android.view.MenuItem;
 
 public class BPRecordList extends FragmentActivity {
 	
@@ -27,30 +26,4 @@ public class BPRecordList extends FragmentActivity {
 		
 		setTitle(R.string.title_list);
 	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		if(!super.onCreateOptionsMenu(menu)) {
-			return false; // vetoed by super
-		}
-		menu.add(Menu.NONE, MENU_ITEM_SEND, 0, R.string.menu_send);
-		menu.add(Menu.NONE, MENU_DATA_MANAGER, 1, R.string.menu_data);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-
-		switch (item.getItemId()) {
-		case MENU_ITEM_SEND:
-			startActivity(new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this, BPSend.class));
-			return true;
-		case MENU_DATA_MANAGER:
-			startActivity(new Intent(this, BPDataManager.class));
-			return true;
-		default:
-			return false;
-		}
-	}
-
 }
