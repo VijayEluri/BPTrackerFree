@@ -341,7 +341,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	
 	public void onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
-		menu.findItem(R.id.cancel).setTitle((mState == STATE_EDIT) ? R.string.menu_revert : R.string.menu_cancel);
+		menu.findItem(R.id.menu_cancel).setTitle((mState == STATE_EDIT) ? R.string.menu_revert : R.string.menu_cancel);
 	}
 	
 	@Override

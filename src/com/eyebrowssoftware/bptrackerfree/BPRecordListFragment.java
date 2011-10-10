@@ -83,7 +83,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		
 		View v = inflater.inflate(R.layout.bp_record_list_header, null);
 
-		ListView lv = this.getListView();
+		ListView lv = (ListView) layout.findViewById(android.R.id.list);
 		lv.addHeaderView(v, null, true);
 		lv.setOnCreateContextMenuListener(this);
 
@@ -162,18 +162,14 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 			getListView().setItemChecked(position, true);
 			
 			FragmentManager fMgr = this.getFragmentManager();
-			// Check which fragment is shown and get the editor 
-			BPRecordEditorSpinnerFragment mEditorFragment = new BPRecordEditorSpinnerFragment();
-			Bundle args = new Bundle();
+			// Show the correct fragment 
+			BPRecordEditorFragment mEditorFragment;
 			if(id < 0) {
-				args.putString(BPRecordEditorFragment.DATA_KEY, data.toString());
-				args.putString(BPRecordEditorFragment.ACTION_KEY, Intent.ACTION_INSERT);
+				mEditorFragment = BPRecordEditorSpinnerFragment.newInstance(data, Intent.ACTION_INSERT);
 			} else {
 				Uri uri = ContentUris.withAppendedId(data, id);
-				args.putString(BPRecordEditorFragment.DATA_KEY, uri.toString());
-				args.putString(BPRecordEditorFragment.ACTION_KEY, Intent.ACTION_EDIT);
+				mEditorFragment = BPRecordEditorSpinnerFragment.newInstance(uri, Intent.ACTION_EDIT);
 			}
-			mEditorFragment.setArguments(args);
 			fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment).commit();
 		} else {
 			if(id < 0) {
