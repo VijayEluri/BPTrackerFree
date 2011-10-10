@@ -10,8 +10,6 @@ import java.nio.charset.Charset;
 import java.text.DateFormat;
 
 import android.app.Activity;
-import android.content.AsyncQueryHandler;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -19,6 +17,9 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,7 +36,8 @@ import android.widget.Toast;
 import com.csvreader.CsvWriter;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
-public class BPSendFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, OnClickListener {
+public class BPSendFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, 
+		OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
 	private static final String TAG = "BPSendFragment";
 
@@ -64,10 +66,11 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	private Button mSendButton;
 	private Button mCancelButton;
 
+	private WeakReference<TextView> mWeakLabelView;
+	private WeakReference<TextView> mWeakMsgView;
+
 	private String mMsgLabelString;
 	
-	private MyAsyncQueryHandler mMAQH;
-
 	public static final boolean ALL_DATES = true;
 	public static final String REVERSE = "reverse";
 
@@ -76,7 +79,10 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	private static final String SEND_FILE = "fsend";
 	
 	// This may or may not be used
+	@SuppressWarnings("unused")
 	private boolean mReverse = true;
+	
+	private static final int SEND_LOAD_ID = 2;
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -84,8 +90,12 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 		View layout = inflater.inflate(R.layout.bp_send_fragment, container, false);
 
 		mMsgLabelView = (TextView) layout.findViewById(R.id.message_label);
+		mWeakLabelView = new WeakReference<TextView>(mMsgLabelView);
+		
 		mMsgLabelString = getString(R.string.label_message_format);
+		
 		mMsgView = (TextView) layout.findViewById(R.id.message);
+		mWeakMsgView = new WeakReference<TextView>(mMsgView);
 
 		mSendText = (CheckBox) layout.findViewById(R.id.text);
 		mSendText.setOnCheckedChangeListener(this);
@@ -121,8 +131,6 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 
 		mUri = intent.getData();
 		
-		mMAQH = new MyAsyncQueryHandler(activity.getContentResolver(), mMsgLabelView, mMsgView);
-		
 		if(savedInstanceState != null) {
 			mSendText.setChecked(savedInstanceState.getBoolean(SEND_TEXT));
 			mSendFile.setChecked(savedInstanceState.getBoolean(SEND_FILE));
@@ -130,7 +138,7 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 			mSendText.setChecked(true);
 			mSendFile.setChecked(true);
 		}
-		querySendData();
+		this.getLoaderManager().initLoader(SEND_LOAD_ID, null, this);
 	}
 	
 	public void onSaveInstanceState(Bundle icicle) {
@@ -138,37 +146,34 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 		icicle.putBoolean(SEND_FILE, mSendFile.isChecked());
 	}
 	
-	private void querySendData() {
-		mMAQH.startQuery(0, this, mUri, PROJECTION, null, null, BPRecord.CREATED_DATE + ((mReverse) ? " DESC" : "ASC"));
-	}
 	
-	private class MyAsyncQueryHandler extends AsyncQueryHandler {
-		private WeakReference<TextView> mLabelView;
-		private WeakReference<TextView> mMsgView;
-		
-		public MyAsyncQueryHandler(ContentResolver cr, TextView labelView, TextView msgView) {
-			super(cr);
-			mLabelView = new WeakReference<TextView>(labelView);
-			mMsgView = new WeakReference<TextView>(msgView);
-		}
-		
-		@Override
-		protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-			if(cursor != null) {
-				TextView labelView = mLabelView.get();
-				TextView msgView = mMsgView.get();
-				if(labelView != null && msgView != null) {
-					String msg = getMessage(cursor);
-			        labelView.setText(String.format(mMsgLabelString, msg.length()));
-			        msgView.setText(msg);
-				}
-				cursor.close();
-			}
-		}
-		
-		
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		// Create a CursorLoader that will take care of creating a cursor for the data
+		CursorLoader loader = new CursorLoader(getActivity(), mUri,	PROJECTION, null, null, null);
+		return loader;
 	}
 
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		if(cursor != null) {
+			TextView labelView = mWeakLabelView.get();
+			TextView msgView = mWeakMsgView.get();
+			if(labelView != null && msgView != null) {
+				String msg = getMessage(cursor);
+		        labelView.setText(String.format(mMsgLabelString, msg.length()));
+		        msgView.setText(msg);
+			}
+		}
+	}
+
+	public void onLoaderReset(Loader<Cursor> cursor) {
+		TextView labelView = mWeakLabelView.get();
+		TextView msgView = mWeakMsgView.get();
+		if(labelView != null && msgView != null) {
+	        labelView.setText(null);
+	        msgView.setText(null);
+		}
+	}
+	
 	public void onClick(View v) {
 		Callback callback = (Callback) this.getActivity();
 		if (v.equals(mSendButton)) {
@@ -352,5 +357,5 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	public interface Callback {
 		void onComplete(int status);
 	}
-	
+
 }

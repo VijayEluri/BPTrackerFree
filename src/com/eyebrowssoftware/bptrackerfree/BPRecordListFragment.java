@@ -64,6 +64,8 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	// The state that needs to be saved and stored
 	private int mCurrentCheckPosition = 0;
 	private long mContextMenuRecordId = 0;
+	
+	private static final int LIST_LOADER_ID = 0;
 
 	boolean mDualPane = false;
 	Uri mStartUri;
@@ -128,7 +130,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		adapter.setViewBinder(new MyViewBinder());
 		setListAdapter(adapter);
 
-		this.getLoaderManager().initLoader(0, null, this);
+		this.getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
 		
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.

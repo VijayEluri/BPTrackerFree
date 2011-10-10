@@ -12,8 +12,6 @@ import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
-import android.content.AsyncQueryHandler;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -21,6 +19,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -37,7 +38,8 @@ import android.widget.Toast;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
-public abstract class BPRecordEditorFragment extends Fragment implements OnDateSetListener, OnTimeSetListener {
+public abstract class BPRecordEditorFragment extends Fragment implements OnDateSetListener, 
+		OnTimeSetListener, LoaderManager.LoaderCallbacks<Cursor> {
 
 	private static final String TAG = "BPRecordEditorFragment";
 
@@ -119,8 +121,8 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	private static final String MURI = "sUri";
 	private static final String COMPLETED = "completed";
 	
-	private MyAsyncQueryHandler mMAQH;
-
+	private static final int EDITOR_LOADER_ID = 1;
+	
 	public interface Callback {
 		
 		void onEditComplete(int status);
@@ -150,9 +152,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 		
 		mCancelButton = (Button) layout.findViewById(R.id.revert_button);
 		mCancelButton.setOnClickListener(new CancelButtonListener());
-		if(mState == STATE_INSERT) {
-			mCancelButton.setText(R.string.menu_discard);
-		}
+
 		return layout;
 	}
 	
@@ -226,16 +226,90 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 			Log.e(TAG, "Unknown action, exiting");
 			return;
 		}
-
-		mMAQH = new MyAsyncQueryHandler(this.getActivity().getContentResolver());
-		mMAQH.startQuery(BPRECORDS_TOKEN, TAG, mUri, BPTrackerFree.PROJECTION, null, null, null);
+		if(mState == STATE_INSERT) {
+			mCancelButton.setText(R.string.menu_discard);
+		}
+		this.getLoaderManager().initLoader(EDITOR_LOADER_ID, null, this);
 	}
+	
+	/**
+	 * Called when the Loader is created
+	 */
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		// Create a CursorLoader that will take care of creating a cursor for the data
+		CursorLoader loader = new CursorLoader(getActivity(), mUri,	BPTrackerFree.PROJECTION, null, null, null);
+		return loader;
+	}
+
+	/**
+	 * Called when the load of the cursor is finished
+	 */
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		
+		Activity activity = this.getActivity();
+		if(mCursor != null) {
+			activity.stopManagingCursor(mCursor);
+		}
+		if(cursor != null) {
+			mCursor = cursor;
+			activity.startManagingCursor(mCursor);
+			if (mCursor.moveToFirst()) {
+				int systolic = mCursor.getInt(BPTrackerFree.COLUMN_SYSTOLIC_INDEX);
+				int diastolic = mCursor.getInt(BPTrackerFree.COLUMN_DIASTOLIC_INDEX);
+				int pulse = mCursor.getInt(BPTrackerFree.COLUMN_PULSE_INDEX);
+				long datetime = mCursor.getLong(BPTrackerFree.COLUMN_CREATED_AT_INDEX);
+				long mod_datetime = mCursor.getLong(BPTrackerFree.COLUMN_MODIFIED_AT_INDEX);
+				String note = mCursor.getString(BPTrackerFree.COLUMN_NOTE_INDEX);
+				
+				// If we hadn't previously retrieved the original text, do so
+				// now. This allows the user to revert their changes.
+				if(mOriginalValues == null) {
+					mOriginalValues = new Bundle();
+					mOriginalValues.putInt(BPRecord.SYSTOLIC, systolic);
+					mOriginalValues.putInt(BPRecord.DIASTOLIC, diastolic);
+					mOriginalValues.putInt(BPRecord.PULSE, pulse);
+					mOriginalValues.putLong(BPRecord.CREATED_DATE, datetime);
+					mOriginalValues.putLong(BPRecord.MODIFIED_DATE, mod_datetime);
+					mOriginalValues.putString(BPRecord.NOTE, note);
+				}
+				EditText noteView = mWeakNoteView.get();
+				Button dateButton = mWeakDateButton.get();
+				Button timeButton = mWeakTimeButton.get();
+				Calendar calendar = mWeakCalendar.get();
+				if(calendar != null) {
+					calendar.setTimeInMillis(datetime);
+				}
+				Date date = calendar.getTime();
+				if(dateButton != null) {
+					dateButton.setText(BPTrackerFree.getDateString(date, DateFormat.MEDIUM));
+				}
+				if(timeButton != null) {
+					timeButton.setText(BPTrackerFree.getTimeString(date, DateFormat.SHORT));
+				}
+				if(noteView != null) {
+					noteView.setText(note);
+				}
+				BPRecordEditorFragment.this.onQueryComplete(systolic, diastolic, pulse);
+			}
+		}
+	}
+
+	/**
+	 * Called when the loader is reset, we swap out the current cursor with null
+	 */
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		if(mCursor != null) {
+			getActivity().stopManagingCursor(mCursor);
+		}
+		mCursor = null;
+	}
+
 	
 	/***
 	 * Save all the UI information as the current state of the object
 	 */
 	protected void saveRecord() {
-		mMAQH.startUpdate(BPRecordEditorFragment.BPRECORDS_TOKEN, TAG + "_SAVE", mUri, getCurrentRecordValues(), null, null);
+		getActivity().getContentResolver().update(mUri, getCurrentRecordValues(), null, null);
 	}
 	
 	protected Uri createRecord() {
@@ -248,7 +322,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	}
 	
 	protected void revertRecord() {
-		mMAQH.startUpdate(BPRecordEditorFragment.BPRECORDS_TOKEN, TAG + "_REVERT", mUri, getOriginalContentValues(), null, null);
+		getActivity().getContentResolver().update(mUri, getOriginalContentValues(), null, null);
 	}
 	
 	protected ContentValues getCurrentRecordValues() {
@@ -295,9 +369,6 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 		}
 		Activity activity = getActivity();
 		activity.setResult(Activity.RESULT_CANCELED);
-		// XXX: More dubiosity
-		// activity.finish();
-		Log.wtf(TAG, "Something needs to happen here");
 	}
 
 	/**
@@ -341,7 +412,8 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	
 	public void onPrepareOptionsMenu(Menu menu) {
 		super.onPrepareOptionsMenu(menu);
-		menu.findItem(R.id.menu_cancel).setTitle((mState == STATE_EDIT) ? R.string.menu_revert : R.string.menu_cancel);
+		int title_id = (mState == STATE_EDIT) ? R.string.menu_revert : R.string.menu_cancel;
+		menu.findItem(R.id.menu_cancel).setTitle(title_id);
 	}
 	
 	@Override
@@ -425,66 +497,4 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 		}
 
 	}
-	
-	private class MyAsyncQueryHandler extends AsyncQueryHandler {
-
-		
-		public MyAsyncQueryHandler(ContentResolver cr) {
-			super(cr);
-		}
-		
-		@Override
-		protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-			mCursor = cursor;
-			if(mCursor != null) {
-				getActivity().startManagingCursor(mCursor);
-				if (mCursor.moveToFirst()) {
-					int systolic = mCursor.getInt(BPTrackerFree.COLUMN_SYSTOLIC_INDEX);
-					int diastolic = mCursor.getInt(BPTrackerFree.COLUMN_DIASTOLIC_INDEX);
-					int pulse = mCursor.getInt(BPTrackerFree.COLUMN_PULSE_INDEX);
-					long datetime = mCursor.getLong(BPTrackerFree.COLUMN_CREATED_AT_INDEX);
-					long mod_datetime = mCursor.getLong(BPTrackerFree.COLUMN_MODIFIED_AT_INDEX);
-					String note = mCursor.getString(BPTrackerFree.COLUMN_NOTE_INDEX);
-					
-					// If we hadn't previously retrieved the original text, do so
-					// now. This allows the user to revert their changes.
-					if(mOriginalValues == null) {
-						mOriginalValues = new Bundle();
-						mOriginalValues.putInt(BPRecord.SYSTOLIC, systolic);
-						mOriginalValues.putInt(BPRecord.DIASTOLIC, diastolic);
-						mOriginalValues.putInt(BPRecord.PULSE, pulse);
-						mOriginalValues.putLong(BPRecord.CREATED_DATE, datetime);
-						mOriginalValues.putLong(BPRecord.MODIFIED_DATE, mod_datetime);
-						mOriginalValues.putString(BPRecord.NOTE, note);
-					}
-					EditText noteView = mWeakNoteView.get();
-					Button dateButton = mWeakDateButton.get();
-					Button timeButton = mWeakTimeButton.get();
-					Calendar calendar = mWeakCalendar.get();
-					if(calendar != null) {
-						calendar.setTimeInMillis(datetime);
-					}
-					Date date = calendar.getTime();
-					if(dateButton != null) {
-						dateButton.setText(BPTrackerFree.getDateString(date, DateFormat.MEDIUM));
-					}
-					if(timeButton != null) {
-						timeButton.setText(BPTrackerFree.getTimeString(date, DateFormat.SHORT));
-					}
-					if(noteView != null) {
-						noteView.setText(note);
-					}
-					BPRecordEditorFragment.this.onQueryComplete(systolic, diastolic, pulse);
-					
-				}
-			}
-		}
-		
-		@Override
-		protected void onUpdateComplete(int token, Object cookie, int result) {
-			Log.v(TAG, "Update completed with result: " + result);
-		}
-		
-	}
-
 }
