@@ -9,9 +9,6 @@ import android.util.Log;
 public class BPRecordEditorText extends FragmentActivity implements BPRecordEditorFragment.CompleteCallback {
 	private static final String TAG = "BPRecordEditorText";
 	
-	@SuppressWarnings("unused")
-	private BPRecordEditorTextFragment mEditorFragment;
-
 	@Override
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -19,25 +16,29 @@ public class BPRecordEditorText extends FragmentActivity implements BPRecordEdit
 		final Intent intent = getIntent();
 		final String action = intent.getAction();
 
-		setContentView(R.layout.bp_record_editor_text);
+		setContentView(R.layout.bp_record_editor);
 		
 		if (Intent.ACTION_EDIT.equals(action)) {
-			// TODO: Create the right type of fragment mState = STATE_EDIT;
 			setTitle(getText(R.string.title_edit));
 		} else if (Intent.ACTION_INSERT.equals(action)) {
-			// TODO: Create the right intent for STATE_INSERT
 			setTitle(getText(R.string.title_create));
 		} else {
 			Log.e(TAG, "Unknown action, exiting");
 			finish();
 			return;
 		}
-		mEditorFragment = (BPRecordEditorTextFragment) this.getSupportFragmentManager().findFragmentById(R.id.text_editor_fragment);
+		BPRecordEditorTextFragment editorFragment = new BPRecordEditorTextFragment();
+		Bundle args = new Bundle();
+		args.putString(BPRecordEditorFragment.DATA_KEY, intent.getDataString());
+		args.putString(BPRecordEditorFragment.ACTION_KEY, action);
+		editorFragment.setArguments(args);
+		
+		this.getSupportFragmentManager().beginTransaction().add(R.id.editor_fragment_container, editorFragment).commit();
 	}
 	
 	public void onEditComplete(int status) {
-		Log.e(TAG, "Do something here");
 		// TODO Auto-generated method stub
 		Log.e(TAG, "Got an onEditComplete(" + status + ")");
+		finish();
 	}
 }

@@ -33,32 +33,10 @@ import android.widget.TextView;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
-public class BPListFragment extends ListFragment implements OnClickListener {
+public class BPRecordListFragment extends ListFragment implements OnClickListener {
 	
 	private static final String TAG = "BPListFragment";
 
-	private static final String[] PROJECTION = { 
-		BPRecord._ID,
-		BPRecord.SYSTOLIC, 
-		BPRecord.DIASTOLIC, 
-		BPRecord.PULSE,
-		BPRecord.CREATED_DATE,
-		BPRecord.NOTE 
-	};
-
-	// private static final int COLUMN_ID_INDEX = 0;
-	// private static final int COLUMN_SYSTOLIC_INDEX = 1;
-	// private static final int COLUMN_DIASTOLIC_INDEX = 2;
-	// private static final int COLUMN_PULSE_INDEX = 3;
-	private static final int COLUMN_CREATED_AT_INDEX = 4;
-	// private static final int COLUMN_NOTE_INDEX = 5;
-
-	// Menu item ids
-	public static final int MENU_ITEM_DELETE = Menu.FIRST;
-	public static final int MENU_ITEM_EDIT = Menu.FIRST + 1;
-	public static final int MENU_ITEM_SEND = Menu.FIRST + 2;
-	public static final int MENU_DATA_MANAGER = Menu.FIRST + 3;
-	
 	private static final String[] VALS = { 
 		BPRecord.CREATED_DATE,
 		BPRecord.CREATED_DATE, 
@@ -96,7 +74,7 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 		Bundle savedInstanceState) {
 		
 		// Inflate the layout for this fragment
-		View layout = inflater.inflate(R.layout.bp_list_fragment, container, false);
+		View layout = inflater.inflate(R.layout.bp_record_list_fragment, container, false);
 		RelativeLayout mEmptyContent = (RelativeLayout) layout.findViewById(R.id.empty_content);
 		mEmptyContent.setOnClickListener(this);
 		
@@ -150,7 +128,7 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 		setListAdapter(adapter);
 
 		mMAQH = new MyAsyncQueryHandler(getActivity().getContentResolver(), adapter);
-		mMAQH.startQuery(BPRECORDS_TOKEN, this, mStartUri, PROJECTION, null, null, BPRecord.CREATED_DATE + " DESC");
+		mMAQH.startQuery(BPRECORDS_TOKEN, this, mStartUri, BPTrackerFree.PROJECTION, null, null, BPRecord.CREATED_DATE + " DESC");
 		
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.
@@ -172,8 +150,8 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 	}
 	
 	void showDetails(int position) {
-		Uri data = mStartUri;
-		long id = this.getListAdapter().getItemId(position);
+		Uri data = BPRecords.CONTENT_URI;
+		long id = getListView().getItemIdAtPosition(position);
 		if(mDualPane) {
 			getListView().setItemChecked(position, true);
 			
@@ -311,18 +289,18 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 		}
 		Cursor cursor = (Cursor) getListAdapter().getItem(info.position);
 		if (cursor != null && cursor.moveToFirst()) {
-			long datetime = cursor.getLong(COLUMN_CREATED_AT_INDEX);
+			long datetime = cursor.getLong(BPTrackerFree.COLUMN_CREATED_AT_INDEX);
 			String date = BPTrackerFree.getDateString(datetime, DateFormat.SHORT);
 			String time = BPTrackerFree.getTimeString(datetime, DateFormat.SHORT);
 			String fmt = getString(R.string.datetime_format);
 			menu.setHeaderTitle(String.format(fmt, date, time));
 		}
 		// Add a menu item to edit the record
-		menu.add(Menu.NONE, MENU_ITEM_EDIT, 0, R.string.menu_edit);
+		menu.add(Menu.NONE, BPTrackerFree.MENU_ITEM_EDIT, 0, R.string.menu_edit);
 		// Add a menu item to delete the record
-		menu.add(Menu.NONE, MENU_ITEM_DELETE, 1, R.string.menu_delete);
+		menu.add(Menu.NONE, BPTrackerFree.MENU_ITEM_DELETE, 1, R.string.menu_delete);
 		// Add a menu item to send the record
-		menu.add(Menu.NONE, MENU_ITEM_SEND, 2, R.string.menu_send);
+		menu.add(Menu.NONE, BPTrackerFree.MENU_ITEM_SEND, 2, R.string.menu_send);
 	}
 	
 	@Override
@@ -334,14 +312,14 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 			mContextMenuRecordId = info.id;
 			Uri contextMenuUri = ContentUris.withAppendedId(mStartUri, mContextMenuRecordId);
 			switch (item.getItemId()) {
-			case MENU_ITEM_DELETE:
+			case BPTrackerFree.MENU_ITEM_DELETE:
 				DeleteDialogFragment diagFrag = new DeleteDialogFragment();
 				diagFrag.show(this.getFragmentManager(), "delete");
 				return true;
-			case MENU_ITEM_EDIT:
+			case BPTrackerFree.MENU_ITEM_EDIT:
 				startActivity(new Intent(Intent.ACTION_EDIT, contextMenuUri));
 				return true;
-			case MENU_ITEM_SEND:
+			case BPTrackerFree.MENU_ITEM_SEND:
 				startActivity(new Intent(Intent.ACTION_SEND, contextMenuUri, getActivity(), BPSend.class));
 				return true;
 			}
@@ -379,5 +357,4 @@ public class BPListFragment extends ListFragment implements OnClickListener {
 		}
 
 	}
-
 }

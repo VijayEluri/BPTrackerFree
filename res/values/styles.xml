@@ -7,9 +7,8 @@
 	</style>
 
 	<!-- Used for label text -->
-	<style name="bp_label">
+	<style name="bp_label" parent="bp_text" >
 		<item name="android:textStyle">bold</item>
-		<item name="android:padding">2dp</item>
 	</style>
 
 	<!-- Style for the TextView that's shown when the list is empty  -->

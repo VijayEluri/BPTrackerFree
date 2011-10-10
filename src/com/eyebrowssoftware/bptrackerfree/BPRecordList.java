@@ -30,7 +30,7 @@ public class BPRecordList extends FragmentActivity {
 
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
-		if(!super.onPrepareOptionsMenu(menu)) {
+		if(!super.onCreateOptionsMenu(menu)) {
 			return false; // vetoed by super
 		}
 		menu.add(Menu.NONE, MENU_ITEM_SEND, 0, R.string.menu_send);

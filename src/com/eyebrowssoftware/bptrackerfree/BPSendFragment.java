@@ -22,6 +22,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -324,9 +325,8 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	private static final int CANCEL_ID = Menu.FIRST + 1;
 
 	@Override
-	public void onPrepareOptionsMenu(Menu menu) {
-		super.onPrepareOptionsMenu(menu);
-
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
 		// Build the menus that are shown when editing.
 		menu.add(Menu.NONE, SEND_ID, 0, R.string.menu_send);
 		menu.add(Menu.NONE, CANCEL_ID, 1, R.string.menu_cancel);
@@ -335,17 +335,23 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle all of the possible menu actions.
+		Callback callback = (Callback) getActivity();
 		switch (item.getItemId()) {
 		case CANCEL_ID:
-			// TODO: finish();
+			callback.onComplete(Activity.RESULT_CANCELED);
 			return true;
 		case SEND_ID:
-			// TODO: if(sendData())
-			//	finish();
+			if(sendData()) {
+				callback.onComplete(Activity.RESULT_OK);
+			}
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	public interface Callback {
+		void onComplete(int status);
 	}
 	
 }
