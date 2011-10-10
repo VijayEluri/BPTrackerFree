@@ -22,6 +22,7 @@ import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -169,16 +170,15 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	}
 
 	public void onClick(View v) {
+		Callback callback = (Callback) this.getActivity();
 		if (v.equals(mSendButton)) {
 			if (sendData()) {
-				Log.wtf(TAG, "Can't finish here till we learn more");
-				// XXX: finish();
+				callback.onComplete(Activity.RESULT_OK);
 			} else {
 				Toast.makeText(getActivity(), R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
 			}
 		} else if (v.equals(mCancelButton)) {
-			// XXX: finish();
-			Log.wtf(TAG, "Can't finish here, blah blah blah");
+			callback.onComplete(Activity.RESULT_CANCELED);
 		}
 	}
 	
@@ -324,9 +324,8 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	private static final int CANCEL_ID = Menu.FIRST + 1;
 
 	@Override
-	public void onPrepareOptionsMenu(Menu menu) {
-		super.onPrepareOptionsMenu(menu);
-
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+		super.onCreateOptionsMenu(menu, inflater);
 		// Build the menus that are shown when editing.
 		menu.add(Menu.NONE, SEND_ID, 0, R.string.menu_send);
 		menu.add(Menu.NONE, CANCEL_ID, 1, R.string.menu_cancel);
@@ -335,17 +334,23 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle all of the possible menu actions.
+		Callback callback = (Callback) getActivity();
 		switch (item.getItemId()) {
 		case CANCEL_ID:
-			// TODO: finish();
+			callback.onComplete(Activity.RESULT_CANCELED);
 			return true;
 		case SEND_ID:
-			// TODO: if(sendData())
-			//	finish();
+			if(sendData()) {
+				callback.onComplete(Activity.RESULT_OK);
+			}
 			return true;
 		default:
 			return super.onOptionsItemSelected(item);
 		}
+	}
+	
+	public interface Callback {
+		void onComplete(int status);
 	}
 	
 }

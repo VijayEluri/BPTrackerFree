@@ -2,11 +2,6 @@
 <FrameLayout  xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
+	android:id="@+id/editor_fragment_container"
 >
-	<fragment
-		android:name="com.eyebrowssoftware.bptrackerfree.BPRecordEditorSpinnerFragment"
-		android:id="@+id/spinner_editor_fragment"
-		android:layout_width="match_parent"
-		android:layout_height="match_parent"
-	/>
 </FrameLayout>
