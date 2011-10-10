@@ -1,13 +1,10 @@
 package com.eyebrowssoftware.bptrackerfree;
 
-import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.content.AsyncQueryHandler;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,7 +14,9 @@ import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
-import android.support.v4.widget.CursorAdapter;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -36,7 +35,8 @@ import android.widget.TextView;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
-public class BPRecordListFragment extends ListFragment implements OnClickListener {
+public class BPRecordListFragment extends ListFragment implements OnClickListener, 
+		LoaderManager.LoaderCallbacks<Cursor> {
 	
 	private static final String TAG = "BPListFragment";
 
@@ -65,10 +65,6 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	private int mCurrentCheckPosition = 0;
 	private long mContextMenuRecordId = 0;
 
-	private MyAsyncQueryHandler mMAQH;
-	
-	private static final int BPRECORDS_TOKEN = 0;
-	
 	boolean mDualPane = false;
 	Uri mStartUri;
 	
@@ -125,16 +121,14 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		if(mStartUri == null) {
 			mStartUri = BPRecords.CONTENT_URI;
 		}
-		// No cursor yet. Will be assigned when the asynchronous query is complete
-		// TODO: Upgrade this to use a cursor loader and get rid of the requery flag
-		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), R.layout.bp_record_list_item, null, 
-			VALS, IDS, CursorAdapter.FLAG_AUTO_REQUERY | CursorAdapter.FLAG_REGISTER_CONTENT_OBSERVER);
+		// No cursor yet. Will be assigned when the CursorLoader query is complete
+		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
+				R.layout.bp_record_list_item, null,	VALS, IDS, 0);
 		
 		adapter.setViewBinder(new MyViewBinder());
 		setListAdapter(adapter);
 
-		mMAQH = new MyAsyncQueryHandler(getActivity().getContentResolver(), adapter);
-		mMAQH.startQuery(BPRECORDS_TOKEN, this, mStartUri, BPTrackerFree.PROJECTION, null, null, BPRecord.CREATED_DATE + " DESC");
+		this.getLoaderManager().initLoader(0, null, this);
 		
         // Check to see if we have a frame in which to embed the details
         // fragment directly in the containing UI.
@@ -156,8 +150,12 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	}
 	
 	void showDetails(int position) {
+		
+		mCurrentCheckPosition = position;
+		
 		Uri data = BPRecords.CONTENT_URI;
 		long id = getListView().getItemIdAtPosition(position);
+		
 		if(mDualPane) {
 			getListView().setItemChecked(position, true);
 			
@@ -232,27 +230,30 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		}
 	}
 	
-	private class MyAsyncQueryHandler extends AsyncQueryHandler {
-
-		private WeakReference<SimpleCursorAdapter> mAdapter;
-		
-		public MyAsyncQueryHandler(ContentResolver cr, SimpleCursorAdapter adapter) {
-			super(cr);
-			mAdapter = new WeakReference<SimpleCursorAdapter>(adapter);
-		}
-
-		@Override
-		protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-			if (cursor != null) {
-				getActivity().startManagingCursor(cursor);
-				SimpleCursorAdapter adapter = mAdapter.get();
-				if(adapter != null) {
-					adapter.changeCursor(cursor);
-				}
-			}
-		}
+	/**
+	 * Called when the Loader is created
+	 */
+	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+		// Create a CursorLoader that will take care of creating a cursor for the data
+		CursorLoader loader = new CursorLoader(getActivity(), mStartUri, 
+				BPTrackerFree.PROJECTION, null, null, BPRecord.DEFAULT_SORT_ORDER);
+		return loader;
 	}
 
+	/**
+	 * Called when the load of the cursor is finished
+	 */
+	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		((SimpleCursorAdapter) this.getListAdapter()).swapCursor(cursor);
+	}
+
+	/**
+	 * Called when the loader is reset, we swap out the current cursor with null
+	 */
+	public void onLoaderReset(Loader<Cursor> arg0) {
+		((SimpleCursorAdapter) this.getListAdapter()).swapCursor(null);
+	}
+	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -265,12 +266,20 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		SimpleCursorAdapter adapter = (SimpleCursorAdapter) this.getListAdapter();
 		this.setListAdapter(null);
 		if(adapter != null) {
-			adapter.changeCursor(null);
+			adapter.swapCursor(null);
 		}
 		super.onDestroy();
 	}
 
 
+	private void doSendAction() {
+		this.startActivity(new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this.getActivity(), BPSend.class));
+	}
+	
+	private void doDataManagerAction() {
+		this.startActivity(new Intent(this.getActivity(), BPDataManager.class));
+	}
+	
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
@@ -292,15 +301,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		}
 	}
 
-	private void doSendAction() {
-		this.startActivity(new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this.getActivity(), BPSend.class));
-	}
-	
-	private void doDataManagerAction() {
-		this.startActivity(new Intent(this.getActivity(), BPDataManager.class));
-	}
-	
-@Override
+	@Override
 	public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
 		
 		AdapterView.AdapterContextMenuInfo info;
@@ -319,12 +320,8 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 			String fmt = getString(R.string.datetime_format);
 			menu.setHeaderTitle(String.format(fmt, date, time));
 		}
-		// Add a menu item to edit the record
-		menu.add(Menu.NONE, BPTrackerFree.MENU_ITEM_EDIT, 0, R.string.menu_edit);
-		// Add a menu item to delete the record
-		menu.add(Menu.NONE, BPTrackerFree.MENU_ITEM_DELETE, 1, R.string.menu_delete);
-		// Add a menu item to send the record
-		menu.add(Menu.NONE, BPTrackerFree.MENU_ITEM_SEND, 2, R.string.menu_send);
+		MenuInflater inflater = getActivity().getMenuInflater();
+		inflater.inflate(R.menu.bp_record_list_fragment_context_menu, menu);
 	}
 	
 	@Override
@@ -336,23 +333,21 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 			mContextMenuRecordId = info.id;
 			Uri contextMenuUri = ContentUris.withAppendedId(mStartUri, mContextMenuRecordId);
 			switch (item.getItemId()) {
-			case BPTrackerFree.MENU_ITEM_DELETE:
+			case R.id.menu_delete:
 				DeleteDialogFragment diagFrag = new DeleteDialogFragment();
 				diagFrag.show(this.getFragmentManager(), "delete");
 				return true;
-			case BPTrackerFree.MENU_ITEM_EDIT:
+			case R.id.menu_edit:
 				startActivity(new Intent(Intent.ACTION_EDIT, contextMenuUri));
 				return true;
-			case BPTrackerFree.MENU_ITEM_SEND:
+			case R.id.menu_send:
 				startActivity(new Intent(Intent.ACTION_SEND, contextMenuUri, getActivity(), BPSend.class));
 				return true;
 			}
-			return false;
 		} catch (ClassCastException e) {
 			Log.e(TAG, "bad menuInfo", e);
-			return false;
 		}
-
+		return super.onContextItemSelected(item);
 	}
 	
 	private void deleteRecord() {

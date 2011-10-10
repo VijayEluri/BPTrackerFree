@@ -33,7 +33,7 @@ public final class BPRecords {
 		/**
 		 * The default sort order for this table
 		 */
-		public static final String DEFAULT_SORT_ORDER = "name ASC";
+		public static final String DEFAULT_SORT_ORDER = "created_at DESC";
 
 		/**
 		 * The id of the Beer record

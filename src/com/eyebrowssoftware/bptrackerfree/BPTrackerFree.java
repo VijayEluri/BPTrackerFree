@@ -3,15 +3,14 @@ package com.eyebrowssoftware.bptrackerfree;
 import java.text.DateFormat;
 import java.util.Date;
 
-import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
-
 import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.Log;
-import android.view.Menu;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
 public class BPTrackerFree extends Application {
 	
@@ -49,16 +48,6 @@ public class BPTrackerFree extends Application {
 	public static final int COLUMN_MODIFIED_AT_INDEX = 5;
 	public static final int COLUMN_NOTE_INDEX = 6;
 
-	// Menu item ids
-	public static final int MENU_ITEM_DELETE = Menu.FIRST;
-	public static final int MENU_ITEM_EDIT = Menu.FIRST + 1;
-	public static final int MENU_ITEM_SEND = Menu.FIRST + 2;
-	public static final int MENU_DATA_MANAGER = Menu.FIRST + 3;
-	public static final int MENU_ITEM_REVERT = Menu.FIRST + 4;
-	public static final int MENU_ITEM_DONE = Menu.FIRST + 5;
-	public static final int MENU_ITEM_CANCEL = Menu.FIRST + 6;
-	public static final int MENU_ITEM_DISCARD = Menu.FIRST + 7;
-	
 	// Min difference between Systolic and Diastolic or between Max and Min
 	// values of anything
 	public static final int MIN_RANGE = 10;
