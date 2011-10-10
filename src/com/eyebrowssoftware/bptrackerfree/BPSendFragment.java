@@ -78,11 +78,9 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	private static final String SEND_TEXT = "tsend";
 	private static final String SEND_FILE = "fsend";
 	
-	// This may or may not be used
-	@SuppressWarnings("unused")
-	private boolean mReverse = true;
-	
 	private static final int SEND_LOAD_ID = 2;
+	
+	public static final int SEND_FAILED = Activity.RESULT_FIRST_USER; 
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -127,7 +125,6 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 		if (intent.getData() == null) {
 			intent.setData(BPRecords.CONTENT_URI);
 		}
-		mReverse = intent.getBooleanExtra(REVERSE, true);
 
 		mUri = intent.getData();
 		
@@ -162,10 +159,11 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 		        labelView.setText(String.format(mMsgLabelString, msg.length()));
 		        msgView.setText(msg);
 			}
+			cursor.close();
 		}
 	}
 
-	public void onLoaderReset(Loader<Cursor> cursor) {
+	public void onLoaderReset(Loader<Cursor> loader) {
 		TextView labelView = mWeakLabelView.get();
 		TextView msgView = mWeakMsgView.get();
 		if(labelView != null && msgView != null) {
@@ -178,12 +176,12 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 		Callback callback = (Callback) this.getActivity();
 		if (v.equals(mSendButton)) {
 			if (sendData()) {
-				callback.onComplete(Activity.RESULT_OK);
+				callback.onSendComplete(Activity.RESULT_OK);
 			} else {
 				Toast.makeText(getActivity(), R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
 			}
 		} else if (v.equals(mCancelButton)) {
-			callback.onComplete(Activity.RESULT_CANCELED);
+			callback.onSendComplete(Activity.RESULT_CANCELED);
 		}
 	}
 	
@@ -324,16 +322,11 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 		return baos.toString();
 	}
 
-	// Identifiers of our menu items
-	private static final int SEND_ID = Menu.FIRST;
-	private static final int CANCEL_ID = Menu.FIRST + 1;
-
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 		super.onCreateOptionsMenu(menu, inflater);
 		// Build the menus that are shown when editing.
-		menu.add(Menu.NONE, SEND_ID, 0, R.string.menu_send);
-		menu.add(Menu.NONE, CANCEL_ID, 1, R.string.menu_cancel);
+		inflater.inflate(R.menu.bp_send_fragment_menu, menu);
 	}
 
 	@Override
@@ -341,12 +334,14 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 		// Handle all of the possible menu actions.
 		Callback callback = (Callback) getActivity();
 		switch (item.getItemId()) {
-		case CANCEL_ID:
-			callback.onComplete(Activity.RESULT_CANCELED);
+		case R.id.menu_cancel:
+			callback.onSendComplete(Activity.RESULT_CANCELED);
 			return true;
-		case SEND_ID:
+		case R.id.menu_send:
 			if(sendData()) {
-				callback.onComplete(Activity.RESULT_OK);
+				callback.onSendComplete(Activity.RESULT_OK);
+			} else {
+				callback.onSendComplete(SEND_FAILED);
 			}
 			return true;
 		default:
@@ -355,7 +350,7 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	}
 	
 	public interface Callback {
-		void onComplete(int status);
+		void onSendComplete(int status);
 	}
 
 }

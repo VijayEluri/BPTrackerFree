@@ -36,7 +36,7 @@ import android.widget.TextView;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
 public class BPRecordListFragment extends ListFragment implements OnClickListener, 
-		LoaderManager.LoaderCallbacks<Cursor> {
+		LoaderManager.LoaderCallbacks<Cursor>, BPSendFragment.Callback, BPRecordEditorFragment.Callback {
 	
 	private static final String TAG = "BPListFragment";
 
@@ -377,5 +377,15 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 			return builder.create();
 		}
 
+	}
+
+	public void onSendComplete(int status) {
+		Log.i(TAG, "onSendComplete called with status: " + status);
+		showDetails(mCurrentCheckPosition);
+	}
+
+	public void onEditComplete(int status) {
+		Log.i(TAG, "onEditComplete called with status: " + status);
+		showDetails(mCurrentCheckPosition);
 	}
 }

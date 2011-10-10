@@ -85,7 +85,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	protected Uri mUri;
 	
 	/// This fragment manages the cursor for the sub-fragments
-	protected Cursor mCursor;
+	private Cursor mCursor;
 
 	/// and the calendar
 	protected Calendar mCalendar;
@@ -249,6 +249,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 		Activity activity = this.getActivity();
 		if(mCursor != null) {
 			activity.stopManagingCursor(mCursor);
+			mCursor.close();
 		}
 		if(cursor != null) {
 			mCursor = cursor;
@@ -300,6 +301,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	public void onLoaderReset(Loader<Cursor> arg0) {
 		if(mCursor != null) {
 			getActivity().stopManagingCursor(mCursor);
+			mCursor.close();
 		}
 		mCursor = null;
 	}
@@ -367,8 +369,6 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 				deleteRecord();
 			}
 		}
-		Activity activity = getActivity();
-		activity.setResult(Activity.RESULT_CANCELED);
 	}
 
 	/**

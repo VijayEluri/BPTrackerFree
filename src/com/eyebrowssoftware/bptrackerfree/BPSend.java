@@ -19,7 +19,7 @@ public class BPSend extends FragmentActivity implements BPSendFragment.Callback 
 		mSendFragment = (BPSendFragment) this.getSupportFragmentManager().findFragmentById(R.id.bpsend_fragment);
 	}
 
-	public void onComplete(int status) {
+	public void onSendComplete(int status) {
 		Log.v(TAG, "onComplete called with status: " + status);
 		finish();
 	}
