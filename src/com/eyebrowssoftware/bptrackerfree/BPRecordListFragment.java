@@ -79,12 +79,6 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		RelativeLayout mEmptyContent = (RelativeLayout) layout.findViewById(R.id.empty_content);
 		mEmptyContent.setOnClickListener(this);
 		
-		View v = inflater.inflate(R.layout.bp_record_list_header, null);
-
-		ListView lv = (ListView) layout.findViewById(android.R.id.list);
-		lv.addHeaderView(v, null, true);
-		lv.setOnCreateContextMenuListener(this);
-
 		return layout;
 	}
 	
@@ -128,6 +122,12 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 				R.layout.bp_record_list_item, null,	VALS, IDS, 0);
 		
 		adapter.setViewBinder(new MyViewBinder());
+		View v = this.getLayoutInflater(null).inflate(R.layout.bp_record_list_header, null);
+
+		ListView lv = this.getListView();
+		lv.addHeaderView(v, null, true);
+		lv.setOnCreateContextMenuListener(this);
+		
 		setListAdapter(adapter);
 
 		this.getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
@@ -140,9 +140,9 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 
         if (mDualPane) {
             // In dual-pane mode, list view highlights selected item.
-            getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             // Make sure our UI is in the correct state.
-            showDetails(mCurrentCheckPosition);
+            // TODO: showDetails(mCurrentCheckPosition);
         }
 	}
 	
@@ -165,10 +165,10 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 			// Show the correct fragment 
 			BPRecordEditorFragment mEditorFragment;
 			if(id < 0) {
-				mEditorFragment = BPRecordEditorSpinnerFragment.newInstance(data, Intent.ACTION_INSERT);
+				mEditorFragment = BPRecordEditorTextFragment.newInstance(data, Intent.ACTION_INSERT);
 			} else {
 				Uri uri = ContentUris.withAppendedId(data, id);
-				mEditorFragment = BPRecordEditorSpinnerFragment.newInstance(uri, Intent.ACTION_EDIT);
+				mEditorFragment = BPRecordEditorTextFragment.newInstance(uri, Intent.ACTION_EDIT);
 			}
 			fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment).commit();
 		} else {
