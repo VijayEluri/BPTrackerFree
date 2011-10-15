@@ -3,15 +3,11 @@ package com.eyebrowssoftware.bptrackerfree;
 import java.text.DateFormat;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.content.ContentUris;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -36,7 +32,8 @@ import android.widget.TextView;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
 public class BPRecordListFragment extends ListFragment implements OnClickListener, 
-		LoaderManager.LoaderCallbacks<Cursor>, BPSendFragment.Callback, BPRecordEditorFragment.Callback {
+		LoaderManager.LoaderCallbacks<Cursor>, BPSendFragment.Callback, BPRecordEditorFragment.Callback,
+		BPDataManagerFragment.Callback, AlertDialogFragment.Callback {
 	
 	private static final String TAG = "BPListFragment";
 
@@ -142,7 +139,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
             // In dual-pane mode, list view highlights selected item.
             lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             // Make sure our UI is in the correct state.
-            // TODO: showDetails(mCurrentCheckPosition);
+            // XXX: showDetails(mCurrentCheckPosition);
         }
 	}
 	
@@ -336,7 +333,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 			Uri contextMenuUri = ContentUris.withAppendedId(mStartUri, mContextMenuRecordId);
 			switch (item.getItemId()) {
 			case R.id.menu_delete:
-				DeleteDialogFragment diagFrag = new DeleteDialogFragment();
+				AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
 				diagFrag.show(this.getFragmentManager(), "delete");
 				return true;
 			case R.id.menu_edit:
@@ -357,28 +354,6 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		getActivity().getContentResolver().delete(contextMenuUri, null, null);
 	}
 	
-	private class DeleteDialogFragment extends DialogFragment {
-
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceData) {
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setMessage(getString(R.string.really_delete))
-				.setCancelable(false)
-				.setPositiveButton(getString(R.string.label_yes), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						deleteRecord();
-					}
-				})
-				.setNegativeButton(getString(R.string.label_no), new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();
-					}
-				});
-			return builder.create();
-		}
-
-	}
-
 	public void onSendComplete(int status) {
 		Log.i(TAG, "onSendComplete called with status: " + status);
 		showDetails(mCurrentCheckPosition);
@@ -387,5 +362,18 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	public void onEditComplete(int status) {
 		Log.i(TAG, "onEditComplete called with status: " + status);
 		showDetails(mCurrentCheckPosition);
+	}
+
+	public void onDataManagerComplete(int status) {
+		Log.i(TAG, "onEditComplete called with status: " + status);
+		// XXX: do something here
+	}
+
+	public void onNegativeButtonClicked() {
+		// nothing to do, dialog is cancelled already
+	}
+
+	public void onPositiveButtonClicked() {
+		deleteRecord();
 	}
 }
