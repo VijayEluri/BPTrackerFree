@@ -69,11 +69,16 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	boolean mDualPane = false;
 	
 	private static final int DUAL_PANE_STATE_EMPTY = -1;
+	@SuppressWarnings("unused")
 	private static final int DUAL_PANE_STATE_EDIT = 0;
+	@SuppressWarnings("unused")
 	private static final int DUAL_PANE_STATE_INSERT = 1;
+	@SuppressWarnings("unused")
 	private static final int DUAL_PANE_STATE_SEND = 2;
+	@SuppressWarnings("unused")
 	private static final int DUAL_PANE_STATE_DATA = 3;
 
+	@SuppressWarnings("unused")
 	private int mDualPaneState = DUAL_PANE_STATE_EMPTY;
 	
 	private Uri mStartUri;
@@ -140,7 +145,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		lv.addHeaderView(v, null, true);
 		lv.setOnCreateContextMenuListener(this);
 		
-		setListAdapter(adapter);
+		this.setListAdapter(adapter);
 
 		// Set up our cursor loader. It manages the cursors from now on
 		this.getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
@@ -290,11 +295,6 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 
 	@Override
 	public void onDestroy() {
-		SimpleCursorAdapter adapter = (SimpleCursorAdapter) this.getListAdapter();
-		this.setListAdapter(null);
-		if(adapter != null) {
-			adapter.swapCursor(null);
-		}
 		super.onDestroy();
 	}
 

@@ -151,25 +151,17 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	}
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		if(cursor != null) {
-			TextView labelView = mWeakLabelView.get();
-			TextView msgView = mWeakMsgView.get();
-			if(labelView != null && msgView != null) {
-				String msg = getMessage(cursor);
-		        labelView.setText(String.format(mMsgLabelString, msg.length()));
-		        msgView.setText(msg);
-			}
-			cursor.close();
+		TextView labelView = mWeakLabelView.get();
+		TextView msgView = mWeakMsgView.get();
+		if(labelView != null && msgView != null) {
+			String msg = getMessage(cursor);
+	        labelView.setText(String.format(mMsgLabelString, msg.length()));
+	        msgView.setText(msg);
 		}
 	}
 
 	public void onLoaderReset(Loader<Cursor> loader) {
-		TextView labelView = mWeakLabelView.get();
-		TextView msgView = mWeakMsgView.get();
-		if(labelView != null && msgView != null) {
-	        labelView.setText(null);
-	        msgView.setText(null);
-		}
+		// Don't need to do anything
 	}
 	
 	public void onClick(View v) {
