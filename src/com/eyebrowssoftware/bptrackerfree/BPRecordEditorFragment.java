@@ -480,9 +480,9 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceData) {
 			return new DatePickerDialog(BPRecordEditorFragment.this.getActivity(), 
-					BPRecordEditorFragment.this, mCalendar
-						.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH),
-						mCalendar.get(Calendar.DAY_OF_MONTH));
+				BPRecordEditorFragment.this, mCalendar.get(Calendar.YEAR), 
+					mCalendar.get(Calendar.MONTH),
+					mCalendar.get(Calendar.DAY_OF_MONTH));
 		}
 	}
 	

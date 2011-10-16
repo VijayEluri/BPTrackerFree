@@ -25,6 +25,8 @@ import android.view.ViewGroup;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -65,7 +67,17 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	private static final int LIST_LOADER_ID = 0;
 
 	boolean mDualPane = false;
-	Uri mStartUri;
+	
+	private static final int DUAL_PANE_STATE_EMPTY = -1;
+	private static final int DUAL_PANE_STATE_EDIT = 0;
+	private static final int DUAL_PANE_STATE_INSERT = 1;
+	private static final int DUAL_PANE_STATE_SEND = 2;
+	private static final int DUAL_PANE_STATE_DATA = 3;
+
+	private int mDualPaneState = DUAL_PANE_STATE_EMPTY;
+	
+	private Uri mStartUri;
+	private LinearLayout mEmptyControls;
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -73,9 +85,12 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		
 		// Inflate the layout for this fragment
 		View layout = inflater.inflate(R.layout.bp_record_list_fragment, container, false);
-		RelativeLayout mEmptyContent = (RelativeLayout) layout.findViewById(R.id.empty_content);
+
+		RelativeLayout mEmptyContent = (RelativeLayout) layout.findViewById(R.id.empty_content_id);
 		mEmptyContent.setOnClickListener(this);
-		
+
+		mEmptyControls = (LinearLayout) layout.findViewById(R.id.empty_controls_id);
+
 		return layout;
 	}
 	
@@ -127,6 +142,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		
 		setListAdapter(adapter);
 
+		// Set up our cursor loader. It manages the cursors from now on
 		this.getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
 		
         // Check to see if we have a frame in which to embed the details
@@ -139,7 +155,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
             // In dual-pane mode, list view highlights selected item.
             lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
             // Make sure our UI is in the correct state.
-            // XXX: showDetails(mCurrentCheckPosition);
+            showDetails(mCurrentCheckPosition);
         }
 	}
 	
@@ -156,7 +172,14 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		long id = getListView().getItemIdAtPosition(position);
 		
 		if(mDualPane) {
+			if(position == 0) {  // the add "button" in the list
+				ListAdapter adapter = this.getListAdapter();
+				if(adapter.getCount() > 0) {
+					position = 1;
+				}
+			}
 			getListView().setItemChecked(position, true);
+			mCurrentCheckPosition = position;
 			
 			FragmentManager fMgr = this.getFragmentManager();
 			// Show the correct fragment 
@@ -243,6 +266,11 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	 * Called when the load of the cursor is finished
 	 */
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+		if(cursor.getCount() == 0) {
+			this.mEmptyControls.setVisibility(View.VISIBLE);
+		} else {
+			this.mEmptyControls.setVisibility(View.GONE);
+		}
 		((SimpleCursorAdapter) this.getListAdapter()).swapCursor(cursor);
 	}
 

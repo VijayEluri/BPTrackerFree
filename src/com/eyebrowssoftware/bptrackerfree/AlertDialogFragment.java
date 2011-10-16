@@ -4,15 +4,12 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 
-public class AlertDialogFragment extends DialogFragment {
+public class AlertDialogFragment extends BPDialogFragment {
+	@SuppressWarnings("unused")
+	private static final String TAG = "AlertDialogFragment";
 	
-	interface Callback {
-		void onPositiveButtonClicked();
-		void onNegativeButtonClicked();
-	}
-	
+	// private static final String TYPE_STRING = "type";
 	private static final String TITLE_STRING = "title";
 	private static final String POSITIVE_BUTTON_STRING = "positive";
 	private static final String NEGATIVE_BUTTON_STRING = "negative";
@@ -31,7 +28,7 @@ public class AlertDialogFragment extends DialogFragment {
 	public Dialog onCreateDialog(Bundle savedInstanceData) {
 
 		Bundle args = this.getArguments();
-		Callback callback = (Callback) AlertDialogFragment.this.getTargetFragment();
+		BPDialogFragment.Callback callback = (Callback) AlertDialogFragment.this.getTargetFragment();
 		if(callback == null) {
 			callback = (Callback) AlertDialogFragment.this.getActivity(); 
 		}

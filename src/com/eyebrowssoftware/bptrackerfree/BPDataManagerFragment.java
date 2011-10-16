@@ -23,7 +23,7 @@ public class BPDataManagerFragment extends Fragment implements OnClickListener, 
 	
 	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-		View layout = inflater.inflate(R.layout.data_manager, container, false);
+		View layout = inflater.inflate(R.layout.bp_data_manager_fragment, container, false);
 		
 		Button deleteButton = (Button) layout.findViewById(R.id.delete_button);
 		deleteButton.setOnClickListener(this);
