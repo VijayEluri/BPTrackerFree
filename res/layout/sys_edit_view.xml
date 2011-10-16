@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout 
+	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_height="wrap_content"
 	android:layout_width="match_parent"
 	android:orientation="horizontal" 
@@ -8,16 +9,20 @@
 		android:id="@+id/systolic_label"
 		android:text="@string/label_systolic"
 		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center_vertical|right"
-		android:gravity="center_vertical|right"
-		android:layout_weight="1.0" 
 		style="@style/bp_label" 
+		android:layout_weight="1.0" 
+		android:layout_height="wrap_content" 
+		android:layout_gravity="center_vertical" 
+		android:gravity="center"
 	/>
-	<Spinner 
-		android:id="@+id/systolic_spin" 
+	<TextView android:id="@+id/systolic_edit_view"
 		android:layout_width="wrap_content" 
 		android:layout_height="wrap_content"
+		android:hint="Systolic hint"
+		android:inputType="number"
 		android:layout_weight="1.0"
+		android:layout_gravity="center_vertical" 
+		android:gravity="center"
+		style="@style/bp_text"
 	/>
 </LinearLayout>

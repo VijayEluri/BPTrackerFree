@@ -26,10 +26,17 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 			/>
+			<ViewStub android:id="@+id/view_stub" 
+				android:inflatedId="@+id/view_fragment"
+				android:layout="@layout/bp_record_editor_view_fragment"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+			/>
 			<EditText
 				android:id="@+id/note"
 				android:layout_height="wrap_content"
 				android:layout_width="match_parent"
+				android:hint="@string/label_note"
 			/>
 			<LinearLayout
 				android:layout_height="wrap_content"
