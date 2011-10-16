@@ -10,10 +10,10 @@
 		android:text="@string/label_diastolic"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
-		android:layout_gravity="center_vertical|right"
-		android:gravity="center_vertical|right"
 		android:layout_weight="1.0" 
 		style="@style/bp_label" 
+		android:layout_gravity="center_vertical" 
+		android:gravity="center"
 	/> 
 	<Spinner 
 		android:id="@+id/diastolic_spin" 

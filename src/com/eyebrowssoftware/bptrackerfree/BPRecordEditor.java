@@ -40,8 +40,7 @@ public class BPRecordEditor extends FragmentActivity  implements BPRecordEditorF
 	}
 	
 	public void onEditComplete(int status) {
-		// TODO Auto-generated method stub
-		Log.e(TAG, "Got an onEditComplete(" + status + ")");
+		Log.i(TAG, "Got an onEditComplete(" + status + ")");
 		finish();
 	}
 }
