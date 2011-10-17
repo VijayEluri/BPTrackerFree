@@ -4,13 +4,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.util.Log;
 
-public class BPRecordList extends FragmentActivity 
-		implements BPSendFragment.Callback, BPRecordEditorFragment.Callback {
+public class BPRecordList extends FragmentActivity {
 	
+	@SuppressWarnings("unused")
 	private static final String TAG = "BPRecordList";
 
+	@SuppressWarnings("unused")
 	private BPRecordListFragment mListFragment;
 	
 	/** Called when the activity is first created. */
@@ -29,17 +29,4 @@ public class BPRecordList extends FragmentActivity
 		mListFragment = (BPRecordListFragment) mgr.findFragmentById(R.id.list_fragment);
 	}
 	
-	public void onSendComplete(int status) {
-		Log.i(TAG, "onSendComplete called with status: " + status);
-		BPSendFragment.Callback callback = (BPSendFragment.Callback) mListFragment;
-		callback.onSendComplete(status);
-	}
-
-	public void onEditComplete(int status) {
-		// TODO Auto-generated method stub
-		Log.i(TAG, "onEditComplete called with status: " + status);
-		BPRecordEditorFragment.Callback callback = (BPRecordEditorFragment.Callback) mListFragment;
-		callback.onEditComplete(status);
-	}
-
 }

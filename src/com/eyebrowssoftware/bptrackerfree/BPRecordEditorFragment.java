@@ -250,12 +250,14 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 				mOriginalValues.putLong(BPRecord.MODIFIED_DATE, mod_datetime);
 				mOriginalValues.putString(BPRecord.NOTE, note);
 			}
-			mCalendar.setTimeInMillis(datetime);
-			Date date = mCalendar.getTime();
-			mDateButton.setText(BPTrackerFree.getDateString(date, DateFormat.MEDIUM));
-			mTimeButton.setText(BPTrackerFree.getTimeString(date, DateFormat.SHORT));
-			mNoteText.setText(note);
-			BPRecordEditorFragment.this.onQueryComplete(systolic, diastolic, pulse);
+			if (this.isResumed()) {
+				mCalendar.setTimeInMillis(datetime);
+				Date date = mCalendar.getTime();
+				mDateButton.setText(BPTrackerFree.getDateString(date, DateFormat.MEDIUM));
+				mTimeButton.setText(BPTrackerFree.getTimeString(date, DateFormat.SHORT));
+				mNoteText.setText(note);
+				BPRecordEditorFragment.this.onQueryComplete(systolic, diastolic, pulse);
+			}
 		}
 	}
 
@@ -384,8 +386,12 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 
 	public void complete(int status) {
 		mCompleted = true;
-		Callback callback = (Callback) getActivity();
-		callback.onEditComplete(status);
+		Fragment frag = this.getTargetFragment();
+		if(frag != null) {
+			((BPRecordEditorFragment.Callback) frag).onEditComplete(status);
+		} else {
+			((BPRecordEditorFragment.Callback) this.getActivity()).onEditComplete(status);
+		}
 	}
 
 	// Internal Classes

@@ -26,7 +26,6 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
-import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -51,7 +50,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	private static final int[] IDS = { 
 		R.id.date, 
 		R.id.time, 
-		R.id.sys_value,
+		R.id.bp_value,
 		R.id.dia_value, 
 		R.id.pulse_value,
 		R.id.note
@@ -159,8 +158,6 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         if (mDualPane) {
             // In dual-pane mode, list view highlights selected item.
             lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-            // Make sure our UI is in the correct state.
-            showDetails(mCurrentCheckPosition);
         }
 	}
 	
@@ -169,7 +166,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		showDetails(position);
 	}
 	
-	void showDetails(int position) {
+	private void showDetails(int position) {
 		
 		mCurrentCheckPosition = position;
 		
@@ -177,12 +174,6 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		long id = getListView().getItemIdAtPosition(position);
 		
 		if(mDualPane) {
-			if(position == 0) {  // the add "button" in the list
-				ListAdapter adapter = this.getListAdapter();
-				if(adapter.getCount() > 0) {
-					position = 1;
-				}
-			}
 			getListView().setItemChecked(position, true);
 			mCurrentCheckPosition = position;
 			
@@ -195,7 +186,9 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 				Uri uri = ContentUris.withAppendedId(data, id);
 				mEditorFragment = BPRecordEditorTextFragment.newInstance(uri, Intent.ACTION_EDIT);
 			}
+			mEditorFragment.setTargetFragment(this, 128);
 			fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment).commit();
+
 		} else {
 			if(id < 0) {
 				if (data == null) {
@@ -230,10 +223,17 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 			int id = view.getId();
 
 			switch (id) {
-			case R.id.sys_value:
-			case R.id.dia_value:
+			case R.id.bp_value:
+				int sys = cursor.getInt(columnIndex);
+				int dia = cursor.getInt(BPTrackerFree.COLUMN_DIASTOLIC_INDEX);
+				String bp = String.valueOf(sys) + "/" + String.valueOf(dia); 
+				((TextView) view).setText(bp);
+				return true;
 			case R.id.pulse_value: // Pulse
 				((TextView) view).setText(String.valueOf(cursor.getInt(columnIndex)));
+				return true;
+			case R.id.dia_value:
+				// do nothing
 				return true;
 			case R.id.date: // Date
 			case R.id.time: // Time -- these use the same cursor column

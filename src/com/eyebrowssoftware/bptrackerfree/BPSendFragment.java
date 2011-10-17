@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.ref.WeakReference;
 import java.nio.charset.Charset;
 import java.text.DateFormat;
 
@@ -66,9 +65,6 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	private Button mSendButton;
 	private Button mCancelButton;
 
-	private WeakReference<TextView> mWeakLabelView;
-	private WeakReference<TextView> mWeakMsgView;
-
 	private String mMsgLabelString;
 	
 	public static final boolean ALL_DATES = true;
@@ -88,12 +84,10 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 		View layout = inflater.inflate(R.layout.bp_send_fragment, container, false);
 
 		mMsgLabelView = (TextView) layout.findViewById(R.id.message_label);
-		mWeakLabelView = new WeakReference<TextView>(mMsgLabelView);
 		
 		mMsgLabelString = getString(R.string.label_message_format);
 		
 		mMsgView = (TextView) layout.findViewById(R.id.message);
-		mWeakMsgView = new WeakReference<TextView>(mMsgView);
 
 		mSendText = (CheckBox) layout.findViewById(R.id.text);
 		mSendText.setOnCheckedChangeListener(this);
@@ -151,12 +145,10 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	}
 
 	public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-		TextView labelView = mWeakLabelView.get();
-		TextView msgView = mWeakMsgView.get();
-		if(labelView != null && msgView != null) {
-			String msg = getMessage(cursor);
-	        labelView.setText(String.format(mMsgLabelString, msg.length()));
-	        msgView.setText(msg);
+		String msg = getMessage(cursor);
+		if(this.isResumed()) {
+			mMsgLabelView.setText(String.format(mMsgLabelString, msg.length()));
+	        mMsgView.setText(msg);
 		}
 	}
 
@@ -165,15 +157,14 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	}
 	
 	public void onClick(View v) {
-		Callback callback = (Callback) this.getActivity();
 		if (v.equals(mSendButton)) {
 			if (sendData()) {
-				callback.onSendComplete(Activity.RESULT_OK);
+				getCallback().onSendComplete(Activity.RESULT_OK);
 			} else {
 				Toast.makeText(getActivity(), R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
 			}
 		} else if (v.equals(mCancelButton)) {
-			callback.onSendComplete(Activity.RESULT_CANCELED);
+			getCallback().onSendComplete(Activity.RESULT_CANCELED);
 		}
 	}
 	
@@ -320,20 +311,30 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 		// Build the menus that are shown when editing.
 		inflater.inflate(R.menu.bp_send_fragment_menu, menu);
 	}
+	
+	private BPSendFragment.Callback getCallback() {
+		Callback callback;
+		Fragment frag = this.getTargetFragment();
+		if(frag != null) {
+			callback = (Callback) frag;
+		} else {
+			callback = (Callback) this.getActivity();
+		}
+		return callback;
+	}
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		// Handle all of the possible menu actions.
-		Callback callback = (Callback) getActivity();
 		switch (item.getItemId()) {
 		case R.id.menu_cancel:
-			callback.onSendComplete(Activity.RESULT_CANCELED);
+			getCallback().onSendComplete(Activity.RESULT_CANCELED);
 			return true;
 		case R.id.menu_send:
 			if(sendData()) {
-				callback.onSendComplete(Activity.RESULT_OK);
+				getCallback().onSendComplete(Activity.RESULT_OK);
 			} else {
-				callback.onSendComplete(SEND_FAILED);
+				getCallback().onSendComplete(SEND_FAILED);
 			}
 			return true;
 		default:

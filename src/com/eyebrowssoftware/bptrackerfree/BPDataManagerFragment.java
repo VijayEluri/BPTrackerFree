@@ -44,19 +44,22 @@ public class BPDataManagerFragment extends Fragment implements OnClickListener, 
 		Toast.makeText(activity, String.format(getString(R.string.msg_deleted), deleted), Toast.LENGTH_LONG).show();
 	}
 
-
-	private void completed(int status) {
-		Callback callback = (Callback) this.getActivity();
-		callback.onDataManagerComplete(status);
+	private void complete(int status) {
+		Fragment frag = this.getTargetFragment();
+		if(frag != null) {
+			((BPDataManagerFragment.Callback) frag).onDataManagerComplete(status);
+		} else {
+			((BPDataManagerFragment.Callback) this.getActivity()).onDataManagerComplete(status);
+		}
 	}
-
+	
 	public void onNegativeButtonClicked() {
-		this.completed(Activity.RESULT_CANCELED);
+		this.complete(Activity.RESULT_CANCELED);
 	}
 
 	public void onPositiveButtonClicked() {
 		this.deleteHistory();
-		this.completed(Activity.RESULT_CANCELED);
+		this.complete(Activity.RESULT_CANCELED);
 	}
 
 }

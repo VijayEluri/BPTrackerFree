@@ -4,7 +4,6 @@
 	<!-- Used for list text and editor text -->
 	<style name="bp_text">
 		<item name="android:padding">2sp</item>
-		<item name="android:layout_margin">5sp</item>
 	</style>
 
 	<!-- Used for label text -->
