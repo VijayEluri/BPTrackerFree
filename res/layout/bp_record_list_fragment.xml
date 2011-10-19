@@ -14,38 +14,42 @@
     	android:layout_height="wrap_content"
     >
 		<RelativeLayout 
-			android:id="@+id/empty_content"
+			android:id="@+id/empty_content_id"
 			android:layout_width="fill_parent"
 			android:layout_height="fill_parent"
 			android:orientation="vertical"
 			style="@style/empty_list_view"
 		>
-			<ImageView
-				android:id="@+id/plus_sign_id"
-				android:layout_width="wrap_content"
+			<LinearLayout
+				android:id="@+id/empty_controls_id"
 				android:layout_height="wrap_content"
-				android:src="@android:drawable/ic_menu_add"
-				android:layout_alignParentTop="true"
-				android:layout_alignParentLeft="true"
-			/>
-			<TextView
-				android:id="@+id/empty_text_id"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:text="@string/empty"
-				android:layout_alignParentRight="true"
-				android:layout_alignBottom="@id/plus_sign_id"
-				android:layout_alignParentTop="true"
-				android:layout_toRightOf="@id/plus_sign_id"
-				android:layout_gravity="center_vertical|left"
-				android:gravity="center_vertical|left"
-			/>
+				android:layout_width="match_parent"
+				android:orientation="horizontal"
+				android:visibility="gone"
+			>
+				<ImageView
+					android:id="@+id/plus_sign_id"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:src="@android:drawable/ic_menu_add"
+					android:layout_weight="1.0"
+				/>
+				<TextView
+					android:id="@+id/empty_text_id"
+					android:layout_width="wrap_content"
+					android:layout_height="wrap_content"
+					android:text="@string/empty"
+					android:layout_gravity="center_vertical|left"
+					android:gravity="center_vertical|left"
+					android:layout_weight="1.0"
+				/>
+			</LinearLayout>
 			<ImageView
 				android:src="@drawable/bptracker"
 				android:gravity="center_horizontal"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:layout_below="@id/plus_sign_id"
+				android:layout_below="@id/empty_controls_id"
 			/>
 		</RelativeLayout>
 	</ScrollView>

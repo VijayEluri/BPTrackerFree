@@ -3,7 +3,7 @@
 
 	<!-- Used for list text and editor text -->
 	<style name="bp_text">
-		<item name="android:padding">2dp</item>
+		<item name="android:padding">2sp</item>
 	</style>
 
 	<!-- Used for label text -->
@@ -14,29 +14,29 @@
 	<!-- Style for the TextView that's shown when the list is empty  -->
 	<style name="empty_list_view">
 		<item name="android:gravity">center_vertical</item>
-		<item name="android:padding">6dp</item>
+		<item name="android:padding">2sp</item>
 	</style>
 	
 	<style name="bp_list_header">
-		<item name="android:paddingTop">10dp</item>
-		<item name="android:paddingBottom">10dp</item>
+		<item name="android:paddingTop">10sp</item>
+		<item name="android:paddingBottom">10sp</item>
 	</style>
 
 	<style name="bp_list_item">
-		<item name="android:padding">4dp</item>
+		<item name="android:padding">4sp</item>
 	</style>
 
 	<style name="bp_spinner_item">
 		<item name="android:singleLine">true</item>
-		<item name="android:padding">4dp</item>
+		<item name="android:padding">4sp</item>
 	</style>
 
 	<style name="bp_send_to_group">
-		<item name="android:padding">4dp</item>
+		<item name="android:padding">4sp</item>
 	</style>
 
 	<style name="bp_send_from_group">
-		<item name="android:padding">4dp</item>
+		<item name="android:padding">4sp</item>
 	</style>
 	
 </resources>

@@ -26,10 +26,17 @@
 				android:layout_width="match_parent"
 				android:layout_height="wrap_content"
 			/>
+			<ViewStub android:id="@+id/view_stub" 
+				android:inflatedId="@+id/view_fragment"
+				android:layout="@layout/bp_record_editor_view_fragment"
+				android:layout_width="match_parent"
+				android:layout_height="wrap_content"
+			/>
 			<EditText
 				android:id="@+id/note"
 				android:layout_height="wrap_content"
 				android:layout_width="match_parent"
+				android:hint="@string/label_note"
 			/>
 			<LinearLayout
 				android:layout_height="wrap_content"
@@ -41,15 +48,14 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:text="@string/label_date"
-					android:layout_gravity="center_vertical|right"
 					style="@style/bp_label" 
-				/>
+				android:layout_weight="1.0" android:layout_gravity="center_vertical" android:gravity="center"/>
 				<Button
 					android:id="@+id/date_button"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="center_vertical|left"
-				/>
+				android:layout_weight="1.0" android:hint="Date Hint"/>
 			</LinearLayout>
 			<LinearLayout
 				android:layout_height="wrap_content"
@@ -61,15 +67,14 @@
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:text="@string/label_time"
-					android:layout_gravity="center_vertical|right" 
 					style="@style/bp_label" 
-				/>
+				android:layout_weight="1.0" android:layout_gravity="center_vertical" android:gravity="center"/>
 				<Button
 					android:id="@+id/time_button"
 					android:layout_width="wrap_content"
 					android:layout_height="wrap_content"
 					android:layout_gravity="center_vertical|left" 
-				/>
+				android:layout_weight="1.0" android:hint="Time Hint"/>
 			</LinearLayout>
 		</LinearLayout>
 	</ScrollView>

@@ -6,23 +6,23 @@
   android:orientation="horizontal"
 >
 	<TextView 
-		android:id="@+id/diastolic_label"
-		android:text="@string/label_diastolic"
+		android:id="@+id/pulse_label"
+		android:text="@string/label_pulse" 
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:layout_weight="1.0" 
 		style="@style/bp_label" 
-		android:layout_gravity="center_vertical" 
-		android:gravity="center"
-	/> 
-	<EditText android:id="@+id/diastolic_edit_text"
+		android:gravity="center" 
+		android:layout_gravity="center_vertical"
+	/>
+	<TextView android:id="@+id/pulse_edit_view"
 		android:layout_width="wrap_content" 
 		android:layout_height="wrap_content"
-		android:hint="Diastolic Hint"
-		android:layout_gravity="center_vertical"
-		android:gravity="center"
+		android:hint="Pulse Hint"
 		android:inputType="number"
 		android:layout_weight="1.0"
 		style="@style/bp_text"
+		android:layout_gravity="center_vertical"
+		android:gravity="center"
 	/>
 </LinearLayout>
