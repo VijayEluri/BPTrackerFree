@@ -6,6 +6,12 @@ import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
+/**
+ * This class defines the names of the columns of the BP records in the database
+ * 
+ * @author brione
+ *
+ */
 public final class BPRecords {
 
 	// Private constructor - This class cannot be instantiated
@@ -24,6 +30,11 @@ public final class BPRecords {
 	public static final String CONTENT_TYPE = ContentResolver.CURSOR_DIR_BASE_TYPE
 			+ "/vnd.eyebrowssoftware.free.bp_record";
 
+	/**
+	 * Column name definitions and other content provider/column boilerplate
+	 * @author brione
+	 *
+	 */
 	public static final class BPRecord implements BaseColumns {
 		/**
 		 * The MIME type of a {@link #CONTENT_URI} sub-directory of a single

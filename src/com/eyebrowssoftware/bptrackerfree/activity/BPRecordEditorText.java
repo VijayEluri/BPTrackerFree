@@ -10,6 +10,12 @@ import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorTextFragment;
 
+/**
+ * Activity class for the EditText version of the editor
+ * 
+ * @author brione
+ *
+ */
 public class BPRecordEditorText extends FragmentActivity implements BPRecordEditorFragment.Callback {
 	private static final String TAG = "BPRecordEditorText";
 	

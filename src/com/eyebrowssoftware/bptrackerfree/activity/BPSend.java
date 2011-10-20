@@ -7,6 +7,12 @@ import android.util.Log;
 import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPSendFragment;
 
+/**
+ * Activity class for sharing the bp records via email or sms/mms
+ * 
+ * @author brione
+ *
+ */
 public class BPSend extends FragmentActivity implements BPSendFragment.Callback {
 	private static final String TAG = "BPSend";
 	

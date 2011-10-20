@@ -6,6 +6,11 @@ import android.support.v4.app.FragmentActivity;
 import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPDataManagerFragment;
 
+/**
+ * Activity for cleaning out the database
+ * @author brione
+ *
+ */
 public class BPDataManager extends FragmentActivity implements BPDataManagerFragment.Callback {
 
 	BPDataManagerFragment mDataManagerFragment;

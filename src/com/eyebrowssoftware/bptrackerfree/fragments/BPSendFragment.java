@@ -38,6 +38,11 @@ import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.content.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.content.BPRecords.BPRecord;
 
+/**
+ * Fragment for implementing the send functionality
+ * @author brione
+ *
+ */
 public class BPSendFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, 
 		OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
 
@@ -70,7 +75,14 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 
 	private String mMsgLabelString;
 	
+	/**
+	 * Constant for selection of all dates 
+	 */
 	public static final boolean ALL_DATES = true;
+	
+	/**
+	 * Reverse the order of the items? 
+	 */
 	public static final String REVERSE = "reverse";
 
 	// These are key names for saving things in the icicle
@@ -79,6 +91,9 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	
 	private static final int SEND_LOAD_ID = 2;
 	
+	/**
+	 * Class-defined status for a failed send
+	 */
 	public static final int SEND_FAILED = Activity.RESULT_FIRST_USER; 
 
 	@Override
@@ -345,7 +360,16 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 		}
 	}
 	
+	/**
+	 * Must be implemented by any Fragment or Activity that uses this class
+	 * @author brione
+	 *
+	 */
 	public interface Callback {
+		/**
+		 * Called with this Fragment completes operation, sending an Activity status back
+		 * @param status
+		 */
 		void onSendComplete(int status);
 	}
 

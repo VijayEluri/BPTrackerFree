@@ -27,7 +27,13 @@ public class BPProviderFree extends ContentProvider {
 	@SuppressWarnings("unused")
 	private static final String TAG = "BPProviderFree";
 
+	/**
+	 * Authority for queries to this content provider
+	 */
 	public static final String AUTHORITY = "com.eyebrowssoftware.bptrackerfree.bp";
+	/**
+	 * String form of the content uri to this provider
+	 */
 	public static final String URI_STRING = "content://" + AUTHORITY;
 
 	private static final String DATABASE_NAME = "bptrackerfree.db";
@@ -37,10 +43,13 @@ public class BPProviderFree extends ContentProvider {
 
 	private static final String BP_RECORDS_TABLE_NAME = "bp_records";
 
-	public static HashMap<String, String> sBPProjectionMap;
+	private static HashMap<String, String> sBPProjectionMap;
 
 	private static final UriMatcher sUriMatcher;
 
+	/**
+	 * The Uri that all provider operations are based on.
+	 */
 	public static final Uri CONTENT_URI = Uri.parse(URI_STRING);
 
 	private ContentResolver mCR;

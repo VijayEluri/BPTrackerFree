@@ -37,6 +37,11 @@ import com.eyebrowssoftware.bptrackerfree.activity.BPSend;
 import com.eyebrowssoftware.bptrackerfree.content.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.content.BPRecords.BPRecord;
 
+/**
+ * Main Fragment for the list view/multi-pane startup view
+ * @author brione
+ *
+ */
 public class BPRecordListFragment extends ListFragment implements OnClickListener, 
 		LoaderManager.LoaderCallbacks<Cursor>, BPSendFragment.Callback, BPRecordEditorFragment.Callback,
 		BPDataManagerFragment.Callback, AlertDialogFragment.Callback {
