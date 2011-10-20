@@ -1,14 +1,17 @@
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.content.BPRecords;
 
 public class BPDataManagerFragment extends Fragment implements OnClickListener, AlertDialogFragment.Callback {
 

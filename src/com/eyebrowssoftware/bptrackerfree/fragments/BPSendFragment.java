@@ -1,4 +1,4 @@
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.fragments;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -24,8 +24,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -33,7 +33,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.csvreader.CsvWriter;
-import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
+import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
+import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.content.BPRecords;
+import com.eyebrowssoftware.bptrackerfree.content.BPRecords.BPRecord;
 
 public class BPSendFragment extends Fragment implements CompoundButton.OnCheckedChangeListener, 
 		OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {

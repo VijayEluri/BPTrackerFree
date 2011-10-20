@@ -1,10 +1,14 @@
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.activity;
 
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
+
+import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment;
+import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorTextFragment;
 
 public class BPRecordEditorText extends FragmentActivity implements BPRecordEditorFragment.Callback {
 	private static final String TAG = "BPRecordEditorText";

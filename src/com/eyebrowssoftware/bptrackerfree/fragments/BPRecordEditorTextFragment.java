@@ -1,4 +1,4 @@
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.fragments;
 
 
 import java.lang.ref.WeakReference;
@@ -13,7 +13,8 @@ import android.view.ViewStub;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
+import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.content.BPRecords.BPRecord;
 
 public class BPRecordEditorTextFragment extends BPRecordEditorFragment {
 	@SuppressWarnings("unused")

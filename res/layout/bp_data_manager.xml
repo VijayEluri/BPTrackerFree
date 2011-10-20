@@ -3,7 +3,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 >
-	<fragment android:name="com.eyebrowssoftware.bptrackerfree.BPDataManagerFragment"
+	<fragment android:name="com.eyebrowssoftware.bptrackerfree.fragments.BPDataManagerFragment"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"
 		android:id="@+id/data_manager_fragment"

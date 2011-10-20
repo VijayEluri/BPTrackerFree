@@ -1,4 +1,4 @@
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.fragments;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

@@ -10,7 +10,8 @@ import android.util.Log;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
+import com.eyebrowssoftware.bptrackerfree.adapters.RangeAdapter;
+import com.eyebrowssoftware.bptrackerfree.content.BPRecords.BPRecord;
 
 public class BPTrackerFree extends Application {
 	

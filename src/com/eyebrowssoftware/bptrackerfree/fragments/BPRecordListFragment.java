@@ -1,4 +1,4 @@
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.fragments;
 
 import java.text.DateFormat;
 
@@ -16,21 +16,26 @@ import android.support.v4.content.Loader;
 import android.support.v4.widget.SimpleCursorAdapter;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
+import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
+import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.activity.BPDataManager;
+import com.eyebrowssoftware.bptrackerfree.activity.BPSend;
+import com.eyebrowssoftware.bptrackerfree.content.BPRecords;
+import com.eyebrowssoftware.bptrackerfree.content.BPRecords.BPRecord;
 
 public class BPRecordListFragment extends ListFragment implements OnClickListener, 
 		LoaderManager.LoaderCallbacks<Cursor>, BPSendFragment.Callback, BPRecordEditorFragment.Callback,

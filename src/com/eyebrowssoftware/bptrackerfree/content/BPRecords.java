@@ -1,4 +1,6 @@
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.content;
+
+import com.eyebrowssoftware.bptrackerfree.BPProviderFree;
 
 import android.content.ContentResolver;
 import android.net.Uri;

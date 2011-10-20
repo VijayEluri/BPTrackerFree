@@ -16,7 +16,8 @@ import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
+import com.eyebrowssoftware.bptrackerfree.content.BPRecords;
+import com.eyebrowssoftware.bptrackerfree.content.BPRecords.BPRecord;
 
 /**
  * Provides access to a database of notes. Each note has a title, the note

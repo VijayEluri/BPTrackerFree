@@ -3,7 +3,7 @@
 	android:layout_width="match_parent"
 	android:layout_height="match_parent"
 >
-	<fragment android:name="com.eyebrowssoftware.bptrackerfree.BPSendFragment"
+	<fragment android:name="com.eyebrowssoftware.bptrackerfree.fragments.BPSendFragment"
 		android:id="@+id/bpsend_fragment"
 		android:layout_width="match_parent"
 		android:layout_height="match_parent"

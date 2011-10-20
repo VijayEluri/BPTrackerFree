@@ -1,4 +1,4 @@
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.fragments;
 
 import android.support.v4.app.DialogFragment;
 

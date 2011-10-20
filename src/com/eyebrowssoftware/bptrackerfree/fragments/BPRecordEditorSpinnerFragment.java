@@ -1,4 +1,4 @@
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.fragments;
 
 import java.lang.ref.WeakReference;
 
@@ -11,10 +11,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.widget.AdapterView;
-import android.widget.Spinner;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Spinner;
 
-import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
+import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
+import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.adapters.RangeAdapter;
+import com.eyebrowssoftware.bptrackerfree.content.BPRecords.BPRecord;
 
 public class BPRecordEditorSpinnerFragment extends BPRecordEditorFragment implements OnItemSelectedListener {
 

@@ -1,4 +1,4 @@
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.fragments;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -7,9 +7,9 @@ import java.util.GregorianCalendar;
 
 import android.app.Activity;
 import android.app.DatePickerDialog;
+import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
-import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -27,15 +27,19 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
-import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
+import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
+import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.adapters.RangeAdapter;
+import com.eyebrowssoftware.bptrackerfree.content.BPRecords;
+import com.eyebrowssoftware.bptrackerfree.content.BPRecords.BPRecord;
 
 public abstract class BPRecordEditorFragment extends Fragment implements OnDateSetListener, 
 		OnTimeSetListener, LoaderManager.LoaderCallbacks<Cursor> {
@@ -104,8 +108,8 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	protected static final int BPRECORDS_TOKEN = 0;
 
 	// These are for arguments passed in the Arguments Bundle
-	protected static final String DATA_KEY = BPRecord._ID;
-	protected static final String ACTION_KEY = "action";
+	public static final String DATA_KEY = BPRecord._ID;
+	public static final String ACTION_KEY = "action";
 	
 	// This is for restoring from the system-saved state bundle
 	private static final String MURI = "sUri";
