@@ -265,6 +265,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	 * Called when the loader is reset
 	 */
 	public void onLoaderReset(Loader<Cursor> loader) {
+		// Nothing to do
 	}
 
 	
