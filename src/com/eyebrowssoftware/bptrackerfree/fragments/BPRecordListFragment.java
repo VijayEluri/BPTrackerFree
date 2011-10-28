@@ -141,16 +141,13 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		// No cursor yet. Will be assigned when the CursorLoader query is complete
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
 				R.layout.bp_record_list_item, null,	VALS, IDS, 0);
-		
 		adapter.setViewBinder(new MyViewBinder());
-		View v = this.getLayoutInflater(null).inflate(R.layout.bp_record_list_header, null);
-
-		ListView lv = this.getListView();
-		lv.addHeaderView(v, null, true);
-		lv.setOnCreateContextMenuListener(this);
-		
 		this.setListAdapter(adapter);
 
+		ListView lv = this.getListView();
+		lv.setOnCreateContextMenuListener(this);
+		lv.addHeaderView(this.getLayoutInflater(null).inflate(R.layout.bp_record_list_header, null), null, true);
+		
 		// Set up our cursor loader. It manages the cursors from now on
 		this.getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
 		
@@ -163,17 +160,25 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         if (mDualPane) {
             // In dual-pane mode, list view highlights selected item.
             lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+            if(mCurrentCheckPosition == 0) {
+            	Log.v(TAG, "We're in fresh, start in insert mode");
+            }
         }
 	}
 	
 	@Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
-		showDetails(position);
+		Log.i(TAG, "Got a click at position: " + position + " id: " + id);
+		if(mDualPane && position == 0) {
+			// Insert
+			dualPaneInsert(BPRecords.CONTENT_URI);
+		} else {
+			showDetails(position);
+		}
 	}
 	
 	private void showDetails(int position) {
-		
-		mCurrentCheckPosition = position;
+		Log.i(TAG,  "showDetails for position: " + position);
 		
 		Uri data = BPRecords.CONTENT_URI;
 		long id = getListView().getItemIdAtPosition(position);
@@ -181,20 +186,10 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		if(mDualPane) {
 			getListView().setItemChecked(position, true);
 			mCurrentCheckPosition = position;
-			
-			FragmentManager fMgr = this.getFragmentManager();
-			// Show the correct fragment 
-			BPRecordEditorFragment mEditorFragment;
-			if(id < 0) {
-				mEditorFragment = BPRecordEditorTextFragment.newInstance(data, Intent.ACTION_INSERT);
-			} else {
-				Uri uri = ContentUris.withAppendedId(data, id);
-				mEditorFragment = BPRecordEditorTextFragment.newInstance(uri, Intent.ACTION_EDIT);
-			}
-			mEditorFragment.setTargetFragment(this, 128);
-			fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment).commit();
-
+			Uri uri = ContentUris.withAppendedId(data, id);
+			dualPaneEdit(uri);
 		} else {
+			Log.i(TAG, "Firing off conventional activity");
 			if(id < 0) {
 				if (data == null) {
 					data = BPRecords.CONTENT_URI;
@@ -216,11 +211,59 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		}
 	}
 
+	// Push the insert editor fragment onto the back stack, so it can be popped off by the fragment
+	private void dualPaneInsert(Uri uri) {
+		FragmentManager fMgr = this.getFragmentManager();
+		// Show the correct fragment 
+		BPRecordEditorFragment mEditorFragment;
+		mEditorFragment = BPRecordEditorTextFragment.newInstance(uri, Intent.ACTION_INSERT);
+		mEditorFragment.setTargetFragment(this, 128);
+		fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment).commit();
+		
+	}
+	
+	// Push the edit editor fragment onto the back stack, so it can be popped off by the fragment
+	// callback
+	private void dualPaneEdit(Uri uri) {
+		FragmentManager fMgr = this.getFragmentManager();
+		// Show the correct fragment 
+		BPRecordEditorFragment mEditorFragment;
+		mEditorFragment = BPRecordEditorTextFragment.newInstance(uri, Intent.ACTION_EDIT);
+		mEditorFragment.setTargetFragment(this, 128);
+		fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment).commit();
+	}
+	
+	// Push the data manager fragment onto the back stack, so it can be popped off by the fragment
+	// callback
+	@SuppressWarnings("unused")
+	private void dualPaneDataManager() {
+		FragmentManager fMgr = this.getFragmentManager();
+		// Show the correct fragment 
+		BPDataManagerFragment mDataManagerFragment;
+		mDataManagerFragment = BPDataManagerFragment.newInstance();
+		mDataManagerFragment.setTargetFragment(this, 128);
+		fMgr.beginTransaction().replace(R.id.details_fragment, mDataManagerFragment).commit();
+	}
+	
+	// Push the send fragment onto the back stack, so it can be popped off by the fragment
+	// callback
+	@SuppressWarnings("unused")
+	private void dualPaneSend(Uri uri) {
+		FragmentManager fMgr = this.getFragmentManager();
+		// Show the correct fragment 
+		BPSendFragment mSendFragment;
+		mSendFragment = BPSendFragment.newInstance();
+		mSendFragment.setTargetFragment(this, 128);
+		fMgr.beginTransaction().replace(R.id.details_fragment, mSendFragment).commit();
+	}
+	
+	// This is only used when the empty view is up
 	public void onClick(View v) {
 		Uri data = BPRecords.CONTENT_URI;
 		startActivity(new Intent(Intent.ACTION_INSERT, data));
 	}
 	
+	// Custom view binder
 	private class MyViewBinder implements SimpleCursorAdapter.ViewBinder {
 		String val;
 
@@ -263,7 +306,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	}
 	
 	/**
-	 * Called when the Loader is created
+	 * Called when the Cursor Loader is created
 	 */
 	public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
 		// Create a CursorLoader that will take care of creating a cursor for the data
@@ -305,11 +348,19 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 
 
 	private void doSendAction() {
-		this.startActivity(new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this.getActivity(), BPSend.class));
+		if (mDualPane) {
+			dualPaneSend(null);
+		} else {
+			this.startActivity(new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this.getActivity(), BPSend.class));
+		}
 	}
 	
 	private void doDataManagerAction() {
-		this.startActivity(new Intent(this.getActivity(), BPDataManager.class));
+		if (mDualPane) {
+			dualPaneDataManager();
+		} else {
+			this.startActivity(new Intent(this.getActivity(), BPDataManager.class));
+		}
 	}
 	
 	@Override
@@ -366,8 +417,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 			Uri contextMenuUri = ContentUris.withAppendedId(mStartUri, mContextMenuRecordId);
 			switch (item.getItemId()) {
 			case R.id.menu_delete:
-				AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
-				diagFrag.show(this.getFragmentManager(), "delete");
+				showDeleteConfirmationDialog();
 				return true;
 			case R.id.menu_edit:
 				startActivity(new Intent(Intent.ACTION_EDIT, contextMenuUri));
@@ -380,6 +430,11 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 			Log.e(TAG, "bad menuInfo", e);
 		}
 		return super.onContextItemSelected(item);
+	}
+	
+	private void showDeleteConfirmationDialog() {
+		AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
+		diagFrag.show(this.getFragmentManager(), "delete");
 	}
 	
 	private void deleteRecord() {

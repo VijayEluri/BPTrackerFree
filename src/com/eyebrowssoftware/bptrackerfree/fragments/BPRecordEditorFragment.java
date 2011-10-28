@@ -90,7 +90,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	/// and the calendar
 	protected Calendar mCalendar;
 
-	// and the original values TODO: decide whether to create the element after commit
+	// and the original values 
 	protected Bundle mOriginalValues = null;
 	
 	protected EditText mNoteText;

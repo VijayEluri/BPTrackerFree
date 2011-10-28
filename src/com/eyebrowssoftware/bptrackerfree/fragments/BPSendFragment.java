@@ -79,7 +79,11 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	
 	private static final int SEND_LOAD_ID = 2;
 	
-	public static final int SEND_FAILED = Activity.RESULT_FIRST_USER; 
+	public static final int SEND_FAILED = Activity.RESULT_FIRST_USER;
+	
+	public static BPSendFragment newInstance() {
+		return new BPSendFragment();
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,

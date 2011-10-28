@@ -20,6 +20,10 @@ public class BPDataManagerFragment extends Fragment implements OnClickListener, 
 		void onDataManagerComplete(int status);
 	}
 	
+	public static BPDataManagerFragment newInstance() {
+		return new BPDataManagerFragment();
+	}
+	
 	public void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 	}
