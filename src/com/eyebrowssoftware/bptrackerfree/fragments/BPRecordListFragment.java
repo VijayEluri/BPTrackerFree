@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
@@ -37,6 +38,11 @@ import com.eyebrowssoftware.bptrackerfree.activity.BPSend;
 import com.eyebrowssoftware.bptrackerfree.content.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.content.BPRecords.BPRecord;
 
+/**
+ * Main Fragment for the list view/multi-pane startup view
+ * @author brione
+ *
+ */
 public class BPRecordListFragment extends ListFragment implements OnClickListener, 
 		LoaderManager.LoaderCallbacks<Cursor>, BPSendFragment.Callback, BPRecordEditorFragment.Callback,
 		BPDataManagerFragment.Callback, AlertDialogFragment.Callback {
@@ -118,11 +124,13 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	@Override
 	public void onResume() {
 		super.onResume();
+		Log.i(TAG, "onResume() - why do I exist?");
 	}
 	
 	@Override
 	public void onPause() {
 		super.onPause();
+		Log.i(TAG, "onPause() - why do I exist?");
 	}
 	
 	@Override
@@ -211,14 +219,16 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		}
 	}
 
+	private static final String ACTION_DATA = "DATA";
+	
 	// Push the insert editor fragment onto the back stack, so it can be popped off by the fragment
 	private void dualPaneInsert(Uri uri) {
 		FragmentManager fMgr = this.getFragmentManager();
 		// Show the correct fragment 
 		BPRecordEditorFragment mEditorFragment;
-		mEditorFragment = BPRecordEditorTextFragment.newInstance(uri, Intent.ACTION_INSERT);
+		mEditorFragment = BPRecordEditorTextFragment.newInstance(uri, Intent.ACTION_EDIT);
 		mEditorFragment.setTargetFragment(this, 128);
-		fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment).commit();
+		fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment, Intent.ACTION_INSERT).commit();
 		
 	}
 	
@@ -230,33 +240,63 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		BPRecordEditorFragment mEditorFragment;
 		mEditorFragment = BPRecordEditorTextFragment.newInstance(uri, Intent.ACTION_EDIT);
 		mEditorFragment.setTargetFragment(this, 128);
-		fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment).commit();
+		fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment, Intent.ACTION_EDIT).commit();
 	}
 	
 	// Push the data manager fragment onto the back stack, so it can be popped off by the fragment
 	// callback
-	@SuppressWarnings("unused")
 	private void dualPaneDataManager() {
 		FragmentManager fMgr = this.getFragmentManager();
 		// Show the correct fragment 
 		BPDataManagerFragment mDataManagerFragment;
 		mDataManagerFragment = BPDataManagerFragment.newInstance();
 		mDataManagerFragment.setTargetFragment(this, 128);
-		fMgr.beginTransaction().replace(R.id.details_fragment, mDataManagerFragment).commit();
+		fMgr.beginTransaction().replace(R.id.details_fragment, mDataManagerFragment, BPRecordListFragment.ACTION_DATA).commit();
 	}
 	
 	// Push the send fragment onto the back stack, so it can be popped off by the fragment
 	// callback
-	@SuppressWarnings("unused")
 	private void dualPaneSend(Uri uri) {
 		FragmentManager fMgr = this.getFragmentManager();
 		// Show the correct fragment 
 		BPSendFragment mSendFragment;
 		mSendFragment = BPSendFragment.newInstance();
 		mSendFragment.setTargetFragment(this, 128);
-		fMgr.beginTransaction().replace(R.id.details_fragment, mSendFragment).commit();
+		fMgr.beginTransaction().replace(R.id.details_fragment, mSendFragment, Intent.ACTION_SEND).commit();
 	}
 	
+	public void onSendComplete(int status) {
+		Log.i(TAG, "onSendComplete called with status: " + status);
+		FragmentManager fMgr = this.getFragmentManager();
+		Fragment frag = fMgr.findFragmentByTag(Intent.ACTION_SEND);
+		// Remove the send fragment 
+		fMgr.beginTransaction().remove(frag).commit();
+	}
+
+	public void onEditComplete(int status) {
+		Log.i(TAG, "onEditComplete called with status: " + status);
+		FragmentManager fMgr = this.getFragmentManager();
+		// Remove the edit fragment 
+		Fragment frag = fMgr.findFragmentByTag(Intent.ACTION_EDIT);
+		fMgr.beginTransaction().remove(frag).commit();
+	}
+
+	public void onDataManagerComplete(int status) {
+		Log.i(TAG, "onDataManagerComplete called with status: " + status);
+		FragmentManager fMgr = this.getFragmentManager();
+		// Remove the data manager fragment
+		Fragment frag = fMgr.findFragmentByTag(BPRecordListFragment.ACTION_DATA);
+		fMgr.beginTransaction().remove(frag).commit();
+	}
+
+	public void onNegativeButtonClicked() {
+		// nothing to do, dialog is cancelled already
+	}
+
+	public void onPositiveButtonClicked() {
+		deleteRecord();
+	}
+
 	// This is only used when the empty view is up
 	public void onClick(View v) {
 		Uri data = BPRecords.CONTENT_URI;
@@ -442,26 +482,4 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		getActivity().getContentResolver().delete(contextMenuUri, null, null);
 	}
 	
-	public void onSendComplete(int status) {
-		Log.i(TAG, "onSendComplete called with status: " + status);
-		showDetails(mCurrentCheckPosition);
-	}
-
-	public void onEditComplete(int status) {
-		Log.i(TAG, "onEditComplete called with status: " + status);
-		showDetails(mCurrentCheckPosition);
-	}
-
-	public void onDataManagerComplete(int status) {
-		Log.i(TAG, "onEditComplete called with status: " + status);
-		// XXX: do something here
-	}
-
-	public void onNegativeButtonClicked() {
-		// nothing to do, dialog is cancelled already
-	}
-
-	public void onPositiveButtonClicked() {
-		deleteRecord();
-	}
 }

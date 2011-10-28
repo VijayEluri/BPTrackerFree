@@ -5,6 +5,12 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 
+/**
+ * Semi-generic dialog fragment that displays a simple alert dialog with two buttons.
+ * 
+ * @author brione
+ *
+ */
 public class AlertDialogFragment extends BPDialogFragment {
 	@SuppressWarnings("unused")
 	private static final String TAG = "AlertDialogFragment";
@@ -14,6 +20,14 @@ public class AlertDialogFragment extends BPDialogFragment {
 	private static final String POSITIVE_BUTTON_STRING = "positive";
 	private static final String NEGATIVE_BUTTON_STRING = "negative";
 	
+	/**
+	 * Return a new instance, with the following settings
+	 * 
+	 * @param title_res - title string resource
+	 * @param positive_res - positive button string resource
+	 * @param negative_res - negative button string resource
+	 * @return new instance of this class
+	 */
 	public static AlertDialogFragment getNewInstance(int title_res, int positive_res, int negative_res) {
 		AlertDialogFragment fragment = new AlertDialogFragment();
 		Bundle args = new Bundle();

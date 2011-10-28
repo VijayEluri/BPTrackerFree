@@ -41,13 +41,24 @@ import com.eyebrowssoftware.bptrackerfree.adapters.RangeAdapter;
 import com.eyebrowssoftware.bptrackerfree.content.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.content.BPRecords.BPRecord;
 
+/**
+ * Base class for the two types of editors: spinner-based and text based
+ * @author brione
+ *
+ */
 public abstract class BPRecordEditorFragment extends Fragment implements OnDateSetListener, 
 		OnTimeSetListener, LoaderManager.LoaderCallbacks<Cursor> {
 
 	private static final String TAG = "BPRecordEditorFragment";
 
-	// The different distinct states the activity can be run in.
+	/**
+	 * Editing an existing record 
+	 */
 	public static final int STATE_EDIT = 0;
+	
+	/**
+	 * Inserting a new record
+	 */
 	public static final int STATE_INSERT = 1;
 	
 	protected static final int SYS_IDX = 0;
@@ -107,8 +118,13 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	
 	protected static final int BPRECORDS_TOKEN = 0;
 
-	// These are for arguments passed in the Arguments Bundle
+	/**
+	 * the name of the _id of the element to work on for editing
+	 */
 	public static final String DATA_KEY = BPRecord._ID;
+	/**
+	 * The name action string passed in the bundle arguments
+	 */
 	public static final String ACTION_KEY = "action";
 	
 	// This is for restoring from the system-saved state bundle
@@ -117,8 +133,18 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	
 	private static final int EDITOR_LOADER_ID = 1;
 	
+	/**
+	 * Must be implemented by Activities or Fragments that use this Fragment
+	 * 
+	 * @author brione
+	 *
+	 */
 	public interface Callback {
 		
+		/**
+		 * Called when the Fragment is complete, passing an Activity status for status
+		 * @param status
+		 */
 		void onEditComplete(int status);
 	}
 	
@@ -175,7 +201,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 		outState.putBoolean(COMPLETED, mCompleted);
 	}
 
-	public void updateDateTimeDisplay() {
+	private void updateDateTimeDisplay() {
 		Date date = mCalendar.getTime();
 		mDateButton.setText(BPTrackerFree.getDateString(date, DateFormat.MEDIUM));
 		mTimeButton.setText(BPTrackerFree.getTimeString(date, DateFormat.SHORT));
@@ -389,7 +415,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 		}
 	}
 
-	public void complete(int status) {
+	private void complete(int status) {
 		mCompleted = true;
 		Fragment frag = this.getTargetFragment();
 		if(frag != null) {

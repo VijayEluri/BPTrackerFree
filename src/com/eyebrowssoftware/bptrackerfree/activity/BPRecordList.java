@@ -9,6 +9,12 @@ import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.content.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordListFragment;
 
+/**
+ * Activity class for the main list activity of BP values
+ * 
+ * @author brione
+ *
+ */
 public class BPRecordList extends FragmentActivity {
 	
 	@SuppressWarnings("unused")

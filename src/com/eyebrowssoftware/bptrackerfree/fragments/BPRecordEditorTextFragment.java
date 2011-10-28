@@ -16,6 +16,12 @@ import android.widget.TextView;
 import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.content.BPRecords.BPRecord;
 
+/**
+ * Subclass of BPRecordEditorFragment that implements the text-based editing
+ * 
+ * @author brione
+ *
+ */
 public class BPRecordEditorTextFragment extends BPRecordEditorFragment {
 	@SuppressWarnings("unused")
 	private static final String TAG = "BPRecordEditorText";
@@ -28,6 +34,12 @@ public class BPRecordEditorTextFragment extends BPRecordEditorFragment {
 	
 	private EditText[] mEditValues = new EditText[VALUES_ARRAY_SIZE];
 	
+    /**
+     * Create a new instance of the editor with the specified settings
+     * @param uri - existing uri to edit
+     * @param action - Intent.ACTION_EDIT or IntentACTION_INSERT
+     * @return a new instance of this class
+     */
     public static BPRecordEditorFragment newInstance(Uri uri, String action) {
         BPRecordEditorTextFragment f = new BPRecordEditorTextFragment();
 

@@ -9,14 +9,38 @@ import android.widget.TextView;
 
 import com.eyebrowssoftware.bptrackerfree.R;
 
+/**
+ * Adapter class that has a fixed range of values
+ * 
+ * @author brione
+ *
+ */
 public class RangeAdapter extends BaseAdapter {
 	private static final String TAG = "RangeAdapter";
 
+	/**
+	 * Index for the max value
+	 */
 	public static final int MAX_IDX = 0;
+        /**
+         * Index for the "red" value
+         */
 	public static final int RED_IDX = 1;
+        /**
+         * Index for the "orange" value
+         */
 	public static final int ORANGE_IDX = 2;
+        /**
+         * Index for the "blue" value
+         */
 	public static final int BLUE_IDX = 3;
+        /**
+         * Index for the min value
+         */
 	public static final int MIN_IDX = 4;
+        /**
+         * Array size
+         */
 	public static final int ARRAY_SIZE = MIN_IDX + 1;
 
 	private Context mContext;
@@ -32,6 +56,9 @@ public class RangeAdapter extends BaseAdapter {
 	
 	private LayoutInflater mLI;
 	
+	/**
+	 * Constant signifying that Zones are not being used
+	 */
 	public static final int NO_ZONE = -1;
 
 	private boolean mReverse = false;
@@ -104,6 +131,10 @@ public class RangeAdapter extends BaseAdapter {
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 	}
 
+	/**
+	 * Get the current zone values
+	 * @return integer array of zone values for this setting
+	 */
 	public int[] getValues() {
 		int values[] = new int[ARRAY_SIZE];
 		values[MIN_IDX] = mLower;
@@ -114,6 +145,11 @@ public class RangeAdapter extends BaseAdapter {
 		return values;
 	}
 
+	/**
+	 * Set the values from the supplied integer array
+	 * @param values
+	 * @return this adapter with new values
+	 */
 	public RangeAdapter setValues(int[] values) {
 		if(values != null && values.length == ARRAY_SIZE) {
 			mLower = values[MIN_IDX];
@@ -128,6 +164,15 @@ public class RangeAdapter extends BaseAdapter {
 		return this;
 	}
 
+	/**
+	 * Set the values from the discrete values supplied
+	 * @param max
+	 * @param red
+	 * @param orange
+	 * @param blue
+	 * @param min
+	 * @return this adapter with the new values set
+	 */
 	public RangeAdapter setValues(int max, int red, int orange, int blue, int min) {
 		mLower = min;
 		mBlue = blue;
@@ -137,14 +182,27 @@ public class RangeAdapter extends BaseAdapter {
 		return this;
 	}
 
+	/**
+	 * Are we displaying things in the reverse order?
+	 * @return true if reversed
+	 */
 	public boolean isReverse() {
 		return mReverse;
 	}
 
+	/**
+	 * Set whether we are in reverse mode or not
+	 * @param mReverse
+	 */
 	public void setIsReverse(boolean mReverse) {
 		this.mReverse = mReverse;
 	}
 
+	/**
+	 * Get the current position, based on the value
+	 * @param value
+	 * @return the integer position
+	 */
 	public int getPosition(int value) {
 		if(value < mLower || value > mUpper) {
 			throw new IllegalArgumentException(TAG + ": Value out of range"); 

@@ -13,10 +13,26 @@ import android.widget.Toast;
 import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.content.BPRecords;
 
+/**
+ * Fragment implementation of the data manager class for clearing out the database
+ * 
+ * @author brione
+ *
+ */
 public class BPDataManagerFragment extends Fragment implements OnClickListener, AlertDialogFragment.Callback {
 
+	/**
+	 * Activities or Fragments that use this class must implement this callback interface
+	 * @author brione
+	 *
+	 */
 	public interface Callback {
 		
+		/**
+		 * Called when the DataManager is done, returning an Activity result
+		 * 
+		 * @param status - Activity.RESULT_OK, Activity.RESULT_CANCELED, etc
+		 */
 		void onDataManagerComplete(int status);
 	}
 	

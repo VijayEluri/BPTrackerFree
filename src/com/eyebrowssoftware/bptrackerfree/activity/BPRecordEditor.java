@@ -10,6 +10,12 @@ import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorSpinnerFragment;
 
+/**
+ * Activity for Spinner-based version of the editor.
+ * 
+ * @author brione
+ *
+ */
 public class BPRecordEditor extends FragmentActivity  implements BPRecordEditorFragment.Callback {
 	private static final String TAG = "BPRecordEditor";
 
