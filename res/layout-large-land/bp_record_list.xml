@@ -4,7 +4,7 @@
 	android:layout_width="match_parent"
 	android:orientation="horizontal"
 >
-    <fragment android:name="com.eyebrowssoftware.bptrackerfree.BPRecordListFragment" 
+    <fragment android:name="com.eyebrowssoftware.bptrackerfree.fragments.BPRecordListFragment" 
     	android:id="@+id/list_fragment" 
     	android:layout_width="0px" 
     	android:layout_height="match_parent"

@@ -146,16 +146,16 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		if(mStartUri == null) {
 			mStartUri = BPRecords.CONTENT_URI;
 		}
+		ListView lv = this.getListView();
+		lv.setOnCreateContextMenuListener(this);
+		lv.addHeaderView(this.getLayoutInflater(null).inflate(R.layout.bp_record_list_header, null), null, true);
+		
 		// No cursor yet. Will be assigned when the CursorLoader query is complete
 		SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(), 
 				R.layout.bp_record_list_item, null,	VALS, IDS, 0);
 		adapter.setViewBinder(new MyViewBinder());
 		this.setListAdapter(adapter);
 
-		ListView lv = this.getListView();
-		lv.setOnCreateContextMenuListener(this);
-		lv.addHeaderView(this.getLayoutInflater(null).inflate(R.layout.bp_record_list_header, null), null, true);
-		
 		// Set up our cursor loader. It manages the cursors from now on
 		this.getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
 		
@@ -226,9 +226,9 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		FragmentManager fMgr = this.getFragmentManager();
 		// Show the correct fragment 
 		BPRecordEditorFragment mEditorFragment;
-		mEditorFragment = BPRecordEditorTextFragment.newInstance(uri, Intent.ACTION_EDIT);
+		mEditorFragment = BPRecordEditorTextFragment.newInstance(uri, Intent.ACTION_INSERT);
 		mEditorFragment.setTargetFragment(this, 128);
-		fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment, Intent.ACTION_INSERT).commit();
+		fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment, Intent.ACTION_EDIT).commit();
 		
 	}
 	
