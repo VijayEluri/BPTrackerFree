@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.eyebrowssoftware.bptrackerfree.CheckableLinearLayout 
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/checkable_layout"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
 	android:orientation="vertical"
@@ -79,11 +81,11 @@
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		style="@style/bp_text" 
-	android:hint="Note"/>
+		android:hint="Note"/>
 	<TextView
 		android:id="@+id/dia_value"
 		android:layout_width="wrap_content"
 		android:layout_height="wrap_content"
 		android:visibility="gone"
 	/>
-</LinearLayout>
+</com.eyebrowssoftware.bptrackerfree.CheckableLinearLayout>

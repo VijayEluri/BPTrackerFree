@@ -147,6 +147,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 			mStartUri = BPRecords.CONTENT_URI;
 		}
 		ListView lv = this.getListView();
+		lv.setItemsCanFocus(false);
 		lv.setOnCreateContextMenuListener(this);
 		lv.addHeaderView(this.getLayoutInflater(null).inflate(R.layout.bp_record_list_header, null), null, true);
 		
@@ -324,10 +325,13 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 				// do nothing
 				return true;
 			case R.id.date: // Date
-			case R.id.time: // Time -- these use the same cursor column
 				long datetime = cursor.getLong(columnIndex);
-				val = (id == R.id.date) ? BPTrackerFree.getDateString(datetime, DateFormat.SHORT) 
-						: BPTrackerFree.getTimeString(datetime, DateFormat.SHORT);
+				val = BPTrackerFree.getDateString(datetime, DateFormat.SHORT); 
+				((TextView)view).setText(val);
+				return true;
+			case R.id.time: // Time -- these use the same cursor column
+				datetime = cursor.getLong(columnIndex);
+				val = BPTrackerFree.getTimeString(datetime, DateFormat.SHORT);
 				((TextView)view).setText(val);
 				return true;
 			case R.id.note:
