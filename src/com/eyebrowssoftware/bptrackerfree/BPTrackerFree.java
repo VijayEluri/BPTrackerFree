@@ -107,6 +107,11 @@ public class BPTrackerFree extends Application {
          * Note column index in the projection
          */
 	public static final int COLUMN_NOTE_INDEX = 6;
+	
+	/**
+	 * Defines the extras string name that defines dual pane mode, if present
+	 */
+	public static final String DUAL_PANE = "dual_pane";
 
 	/**
 	 *  Min difference between Systolic and Diastolic or between Max and Min

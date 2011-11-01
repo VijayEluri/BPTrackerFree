@@ -203,7 +203,9 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 				if (data == null) {
 					data = BPRecords.CONTENT_URI;
 				}
-				startActivity(new Intent(Intent.ACTION_INSERT, data));
+				Intent intent = new Intent(Intent.ACTION_INSERT, data);
+				intent.putExtra(BPTrackerFree.DUAL_PANE, mDualPane);
+				startActivity(intent);
 			} else {
 				Uri uri = ContentUris.withAppendedId(data, id);
 				String action = getActivity().getIntent().getAction();
@@ -214,7 +216,9 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 					getActivity().setResult(Activity.RESULT_OK, new Intent().setData(uri));
 				} else {
 					// Launch activity to view/edit the currently selected item
-					startActivity(new Intent(Intent.ACTION_EDIT, uri));
+					Intent intent = new Intent(Intent.ACTION_EDIT, uri);
+					intent.putExtra(BPTrackerFree.DUAL_PANE, mDualPane);
+					startActivity(intent);
 				}
 			}
 		}
@@ -301,7 +305,9 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	// This is only used when the empty view is up
 	public void onClick(View v) {
 		Uri data = BPRecords.CONTENT_URI;
-		startActivity(new Intent(Intent.ACTION_INSERT, data));
+		Intent intent = new Intent(Intent.ACTION_INSERT, data);
+		intent.putExtra(BPTrackerFree.DUAL_PANE, mDualPane);
+		startActivity(intent);
 	}
 	
 	// Custom view binder
@@ -395,7 +401,9 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		if (mDualPane) {
 			dualPaneSend(null);
 		} else {
-			this.startActivity(new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this.getActivity(), BPSend.class));
+			Intent intent = new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this.getActivity(), BPSend.class);
+			intent.putExtra(BPTrackerFree.DUAL_PANE, mDualPane);
+			startActivity(intent);
 		}
 	}
 	
@@ -403,7 +411,9 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		if (mDualPane) {
 			dualPaneDataManager();
 		} else {
-			this.startActivity(new Intent(this.getActivity(), BPDataManager.class));
+			Intent intent = new Intent(this.getActivity(), BPDataManager.class);
+			intent.putExtra(BPTrackerFree.DUAL_PANE, mDualPane);
+			startActivity(intent);
 		}
 	}
 	
@@ -464,10 +474,14 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 				showDeleteConfirmationDialog();
 				return true;
 			case R.id.menu_edit:
-				startActivity(new Intent(Intent.ACTION_EDIT, contextMenuUri));
+				Intent edit_intent = new Intent(Intent.ACTION_EDIT, contextMenuUri);
+				edit_intent.putExtra(BPTrackerFree.DUAL_PANE, mDualPane);
+				startActivity(edit_intent);
 				return true;
 			case R.id.menu_send:
-				startActivity(new Intent(Intent.ACTION_SEND, contextMenuUri, getActivity(), BPSend.class));
+				Intent send_intent = new Intent(Intent.ACTION_SEND, contextMenuUri, this.getActivity(), BPSend.class);
+				send_intent.putExtra(BPTrackerFree.DUAL_PANE, mDualPane);
+				startActivity(send_intent);
 				return true;
 			}
 		} catch (ClassCastException e) {

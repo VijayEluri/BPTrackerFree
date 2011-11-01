@@ -91,8 +91,16 @@ public class BPSendFragment extends Fragment implements CompoundButton.OnChecked
 	
 	private static final int SEND_LOAD_ID = 2;
 	
+	/**
+	 * New status definition for a failed send result
+	 */
 	public static final int SEND_FAILED = Activity.RESULT_FIRST_USER;
 	
+	/**
+	 * Return a new instance of this class
+	 * 
+	 * @return new instance
+	 */
 	public static BPSendFragment newInstance() {
 		return new BPSendFragment();
 	}

@@ -1,11 +1,13 @@
 package com.eyebrowssoftware.bptrackerfree.activity;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
+import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorSpinnerFragment;
@@ -19,6 +21,8 @@ import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorSpinnerFragmen
 public class BPRecordEditor extends FragmentActivity  implements BPRecordEditorFragment.Callback {
 	private static final String TAG = "BPRecordEditor";
 
+	private boolean mDualPane = false;
+	
 	@Override
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
@@ -27,6 +31,15 @@ public class BPRecordEditor extends FragmentActivity  implements BPRecordEditorF
 		Uri uri = intent.getData();
 		String action = intent.getAction();
 		
+		mDualPane = intent.getBooleanExtra(BPTrackerFree.DUAL_PANE, false);
+
+        if (mDualPane && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // If the screen is now in landscape mode, we can show the
+            // dialog in-line so we don't need this activity.
+            finish();
+            return;
+        }
+
 		setContentView(R.layout.bp_record_editor);
 
 		if (Intent.ACTION_EDIT.equals(action)) {

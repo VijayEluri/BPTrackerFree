@@ -2,10 +2,12 @@ package com.eyebrowssoftware.bptrackerfree.activity;
 
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
+import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorTextFragment;
@@ -19,11 +21,24 @@ import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorTextFragment;
 public class BPRecordEditorText extends FragmentActivity implements BPRecordEditorFragment.Callback {
 	private static final String TAG = "BPRecordEditorText";
 	
+	private boolean mDualPane = false;
+	
 	@Override
 	protected void onCreate(Bundle icicle) {
 		super.onCreate(icicle);
 
 		final Intent intent = getIntent();
+		
+		mDualPane = intent.getBooleanExtra(BPTrackerFree.DUAL_PANE, false);
+
+        if (mDualPane && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            // If the screen is now in landscape mode, we can show the
+            // dialog in-line so we don't need this activity.
+            finish();
+            return;
+        }
+
+		
 		final String action = intent.getAction();
 
 		setContentView(R.layout.bp_record_editor);
@@ -47,7 +62,6 @@ public class BPRecordEditorText extends FragmentActivity implements BPRecordEdit
 	}
 	
 	public void onEditComplete(int status) {
-		// TODO Auto-generated method stub
 		Log.e(TAG, "Got an onEditComplete(" + status + ")");
 		finish();
 	}

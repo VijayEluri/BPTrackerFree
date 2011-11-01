@@ -36,6 +36,11 @@ public class BPDataManagerFragment extends Fragment implements OnClickListener, 
 		void onDataManagerComplete(int status);
 	}
 	
+	/**
+	 * Return a new instance of this fragment
+	 * 
+	 * @return new instance
+	 */
 	public static BPDataManagerFragment newInstance() {
 		return new BPDataManagerFragment();
 	}
