@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.eyebrowssoftware.bptrackerfree.CheckableLinearLayout 
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res/com.example.android.apis"
     android:id="@+id/checkable_layout"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
@@ -9,7 +10,7 @@
 	<TableLayout 
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:shrinkColumns="0,1,2,3" 
+		android:shrinkColumns="0,2" 
 		android:stretchColumns="0,1,2,3"
 	>
 		<TableRow
@@ -80,7 +81,8 @@
 		android:id="@+id/note"
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		style="@style/bp_text" 
+		style="@style/bp_text"
+		android:singleLine="false" 
 		android:hint="Note"/>
 	<TextView
 		android:id="@+id/dia_value"

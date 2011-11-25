@@ -36,8 +36,9 @@ public class BPRecordEditor extends FragmentActivity  implements BPRecordEditorF
         if (mDualPane && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             // If the screen is now in landscape mode, we can show the
             // dialog in-line so we don't need this activity.
-            finish();
-            return;
+            Log.v(TAG, "onCreate: Should we finish here? Doesn't seem to work.");
+        	// finish();
+            // return;
         }
 
 		setContentView(R.layout.bp_record_editor);
@@ -51,17 +52,35 @@ public class BPRecordEditor extends FragmentActivity  implements BPRecordEditorF
 			finish();
 			return;
 		}
-		
-		BPRecordEditorSpinnerFragment mEditorFragment = new BPRecordEditorSpinnerFragment();
-		Bundle args = new Bundle();
-		args.putString(BPRecordEditorFragment.DATA_KEY, uri.toString());
-		args.putString(BPRecordEditorFragment.ACTION_KEY, action);
-		mEditorFragment.setArguments(args);
-		
+		BPRecordEditorFragment mEditorFragment = BPRecordEditorSpinnerFragment.newInstance(uri, action);
 		// Pass the action and data Uri to the fragment via fragment arguments
 		this.getSupportFragmentManager().beginTransaction().add(R.id.editor_fragment_container, mEditorFragment).commit();
 	}
 	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		Log.v(TAG, "onStart()");
+	}
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+		Log.v(TAG, "onResume()");
+	}
+	
+	@Override
+	protected void onPause() {
+		super.onPause();
+		Log.v(TAG, "onPause()");
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		Log.v(TAG, "onStop()");
+	}
+
 	public void onEditComplete(int status) {
 		Log.i(TAG, "Got an onEditComplete(" + status + ")");
 		finish();

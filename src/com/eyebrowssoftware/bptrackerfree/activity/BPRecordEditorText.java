@@ -34,8 +34,9 @@ public class BPRecordEditorText extends FragmentActivity implements BPRecordEdit
         if (mDualPane && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             // If the screen is now in landscape mode, we can show the
             // dialog in-line so we don't need this activity.
-            finish();
-            return;
+            Log.v(TAG, "onCreate: Should we finish here? Doesn't seem to work.");
+        	// finish();
+            // return;
         }
 
 		
@@ -52,12 +53,7 @@ public class BPRecordEditorText extends FragmentActivity implements BPRecordEdit
 			finish();
 			return;
 		}
-		BPRecordEditorTextFragment editorFragment = new BPRecordEditorTextFragment();
-		Bundle args = new Bundle();
-		args.putString(BPRecordEditorFragment.DATA_KEY, intent.getDataString());
-		args.putString(BPRecordEditorFragment.ACTION_KEY, action);
-		editorFragment.setArguments(args);
-		
+		BPRecordEditorFragment editorFragment = BPRecordEditorTextFragment.newInstance(intent.getData(), action);
 		this.getSupportFragmentManager().beginTransaction().add(R.id.editor_fragment_container, editorFragment).commit();
 	}
 	

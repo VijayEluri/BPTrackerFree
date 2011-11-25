@@ -1,7 +1,5 @@
 package com.eyebrowssoftware.bptrackerfree.fragments;
 
-import java.lang.ref.WeakReference;
-
 import android.app.Activity;
 import android.content.ContentValues;
 import android.net.Uri;
@@ -32,10 +30,9 @@ public class BPRecordEditorSpinnerFragment extends BPRecordEditorFragment implem
 
 	private Spinner[] mSpinners = null;
 
-	private static final int SPINNER_ITEM_RESOURCE_ID = R.layout.bp_spinner_item;
+	// private static final int SPINNER_ITEM_RESOURCE_ID = R.layout.bp_spinner_item;
+	private static final int SPINNER_ITEM_RESOURCE_ID = android.R.layout.simple_spinner_item;
 	private static final int SPINNER_ITEM_TEXT_VIEW_ID = android.R.id.text1;
-	
-	private WeakReference<Spinner[]> mWeakSpinners;
 	
     /**
      * Create a new instance of the editor with the specified settings
@@ -79,8 +76,6 @@ public class BPRecordEditorSpinnerFragment extends BPRecordEditorFragment implem
 		mSpinners[PLS_IDX] = (Spinner) myView.findViewById(R.id.pulse_spin);
 		mSpinners[PLS_IDX].setPromptId(R.string.label_pls_spinner);
 		mSpinners[PLS_IDX].setOnItemSelectedListener(this);
-		
-		mWeakSpinners = new WeakReference<Spinner[]>(mSpinners);
 
 		return layout;
 	}
@@ -112,12 +107,9 @@ public class BPRecordEditorSpinnerFragment extends BPRecordEditorFragment implem
 	
 	@Override
 	void onQueryComplete(int systolic, int diastolic, int pulse) {
-		Spinner[] spinners = mWeakSpinners.get();
-		if(spinners != null) {
-			BPTrackerFree.setSpinner(spinners[SYS_IDX], systolic);
-			BPTrackerFree.setSpinner(spinners[DIA_IDX], diastolic);
-			BPTrackerFree.setSpinner(spinners[PLS_IDX], pulse);
-		}
+		BPTrackerFree.setSpinner(mSpinners[SYS_IDX], systolic);
+		BPTrackerFree.setSpinner(mSpinners[DIA_IDX], diastolic);
+		BPTrackerFree.setSpinner(mSpinners[PLS_IDX], pulse);
 	}
 	
 	public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
@@ -139,12 +131,15 @@ public class BPRecordEditorSpinnerFragment extends BPRecordEditorFragment implem
 
 	public void onNothingSelected(AdapterView<?> parent) {
 		Spinner sp = (Spinner) parent;
-		if (sp.equals(mSpinners[SYS_IDX])) {
-			BPTrackerFree.setSpinner(mSpinners[SYS_IDX], mOriginalValues.getInt(BPRecord.SYSTOLIC));
-		} else if (sp.equals(mSpinners[DIA_IDX])) {
-			BPTrackerFree.setSpinner(mSpinners[DIA_IDX], mOriginalValues.getInt(BPRecord.DIASTOLIC));
-		} else if (sp.equals(mSpinners[PLS_IDX])) {
-			BPTrackerFree.setSpinner(mSpinners[PLS_IDX], mOriginalValues.getInt(BPRecord.PULSE));
+		if(this.mStateFragment != null) {
+			Bundle originalValues = mStateFragment.getOriginalValues();
+			if (sp.equals(mSpinners[SYS_IDX])) {
+				BPTrackerFree.setSpinner(mSpinners[SYS_IDX], originalValues.getInt(BPRecord.SYSTOLIC));
+			} else if (sp.equals(mSpinners[DIA_IDX])) {
+				BPTrackerFree.setSpinner(mSpinners[DIA_IDX], originalValues.getInt(BPRecord.DIASTOLIC));
+			} else if (sp.equals(mSpinners[PLS_IDX])) {
+				BPTrackerFree.setSpinner(mSpinners[PLS_IDX], originalValues.getInt(BPRecord.PULSE));
+			}
 		}
 	}
 

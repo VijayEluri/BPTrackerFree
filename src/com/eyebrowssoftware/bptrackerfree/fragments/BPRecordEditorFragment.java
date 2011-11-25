@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -94,16 +95,13 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	
 	// Member Variables
 	
-	// These are set by reading the arguments that were sent to the Fragement when it was started
+	// These are set by reading the arguments that were sent to the Fragment when it was started
 	protected int mState = STATE_INSERT;
 	protected Uri mUri;
 	
 	/// and the calendar
 	protected Calendar mCalendar;
 
-	// and the original values 
-	protected Bundle mOriginalValues = null;
-	
 	protected EditText mNoteText;
 	
 	protected Button mDateButton;
@@ -117,6 +115,8 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	protected boolean mCompleted = false;
 	
 	protected static final int BPRECORDS_TOKEN = 0;
+	
+	protected BPRecordEditorRetainedFragment mStateFragment;
 
 	/**
 	 * the name of the _id of the element to work on for editing
@@ -128,7 +128,6 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	public static final String ACTION_KEY = "action";
 	
 	// This is for restoring from the system-saved state bundle
-	private static final String MURI = "sUri";
 	private static final String COMPLETED = "completed";
 	
 	private static final int EDITOR_LOADER_ID = 1;
@@ -195,9 +194,6 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		
-		outState.putAll(mOriginalValues);
-		outState.putString(MURI, mUri.toString());
 		outState.putBoolean(COMPLETED, mCompleted);
 	}
 
@@ -220,27 +216,32 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
-		if(savedInstanceState != null) {
-			mOriginalValues = new Bundle(savedInstanceState);
-			mUri = Uri.parse(savedInstanceState.getString(MURI));
-			mCompleted = savedInstanceState.getBoolean(COMPLETED);
-		}
+		// see if a previous instance left an insert state holder fragment around
+        FragmentManager fm = getFragmentManager();
+        // Check to see if we have retained the worker fragment.
+        mStateFragment = (BPRecordEditorRetainedFragment)fm.findFragmentByTag("work");
 
-		Bundle args = this.getArguments();
-		String action = args.getString(ACTION_KEY);
-		Uri data = Uri.parse(args.getString(DATA_KEY));
-
-		if (Intent.ACTION_EDIT.equals(action)) {
-			mState = STATE_EDIT;
-			mUri = data;
-		} else if (Intent.ACTION_INSERT.equals(action)) {
-			mState = STATE_INSERT;
-			if (mUri == null) {
-				mUri = createRecord();
+        if (mStateFragment != null) {
+        	mState = mStateFragment.getState();
+        	mUri = mStateFragment.getUri();
+        } else {
+			Bundle args = this.getArguments();
+			String action = args.getString(ACTION_KEY);
+			mUri = Uri.parse(args.getString(DATA_KEY));
+			// the passed in Uri is generic in the case of ACTION_INSERT
+			if (Intent.ACTION_EDIT.equals(action)) {
+				mState = STATE_EDIT;
+			} else if (Intent.ACTION_INSERT.equals(action)) {
+				mState = STATE_INSERT;
+				mUri = this.createRecord();
+			} else {
+				Log.e(TAG, "Unknown action, exiting");
+				return;
 			}
-		} else {
-			Log.e(TAG, "Unknown action, exiting");
-			return;
+			// Create a new state holder fragment
+	        mStateFragment = BPRecordEditorRetainedFragment.newInstance(mState, mUri);
+	        mStateFragment.setTargetFragment(this, 2743);
+			fm.beginTransaction().add(mStateFragment, "work").commit();
 		}
 		if(mState == STATE_INSERT) {
 			mCancelButton.setText(R.string.menu_discard);
@@ -266,20 +267,9 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 			int diastolic = cursor.getInt(BPTrackerFree.COLUMN_DIASTOLIC_INDEX);
 			int pulse = cursor.getInt(BPTrackerFree.COLUMN_PULSE_INDEX);
 			long datetime = cursor.getLong(BPTrackerFree.COLUMN_CREATED_AT_INDEX);
-			long mod_datetime = cursor.getLong(BPTrackerFree.COLUMN_MODIFIED_AT_INDEX);
+			// long mod_datetime = cursor.getLong(BPTrackerFree.COLUMN_MODIFIED_AT_INDEX);
 			String note = cursor.getString(BPTrackerFree.COLUMN_NOTE_INDEX);
 			
-			// If we hadn't previously retrieved the original text, do so
-			// now. This allows the user to revert their changes.
-			if(mOriginalValues == null) {
-				mOriginalValues = new Bundle();
-				mOriginalValues.putInt(BPRecord.SYSTOLIC, systolic);
-				mOriginalValues.putInt(BPRecord.DIASTOLIC, diastolic);
-				mOriginalValues.putInt(BPRecord.PULSE, pulse);
-				mOriginalValues.putLong(BPRecord.CREATED_DATE, datetime);
-				mOriginalValues.putLong(BPRecord.MODIFIED_DATE, mod_datetime);
-				mOriginalValues.putString(BPRecord.NOTE, note);
-			}
 			if (this.isResumed()) {
 				mCalendar.setTimeInMillis(datetime);
 				Date date = mCalendar.getTime();
@@ -316,7 +306,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 	}
 	
 	protected void revertRecord() {
-		getActivity().getContentResolver().update(mUri, getOriginalContentValues(), null, null);
+		getActivity().getContentResolver().update(mUri, this.getOriginalContentValues(), null, null);
 	}
 	
 	protected ContentValues getCurrentRecordValues() {
@@ -333,15 +323,21 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 
 	private ContentValues getOriginalContentValues() {
 		ContentValues cv = new ContentValues();
-		if(mOriginalValues != null) {
-			cv.put(BPRecord.SYSTOLIC, mOriginalValues.getInt(BPRecord.SYSTOLIC));
-			cv.put(BPRecord.DIASTOLIC, mOriginalValues.getInt(BPRecord.DIASTOLIC));
-			cv.put(BPRecord.PULSE, mOriginalValues.getInt(BPRecord.PULSE));
-			cv.put(BPRecord.CREATED_DATE, mOriginalValues.getLong(BPRecord.CREATED_DATE));
-			cv.put(BPRecord.MODIFIED_DATE, mOriginalValues.getLong(BPRecord.MODIFIED_DATE));
-			cv.put(BPRecord.NOTE, mOriginalValues.getString(BPRecord.NOTE));
+		if(mStateFragment != null) {
+			Bundle originalValues = mStateFragment.getOriginalValues();
+			cv.put(BPRecord.SYSTOLIC, originalValues.getInt(BPRecord.SYSTOLIC));
+			cv.put(BPRecord.DIASTOLIC, originalValues.getInt(BPRecord.DIASTOLIC));
+			cv.put(BPRecord.PULSE, originalValues.getInt(BPRecord.PULSE));
+			cv.put(BPRecord.CREATED_DATE, originalValues.getLong(BPRecord.CREATED_DATE));
+			cv.put(BPRecord.MODIFIED_DATE, originalValues.getLong(BPRecord.MODIFIED_DATE));
+			cv.put(BPRecord.NOTE, originalValues.getString(BPRecord.NOTE));
 		}
 		return cv;
+	}
+	
+	private void removeStateFragment() {
+        getFragmentManager().beginTransaction().remove(mStateFragment).commit();
+        mStateFragment = null;
 	}
 
 	/**
@@ -417,6 +413,9 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 
 	private void complete(int status) {
 		mCompleted = true;
+		
+		removeStateFragment();
+		
 		Fragment frag = this.getTargetFragment();
 		if(frag != null) {
 			((BPRecordEditorFragment.Callback) frag).onEditComplete(status);
@@ -477,9 +476,8 @@ public abstract class BPRecordEditorFragment extends Fragment implements OnDateS
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceData) {
 			return new TimePickerDialog(BPRecordEditorFragment.this.getActivity(), 
-					BPRecordEditorFragment.this, mCalendar
-					.get(Calendar.HOUR_OF_DAY), mCalendar.get(Calendar.MINUTE),
-					false);
+				BPRecordEditorFragment.this, mCalendar
+					.get(Calendar.HOUR_OF_DAY), mCalendar.get(Calendar.MINUTE), false);
 		}
 
 	}

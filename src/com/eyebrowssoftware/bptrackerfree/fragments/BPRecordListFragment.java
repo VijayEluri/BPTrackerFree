@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -95,17 +96,12 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	private LinearLayout mEmptyControls;
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-		Bundle savedInstanceState) {
-		
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 		// Inflate the layout for this fragment
 		View layout = inflater.inflate(R.layout.bp_record_list_fragment, container, false);
-
 		RelativeLayout mEmptyContent = (RelativeLayout) layout.findViewById(R.id.empty_content_id);
 		mEmptyContent.setOnClickListener(this);
-
 		mEmptyControls = (LinearLayout) layout.findViewById(R.id.empty_controls_id);
-
 		return layout;
 	}
 	
@@ -133,6 +129,18 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 		Log.i(TAG, "onPause() - why do I exist?");
 	}
 	
+	@Override
+	public void onDestroy() {
+		super.onDestroy();
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		outState.putLong(CONTEXT_URI, mContextMenuRecordId);
+		outState.putInt(SELECTION, mCurrentCheckPosition);
+	}
+
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
@@ -227,47 +235,58 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	private static final String ACTION_DATA = "DATA";
 	
 	// Push the insert editor fragment onto the back stack, so it can be popped off by the fragment
-	private void dualPaneInsert(Uri uri) {
-		FragmentManager fMgr = this.getFragmentManager();
+	private int dualPaneInsert(Uri uri) {
 		// Show the correct fragment 
 		BPRecordEditorFragment mEditorFragment;
 		mEditorFragment = BPRecordEditorTextFragment.newInstance(uri, Intent.ACTION_INSERT);
 		mEditorFragment.setTargetFragment(this, 128);
-		fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment, Intent.ACTION_EDIT).commit();
-		
+        FragmentTransaction ft = this.getFragmentManager().beginTransaction();
+        ft.add(R.id.details_fragment, mEditorFragment, Intent.ACTION_INSERT);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.addToBackStack(null);
+        return ft.commit();
 	}
 	
 	// Push the edit editor fragment onto the back stack, so it can be popped off by the fragment
 	// callback
-	private void dualPaneEdit(Uri uri) {
-		FragmentManager fMgr = this.getFragmentManager();
+	private int dualPaneEdit(Uri uri) {
 		// Show the correct fragment 
 		BPRecordEditorFragment mEditorFragment;
 		mEditorFragment = BPRecordEditorTextFragment.newInstance(uri, Intent.ACTION_EDIT);
 		mEditorFragment.setTargetFragment(this, 128);
-		fMgr.beginTransaction().replace(R.id.details_fragment, mEditorFragment, Intent.ACTION_EDIT).commit();
+        FragmentTransaction ft = this.getFragmentManager().beginTransaction();
+        ft.add(R.id.details_fragment, mEditorFragment, Intent.ACTION_EDIT);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.addToBackStack(null);
+        return ft.commit();
 	}
 	
 	// Push the data manager fragment onto the back stack, so it can be popped off by the fragment
 	// callback
-	private void dualPaneDataManager() {
-		FragmentManager fMgr = this.getFragmentManager();
+	private int dualPaneDataManager() {
 		// Show the correct fragment 
 		BPDataManagerFragment mDataManagerFragment;
 		mDataManagerFragment = BPDataManagerFragment.newInstance();
 		mDataManagerFragment.setTargetFragment(this, 128);
-		fMgr.beginTransaction().replace(R.id.details_fragment, mDataManagerFragment, BPRecordListFragment.ACTION_DATA).commit();
+        FragmentTransaction ft = this.getFragmentManager().beginTransaction();
+        ft.add(R.id.details_fragment, mDataManagerFragment, BPRecordListFragment.ACTION_DATA);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.addToBackStack(null);
+        return ft.commit();
 	}
 	
 	// Push the send fragment onto the back stack, so it can be popped off by the fragment
 	// callback
-	private void dualPaneSend(Uri uri) {
-		FragmentManager fMgr = this.getFragmentManager();
+	private int dualPaneSend(Uri uri) {
 		// Show the correct fragment 
 		BPSendFragment mSendFragment;
 		mSendFragment = BPSendFragment.newInstance();
 		mSendFragment.setTargetFragment(this, 128);
-		fMgr.beginTransaction().replace(R.id.details_fragment, mSendFragment, Intent.ACTION_SEND).commit();
+        FragmentTransaction ft = this.getFragmentManager().beginTransaction();
+        ft.add(R.id.details_fragment, mSendFragment, Intent.ACTION_SEND);
+        ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
+        ft.addToBackStack(null);
+        return ft.commit();
 	}
 	
 	public void onSendComplete(int status) {
@@ -383,19 +402,6 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	public void onLoaderReset(Loader<Cursor> arg0) {
 		((SimpleCursorAdapter) this.getListAdapter()).swapCursor(null);
 	}
-	
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
-		outState.putLong(CONTEXT_URI, mContextMenuRecordId);
-		outState.putInt(SELECTION, mCurrentCheckPosition);
-	}
-
-	@Override
-	public void onDestroy() {
-		super.onDestroy();
-	}
-
 
 	private void doSendAction() {
 		if (mDualPane) {
@@ -492,6 +498,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 	
 	private void showDeleteConfirmationDialog() {
 		AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
+		diagFrag.setTargetFragment(this, 0);
 		diagFrag.show(this.getFragmentManager(), "delete");
 	}
 	

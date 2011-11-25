@@ -32,8 +32,9 @@ public class BPSend extends FragmentActivity implements BPSendFragment.Callback 
         if (mDualPane && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             // If the screen is now in landscape mode, we can show the
             // dialog in-line so we don't need this activity.
-            finish();
-            return;
+            Log.v(TAG, "onCreate: Should we finish here? Doesn't seem to work.");
+        	// finish();
+            // return;
         }
 
 		this.setContentView(R.layout.bp_send);

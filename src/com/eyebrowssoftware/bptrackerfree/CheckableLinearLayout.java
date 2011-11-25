@@ -1,8 +1,8 @@
 package com.eyebrowssoftware.bptrackerfree;
 
 import android.content.Context;
+import android.graphics.drawable.ColorDrawable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.widget.Checkable;
 import android.widget.LinearLayout;
 
@@ -13,7 +13,10 @@ import android.widget.LinearLayout;
  *
  */
 public class CheckableLinearLayout extends LinearLayout implements Checkable {
+	@SuppressWarnings("unused")
 	private static final String TAG = "CheckableLinearLayout";
+	
+	private boolean mChecked = false;
 	
 	/**
 	 * Vanilla constructor
@@ -47,17 +50,16 @@ public class CheckableLinearLayout extends LinearLayout implements Checkable {
 	}
 
 	public boolean isChecked() {
-		Log.i(TAG, "isChecked()");
-		return false;
+		return mChecked;
 	}
 
 	public void setChecked(boolean checked) {
-		Log.i(TAG, "setChecked(" + (checked ? "true" : "false") + ")");
-
+		mChecked = checked;
+        setBackgroundDrawable(checked ? new ColorDrawable(0xff0000a0) : null);
 	}
 
 	public void toggle() {
-		Log.i(TAG, "toggle()");
+		setChecked(!mChecked);
 	}
 
 }
