@@ -1,85 +1,90 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!-- Copyright (C) 2010 Brion Noble Emde
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
 <resources>
     <string name="app_name">BPTracker Free</string>
-
     <string name="bp_permission_description">Zugriff auf Ihren Blutdruck Daten.</string>
     <string name="bp_permission_label">Blutdruck Daten</string>
-
     <!-- Miscellaneous string for localization -->
     <string name="empty">Klick Hier zum Starten.</string>
-	<string name="insert_error">Insertion Fehler</string>
-
-	<!-- These are Window titles -->
+    <string name="insert_error">Insertion Fehler</string>
+    <!-- These are Window titles -->
     <string name="title_list">Blutdruck Geschichte</string>
-	<string name="title_provider">Blutdruck Ernährer</string>
-	<string name="title_edit">Bearbeiten von Daten</string>
-	<string name="title_create">Einfügen von Daten</string>
-	<string name="title_error">Interner Fehler</string>
-
-	<!-- These strings appear in the BPRecordEditor activity -->
-	<string name="menu_done">Vollständig</string>
-	<string name="menu_cancel">Abbrechen</string>
-	<string name="menu_revert">Rückgängig</string>
-	<string name="menu_discard">Verwerfen</string>
-	<string name="menu_delete">Löschen</string>
-	<string name="label_systolic">Systolischer</string>
-	<string name="label_diastolic">Diastolische</string>
-	<string name="label_pulse">Puls</string>
-	<string name="label_date">Datum</string>
-	<string name="label_time">Zeit</string>
-	<string name="really_delete">Löschen?</string>
-	<string name="label_yes">Ja</string>
-	<string name="label_no">Nein</string>
-	<string name="label_sys_spinner">Wahl die systolische Wert</string>
-	<string name="label_dia_spinner">Wahl den diastolischen Wert</string>
-	<string name="label_pls_spinner">Wahl den puls Wert</string>
-	<string name="msg_future_date">Späteren Zeitpunkt!</string>
-	<string name="label_note">Note</string>
-	
-	<!-- These values are for the BPRecordList activity -->
-	<string name="msg_add">Hier Erstellen</string>
-	<string name="menu_edit">Edieren</string>
-	<string name="menu_send">@string/label_send</string>
-	<string name="list_label_date">Datum:</string>
-	<string name="list_label_time">Zeit:</string>
-	<string name="list_label_bp">Sys/Dia:</string>
-	<string name="list_label_pulse">Puls:</string>
-	<string name="bp_separator">/</string>
-	
-	<!-- These strings are used on the BPSend Activity layout -->
-	<string name="title_send">@string/label_send</string>
-	<string name="label_send">Senden</string>
-	<string name="label_text">Als Text</string>
-	<string name="label_attach">Als Anhang</string>
-	<string name="label_send_how">Wie senden?</string>
-	<string name="label_message_format">Nachrichtentext (%1$d bytes)</string>
-	<string name="msg_nothing_to_send">Nichts schicken!</string>
-	<string name="msg_choose_send_method">Wo Senden?</string>
-
-	<!-- Localization fields for CSV file -->
-	<string name="bp_send_delimiter">,</string>
-	<string name="bp_send_date">@string/label_date</string>
-	<string name="bp_send_time">@string/label_time</string>
-	<string name="bp_send_sys">@string/label_systolic</string>
-	<string name="bp_send_dia">@string/label_diastolic</string>
-	<string name="bp_send_pls">@string/label_pulse</string>
-
-	<!-- This is a plain old Java format string - default is Date Time -->
-	<string name="datetime_format">%1$s %2$s</string>
-
-	<!-- ******************VERSION_CODE 9 NEW STRINGS****************** -->
-	<!-- These strings appear exclusively in the BPRecordEditorText activity -->
-	<string name="sys_not_empty">Systolischer Feld darf nicht leer sein.</string>
-	<string name="sys_range_error">Der Systolischer muss zwischen %1$d und %2$d werden.</string>
-	<string name="dia_not_empty">Diastolische Feld darf nicht leer sein.</string>
-	<string name="dia_range_error">Die Diastolische muss zwischen %1$d und %2$d werden.</string>
-	<string name="pls_not_empty">Puls Feld darf nicht leer sein.</string>
-	<string name="pls_range_error">Puls muss zwischen %1$d und %2$d werden.</string>
-	<string name="title_alternate_edit">Alternativ Bearbeiten von Daten</string>
-	
-	<!-- These strings apply to the data management activity -->
-	<string name="menu_data">Data</string>
-	<string name="label_delete_history">Historische Daten löschen</string>
-	<string name="msg_delete">Streichung von historischen Daten ist dauerhaft!</string>
-	<string name="msg_deleted">%s Datensätze gestrichen</string>
+    <string name="title_provider">Blutdruck Ernährer</string>
+    <string name="title_edit">Bearbeiten von Daten</string>
+    <string name="title_create">Einfügen von Daten</string>
+    <string name="title_error">Interner Fehler</string>
+    <!-- These strings appear in the BPRecordEditor activity -->
+    <string name="menu_done">Vollständig</string>
+    <string name="menu_cancel">Abbrechen</string>
+    <string name="menu_revert">Rückgängig</string>
+    <string name="menu_discard">Verwerfen</string>
+    <string name="menu_delete">Löschen</string>
+    <string name="label_systolic">Systolischer</string>
+    <string name="label_diastolic">Diastolische</string>
+    <string name="label_pulse">Puls</string>
+    <string name="label_date">Datum</string>
+    <string name="label_time">Zeit</string>
+    <string name="really_delete">Löschen?</string>
+    <string name="label_yes">Ja</string>
+    <string name="label_no">Nein</string>
+    <string name="label_sys_spinner">Wahl die systolische Wert</string>
+    <string name="label_dia_spinner">Wahl den diastolischen Wert</string>
+    <string name="label_pls_spinner">Wahl den puls Wert</string>
+    <string name="msg_future_date">Späteren Zeitpunkt!</string>
+    <string name="label_note">Note</string>
+    <string name="hint_note_entry">Schreiben Sie hier etwas</string>
+    <!-- These values are for the BPRecordList activity -->
+    <string name="msg_add">Hier Erstellen</string>
+    <string name="menu_edit">Edieren</string>
+    <string name="menu_send">@string/label_send</string>
+    <string name="list_label_date">Datum:</string>
+    <string name="list_label_time">Zeit:</string>
+    <string name="list_label_bp">Sys/Dia:</string>
+    <string name="list_label_pulse">Puls:</string>
+    <string name="bp_separator">/</string>
+    <!-- These strings are used on the BPSend Activity layout -->
+    <string name="title_send">@string/label_send</string>
+    <string name="label_send">Senden</string>
+    <string name="label_text">Als Text</string>
+    <string name="label_attach">Als Anhang</string>
+    <string name="label_send_how">Wie senden?</string>
+    <string name="label_message_format">Nachrichtentext (%1$d bytes)</string>
+    <string name="msg_nothing_to_send">Nichts schicken!</string>
+    <string name="msg_choose_send_method">Wo Senden?</string>
+    <!-- Localization fields for CSV file -->
+    <string name="bp_send_delimiter">,</string>
+    <string name="bp_send_date">@string/label_date</string>
+    <string name="bp_send_time">@string/label_time</string>
+    <string name="bp_send_sys">@string/label_systolic</string>
+    <string name="bp_send_dia">@string/label_diastolic</string>
+    <string name="bp_send_pls">@string/label_pulse</string>
+    <!-- This is a plain old Java format string - default is Date Time -->
+    <string name="datetime_format">%1$s %2$s</string>
+    <!-- ******************VERSION_CODE 9 NEW STRINGS****************** -->
+    <!-- These strings appear exclusively in the BPRecordEditorText activity -->
+    <string name="sys_not_empty">Systolischer Feld darf nicht leer sein.</string>
+    <string name="sys_range_error">Der Systolischer muss zwischen %1$d und %2$d werden.</string>
+    <string name="dia_not_empty">Diastolische Feld darf nicht leer sein.</string>
+    <string name="dia_range_error">Die Diastolische muss zwischen %1$d und %2$d werden.</string>
+    <string name="pls_not_empty">Puls Feld darf nicht leer sein.</string>
+    <string name="pls_range_error">Puls muss zwischen %1$d und %2$d werden.</string>
+    <string name="title_alternate_edit">Alternativ Bearbeiten von Daten</string>
+    <!-- These strings apply to the data management activity -->
+    <string name="menu_data">Data</string>
+    <string name="label_delete_history">Historische Daten löschen</string>
+    <string name="msg_delete">Streichung von historischen Daten ist dauerhaft!</string>
+    <string name="msg_deleted">%s Datensätze gestrichen</string>
 </resources>

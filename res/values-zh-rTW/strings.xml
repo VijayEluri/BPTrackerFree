@@ -1,99 +1,101 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!-- Copyright (C) 2010 Brion Noble Emde
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
 <resources>
     <string name="app_name">BPTracker Free</string>
-
     <string name="bp_permission_description">讀取和寫入您的血壓資料。</string>
     <string name="bp_permission_label">個人醫療資料</string>
-
     <!-- Miscellaneous string for localization -->
     <string name="empty">無血壓記錄：點擊這兒開始。</string>
-	<string name="insert_error">插入行失敗</string>
-
-	<!-- These are Window titles -->
+    <string name="insert_error">插入行失敗</string>
+    <!-- These are Window titles -->
     <string name="title_list">血壓歷史</string>
-	<string name="title_provider">血壓提供者</string>
-	<string name="title_edit">編輯閱讀資料</string>
-	<string name="title_create">新增新的閱讀資料</string>
-	<string name="title_error">內部錯誤</string>
-
-	<!-- These strings appear in the BPRecordEditor activity -->
-	<string name="menu_done">完成</string>
-	<string name="menu_revert">還原</string>
-	<string name="menu_cancel">取消</string>
-	<string name="menu_discard">取消</string>
-	<string name="menu_delete">刪除</string>
-	<string name="label_systolic">心臟收縮</string>
-	<string name="label_diastolic">心臟舒張</string>
-	<string name="label_pulse">脈搏</string>
-	<string name="label_date">修改時間</string>
-	<string name="label_time">耗時</string>
-	<string name="really_delete">刪除這個？</string>
-	<string name="label_yes">是</string>
-	<string name="label_no">否</string>
-	<string name="label_sys_spinner">獲取心臟收縮值</string>
-	<string name="label_dia_spinner">獲取心臟舒張值</string>
-	<string name="label_note">註解</string>
-	<string name="label_pls_spinner">獲取脈搏值</string>
-	<string name="msg_future_date">將來的日期！</string>
-	
-	<!-- These values are for the BPRecordList activity -->
-	<string name="menu_edit">編輯</string>
-	<string name="menu_send">@string/label_send</string>
-	<string name="list_label_date">日期：</string>
-	<string name="list_label_time">時間：</string>
-	<string name="list_label_bp">心臟收縮/舒張：</string>
-	<string name="list_label_pulse">脈搏：</string>
-	<string name="msg_add">點擊以新增</string>
-	<string name="bp_separator">/</string>
-	
-	<!-- These strings are used on the BPSend Activity layout -->
-	<string name="title_send">@string/label_send</string>
-	<string name="label_send">傳送</string>
-	<string name="label_text">作為文字</string>
-	<string name="label_attach">作為附屬應用程式</string>
-	<string name="label_send_how">如何傳送？</string>
-	<string name="label_message_format">訊息正文(%1$d 位元組)</string>
-	<string name="msg_nothing_to_send">無任何東西供傳送！</string>
-	<string name="msg_choose_send_method">傳送到哪？</string>
-	<string name="msg_file_not_found_error">錯誤：未找到檔案。您的資料是安全的。</string>
-	<string name="msg_io_exception_error">錯誤：I/O 異常。你的資料是安全的。</string>
-	<string name="msg_directory_error">錯誤：儲存空間。你的資料是安全的。</string>
-	<string name="msg_null_file_error">錯誤：無效的檔案參照。你的資料是安全的。</string>
-	<string name="msg_no_file_error">錯誤：不存在檔案。你的資料是安全的。</string>
-	<string name="msg_zero_size_error">錯誤：檔案大小為0。你的資料是安全的。</string>
-	<string name="msg_twilight_zone">我們暫時的進入了模糊狀態。你的資料是安全的。</string>
-		
-	<!-- These are the column names for the BPSend Activity, so we can send localized names -->
-	<string name="bp_send_delimiter">,</string>
-	<string name="bp_send_date">@string/label_date</string>
-	<string name="bp_send_time">@string/label_time</string>
-	<string name="bp_send_sys">@string/label_systolic</string>
-	<string name="bp_send_dia">@string/label_diastolic</string>
-	<string name="bp_send_pls">@string/label_pulse</string>
-	<string name="bp_send_note">@string/label_note</string>
-
-	<!-- This is a plain old Java format string - default is Date Time -->
-	<string name="datetime_format">%1$s %2$s</string>
-	
-	<!-- *********************************************************************** -->
-	<!-- ******************VERSION_CODE 9 (v1.2.6) NEW STRINGS****************** -->
-	
-	<!-- These strings appear exclusively in the BPRecordEditorText activity -->
-	<string name="sys_not_empty">收縮值欄位必須輸入。</string>
-	<string name="sys_range_error">收縮值必須介於 %1$d 和 %2$d 之間。</string>
-	<string name="dia_not_empty">舒張值欄位必須輸入。</string>
-	<string name="dia_range_error">舒張值必須介於 %1$d 和 %2$d 之間。</string>
-	<string name="pls_not_empty">脈搏值欄位必須輸入。</string>
-	<string name="pls_range_error">脈搏值必須介於 %1$d 和 %2$d 之間。</string>
-	<string name="title_alternate_edit">可選閱讀資料編輯器</string>
-	
-	<!-- These strings appear in the data management activity -->
-	<string name="menu_data">資料</string>
-	<string name="label_delete_history">刪除歷史資料</string>
-	<string name="msg_delete">對於歷史資料的刪除將是永久性的！</string>
-	<string name="msg_deleted">已刪除 %s 條記錄</string>
-	
-	<!-- ******************VERSION_CODE 9 (v1.2.6) NEW STRINGS****************** -->
-	<!-- *********************************************************************** -->
-	
+    <string name="title_provider">血壓提供者</string>
+    <string name="title_edit">編輯閱讀資料</string>
+    <string name="title_create">新增新的閱讀資料</string>
+    <string name="title_error">內部錯誤</string>
+    <!-- These strings appear in the BPRecordEditor activity -->
+    <string name="menu_done">完成</string>
+    <string name="menu_revert">還原</string>
+    <string name="menu_cancel">取消</string>
+    <string name="menu_discard">取消</string>
+    <string name="menu_delete">刪除</string>
+    <string name="label_systolic">心臟收縮</string>
+    <string name="label_diastolic">心臟舒張</string>
+    <string name="label_pulse">脈搏</string>
+    <string name="label_date">修改時間</string>
+    <string name="label_time">耗時</string>
+    <string name="really_delete">刪除這個？</string>
+    <string name="label_yes">是</string>
+    <string name="label_no">否</string>
+    <string name="label_sys_spinner">獲取心臟收縮值</string>
+    <string name="label_dia_spinner">獲取心臟舒張值</string>
+    <string name="label_note">註解</string>
+    <string name="label_pls_spinner">獲取脈搏值</string>
+    <string name="msg_future_date">將來的日期！</string>
+    <string name="hint_note_entry">寫的東西在這裡</string>
+    <!-- These values are for the BPRecordList activity -->
+    <string name="menu_edit">編輯</string>
+    <string name="menu_send">@string/label_send</string>
+    <string name="list_label_date">日期：</string>
+    <string name="list_label_time">時間：</string>
+    <string name="list_label_bp">心臟收縮/舒張：</string>
+    <string name="list_label_pulse">脈搏：</string>
+    <string name="msg_add">點擊以新增</string>
+    <string name="bp_separator">/</string>
+    <!-- These strings are used on the BPSend Activity layout -->
+    <string name="title_send">@string/label_send</string>
+    <string name="label_send">傳送</string>
+    <string name="label_text">作為文字</string>
+    <string name="label_attach">作為附屬應用程式</string>
+    <string name="label_send_how">如何傳送？</string>
+    <string name="label_message_format">訊息正文(%1$d 位元組)</string>
+    <string name="msg_nothing_to_send">無任何東西供傳送！</string>
+    <string name="msg_choose_send_method">傳送到哪？</string>
+    <string name="msg_file_not_found_error">錯誤：未找到檔案。您的資料是安全的。</string>
+    <string name="msg_io_exception_error">錯誤：I/O 異常。你的資料是安全的。</string>
+    <string name="msg_directory_error">錯誤：儲存空間。你的資料是安全的。</string>
+    <string name="msg_null_file_error">錯誤：無效的檔案參照。你的資料是安全的。</string>
+    <string name="msg_no_file_error">錯誤：不存在檔案。你的資料是安全的。</string>
+    <string name="msg_zero_size_error">錯誤：檔案大小為0。你的資料是安全的。</string>
+    <string name="msg_twilight_zone">我們暫時的進入了模糊狀態。你的資料是安全的。</string>
+    <!-- These are the column names for the BPSend Activity, so we can send localized names -->
+    <string name="bp_send_delimiter">,</string>
+    <string name="bp_send_date">@string/label_date</string>
+    <string name="bp_send_time">@string/label_time</string>
+    <string name="bp_send_sys">@string/label_systolic</string>
+    <string name="bp_send_dia">@string/label_diastolic</string>
+    <string name="bp_send_pls">@string/label_pulse</string>
+    <string name="bp_send_note">@string/label_note</string>
+    <!-- This is a plain old Java format string - default is Date Time -->
+    <string name="datetime_format">%1$s %2$s</string>
+    <!-- *********************************************************************** -->
+    <!-- ******************VERSION_CODE 9 (v1.2.6) NEW STRINGS****************** -->
+    <!-- These strings appear exclusively in the BPRecordEditorText activity -->
+    <string name="sys_not_empty">收縮值欄位必須輸入。</string>
+    <string name="sys_range_error">收縮值必須介於 %1$d 和 %2$d 之間。</string>
+    <string name="dia_not_empty">舒張值欄位必須輸入。</string>
+    <string name="dia_range_error">舒張值必須介於 %1$d 和 %2$d 之間。</string>
+    <string name="pls_not_empty">脈搏值欄位必須輸入。</string>
+    <string name="pls_range_error">脈搏值必須介於 %1$d 和 %2$d 之間。</string>
+    <string name="title_alternate_edit">可選閱讀資料編輯器</string>
+    <!-- These strings appear in the data management activity -->
+    <string name="menu_data">資料</string>
+    <string name="label_delete_history">刪除歷史資料</string>
+    <string name="msg_delete">對於歷史資料的刪除將是永久性的！</string>
+    <string name="msg_deleted">已刪除 %s 條記錄</string>
+    <!-- ******************VERSION_CODE 9 (v1.2.6) NEW STRINGS****************** -->
+    <!-- *********************************************************************** -->
 </resources>
