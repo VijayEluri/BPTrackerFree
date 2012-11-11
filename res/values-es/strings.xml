@@ -64,6 +64,13 @@
     <string name="label_message_format">Texto del mensaje (%1$d bytes)</string>
     <string name="msg_nothing_to_send">Nada para enviar!</string>
     <string name="msg_choose_send_method">Enviar a dónde?</string>
+    <string name="msg_file_not_found_error">Error: El archivo no encontrado. Sus datos es segura.</string>
+    <string name="msg_io_exception_error">Error: I/O Exception. Sus datos es segura.</string>
+    <string name="msg_directory_error">Error: El espacio de almacenamiento. Sus datos es segura.</string>
+    <string name="msg_null_file_error">Error: la referencia de archivo Null. Sus datos es segura.</string>
+    <string name="msg_no_file_error">Error: No existe el archivo. Sus datos es segura.</string>
+    <string name="msg_zero_size_error">Error: Zero tamaño del archivo. Sus datos es segura.</string>
+    <string name="msg_twilight_zone">Hemos entrado brevemente la Dimensión Desconocida. Sus datos es segura.</string>
     <!-- These are the column names for the BPSend Activity, so we can send localized names -->
     <string name="bp_send_delimiter">,</string>
     <string name="bp_send_date">@string/label_date</string>
@@ -71,6 +78,7 @@
     <string name="bp_send_sys">@string/label_systolic</string>
     <string name="bp_send_dia">@string/label_diastolic</string>
     <string name="bp_send_pls">@string/label_pulse</string>
+    <string name="bp_send_note">@string/label_note</string>
     <!-- This is a plain old Java format string - default is Date Time -->
     <string name="datetime_format">%1$s %2$s</string>
     <!-- ******************VERSION_CODE 9 NEW STRINGS****************** -->

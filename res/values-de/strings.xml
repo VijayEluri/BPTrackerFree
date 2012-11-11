@@ -64,6 +64,13 @@
     <string name="label_message_format">Nachrichtentext (%1$d bytes)</string>
     <string name="msg_nothing_to_send">Nichts schicken!</string>
     <string name="msg_choose_send_method">Wo Senden?</string>
+    <string name="msg_file_not_found_error">Fehler: Datei nicht gefunden. Ihre Daten sind sicher.</string>
+    <string name="msg_io_exception_error">Fehler: I / O Exception. Ihre Daten sind sicher.</string>
+    <string name="msg_directory_error">Fehler: Datenmenge. Ihre Daten sind sicher.</string>
+    <string name="msg_null_file_error">Fehler: Null Aktenzeichen. Ihre Daten sind sicher.</string>
+    <string name="msg_no_file_error">Fehler: Datei nicht gefunden. Ihre Daten sind sicher.</string>
+    <string name="msg_zero_size_error">Fehler: Zero Dateigröße. Ihre Daten sind sicher.</string>
+    <string name="msg_twilight_zone">Wir sind in der Twilight Zone. Ihre Daten sind sicher.</string>
     <!-- Localization fields for CSV file -->
     <string name="bp_send_delimiter">,</string>
     <string name="bp_send_date">@string/label_date</string>
@@ -71,6 +78,7 @@
     <string name="bp_send_sys">@string/label_systolic</string>
     <string name="bp_send_dia">@string/label_diastolic</string>
     <string name="bp_send_pls">@string/label_pulse</string>
+    <string name="bp_send_note">@string/label_note</string>
     <!-- This is a plain old Java format string - default is Date Time -->
     <string name="datetime_format">%1$s %2$s</string>
     <!-- ******************VERSION_CODE 9 NEW STRINGS****************** -->

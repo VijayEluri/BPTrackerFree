@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Copyright (C) 2010 Brion Noble Emde
+<!--
+     Copyright (C) 2010 Brion Noble Emde
 
      Licensed under the Apache License, Version 2.0 (the "License");
      you may not use this file except in compliance with the License.
@@ -13,23 +14,12 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="fill_parent"
-	android:layout_height="wrap_content"
-	android:orientation="horizontal"
->
-	<ImageView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:src="@android:drawable/ic_menu_add"
-		android:layout_gravity="center_vertical|right"
-	/>
-	<TextView
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:text="@string/msg_add"
-		android:gravity="center_vertical"
-		android:layout_gravity="center_vertical|left"
-		style="@style/bp_list_header"
-	/>
-</LinearLayout>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/bp_list_header"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical|left"
+    android:drawableLeft="@android:drawable/ic_menu_add"
+    android:gravity="center_vertical"
+    android:text="@string/msg_add"
+/>
