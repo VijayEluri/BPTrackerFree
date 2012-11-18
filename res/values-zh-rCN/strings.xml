@@ -98,4 +98,5 @@
     <string name="msg_deleted">已删除 %s 条记录</string>
     <!-- ******************VERSION_CODE 9 (v1.2.6) NEW STRINGS****************** -->
     <!-- *********************************************************************** -->
+    <string name="menu_settings">Settings</string>
 </resources>
