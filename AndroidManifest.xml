@@ -33,6 +33,7 @@
     <application
       android:icon="@drawable/icon"
       android:label="@string/app_name"
+      android:allowBackup="false"
     android:name=".BPTrackerFree">
         <activity
             android:name=".BPRecordList"

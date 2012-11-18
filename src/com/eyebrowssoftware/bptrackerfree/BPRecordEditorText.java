@@ -39,6 +39,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -79,12 +80,6 @@ public class BPRecordEditorText extends Activity implements OnDateSetListener, O
     private static final int COLUMN_CREATED_AT_INDEX = 4;
     private static final int COLUMN_MODIFIED_AT_INDEX = 5;
     private static final int COLUMN_NOTE_INDEX = 6;
-
-    // Identifiers of our menu items
-    private static final int DONE_ID = Menu.FIRST;
-    private static final int REVERT_ID = Menu.FIRST + 1;
-    private static final int DISCARD_ID = Menu.FIRST + 2;
-    private static final int DELETE_ID = Menu.FIRST + 3;
 
     // The menu group, for grouped items
     private static final int MENU_GROUP = Menu.NONE + 1;
@@ -402,40 +397,46 @@ public class BPRecordEditorText extends Activity implements OnDateSetListener, O
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-
-        // Build the menus that are shown when editing.
-        if (mState == STATE_EDIT) {
-            menu.add(MENU_GROUP, DONE_ID, 0, R.string.menu_done);
-            menu.add(MENU_GROUP, REVERT_ID, 1, R.string.menu_revert);
-            menu.add(MENU_GROUP, DELETE_ID, 2, R.string.menu_delete);
-        } else {
-            menu.add(MENU_GROUP, DONE_ID, 0, R.string.menu_done);
-            menu.add(MENU_GROUP, DISCARD_ID, 1, R.string.menu_discard);
-        }
+        MenuInflater inflater = this.getMenuInflater();
+        inflater.inflate(R.menu.bp_record_editor_options_menu, menu);
         return true;
     }
 
-    @TargetApi(5)
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        // Build the menus that are shown when editing.
+        if (mState == STATE_EDIT) {
+            menu.setGroupVisible(R.id.edit_menu_group, true);
+            menu.setGroupVisible(R.id.create_menu_group, false);
+            return true;
+        } else if (mState == STATE_INSERT){
+            menu.setGroupVisible(R.id.edit_menu_group, false);
+            menu.setGroupVisible(R.id.create_menu_group, true);
+            return true;
+        }
+        return false;
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle all of the possible menu actions.
         switch (item.getItemId()) {
-        case DELETE_ID:
+        case R.id.menu_delete:
             showDialog(DELETE_DIALOG_ID);
             return true;
-        case DISCARD_ID:
+        case R.id.menu_discard:
             cancelRecord();
             return true;
-        case REVERT_ID:
+        case R.id.menu_revert:
             cancelRecord();
             return true;
-        case DONE_ID:
-            onBackPressed();
+        case R.id.menu_done:
+            finish();
             return true;
-        default:
-            return super.onOptionsItemSelected(item);
         }
+        return super.onOptionsItemSelected(item);
     }
+
 
     private ContentValues getOriginalContentValues() {
         ContentValues cv = new ContentValues();

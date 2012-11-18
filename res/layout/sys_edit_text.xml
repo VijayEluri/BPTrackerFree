@@ -14,8 +14,9 @@
      limitations under the License.
 -->
 <TableRow xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_height="wrap_content" 
+  android:layout_height="wrap_content"
+  android:layout_width="fill_parent"
 >
-	<include android:id="@+id/systolic_label" layout="@layout/bp_edit_label" />
-	<include android:id="@+id/systolic_edit_text" layout="@layout/bp_edit_text" />
+  <include android:id="@+id/systolic_label" layout="@layout/bp_edit_label" />
+  <include android:id="@+id/systolic_edit_text" layout="@layout/bp_edit_text" />
 </TableRow>

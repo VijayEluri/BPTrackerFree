@@ -95,4 +95,5 @@
     <string name="label_delete_history">Historische Daten löschen</string>
     <string name="msg_delete">Streichung von historischen Daten ist dauerhaft!</string>
     <string name="msg_deleted">%s Datensätze gestrichen</string>
+    <string name="menu_settings">Einstellungen</string>
 </resources>

@@ -95,4 +95,5 @@
     <string name="label_delete_history">Supprimez les données historiques</string>
     <string name="msg_delete">Suppression des données historiques est permanente!</string>
     <string name="msg_deleted">Supprimé %s records</string>
+    <string name="menu_settings">Préférences</string>
 </resources>
