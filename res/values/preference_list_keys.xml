@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="default_value_keys">
+        <item>fixed_values</item>
+        <item>average_values</item>
+    </string-array>
+</resources>

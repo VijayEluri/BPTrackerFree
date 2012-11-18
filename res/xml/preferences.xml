@@ -17,7 +17,8 @@
     <ListPreference
         android:key="initial_value_choices"
         android:title="@string/default_values"
-        android:entries="@array/preferences_array"/>
-
-
+        android:entries="@array/default_value_options"
+        android:entryValues="@array/default_value_keys"
+        android:defaultValue="@string/fixed_values"
+    />
 </PreferenceScreen>

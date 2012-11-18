@@ -98,4 +98,8 @@
     <string name="default_values">Defaults</string>
     <string name="fixed_values">Fixed Values</string>
     <string name="average_values">Average Values</string>
+    <string-array name="default_value_options">
+        <item>@string/fixed_values</item>
+        <item>@string/average_values</item>
+    </string-array>
 </resources>

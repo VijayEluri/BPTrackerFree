@@ -239,8 +239,8 @@ public class BPRecordList extends ListActivity implements OnClickListener {
             startActivity(new Intent(this, BPDataManager.class));
             return true;
         case R.id.menu_settings:
-            Toast.makeText(this, "Settings: Not Implemented", Toast.LENGTH_LONG).show();
-            // Fallthrough
+            startActivity(new Intent(this, BPPreferenceActivity.class));
+            return true;
         default:
             return false;
         }
