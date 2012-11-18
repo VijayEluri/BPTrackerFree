@@ -21,20 +21,20 @@
         android:targetSdkVersion="10"
     />
     <permission
-    android:name="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
-    android:permissionGroup="android.permission-group.PERSONAL_INFO"
-    android:label="@string/bp_permission_label"
-    android:description="@string/bp_permission_description"
-    android:protectionLevel="dangerous"
-  />
+        android:name="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
+        android:permissionGroup="android.permission-group.PERSONAL_INFO"
+        android:label="@string/bp_permission_label"
+        android:description="@string/bp_permission_description"
+        android:protectionLevel="dangerous"
+    />
 
-  <uses-permission android:name="com.eyebrowssoftware.BPTracker.permission.MEDICAL" />
+    <uses-permission android:name="com.eyebrowssoftware.BPTracker.permission.MEDICAL" />
 
     <application
-      android:icon="@drawable/icon"
-      android:label="@string/app_name"
-      android:allowBackup="false"
-    android:name=".BPTrackerFree">
+        android:icon="@drawable/icon"
+        android:label="@string/app_name"
+        android:allowBackup="false"
+        android:name=".BPTrackerFree">
         <activity
             android:name=".BPRecordList"
             android:label="@string/app_name"
@@ -52,52 +52,58 @@
             android:label="@string/title_edit"
             android:exported="false"
         >
-          <intent-filter>
-            <action android:name="android.intent.action.EDIT" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <data android:mimeType="vnd.android.cursor.item/vnd.eyebrowssoftware.free.bp_record" />
-          </intent-filter>
-          <intent-filter>
-            <action android:name="android.intent.action.INSERT" />
-            <category android:name="android.intent.category.DEFAULT" />
-            <data android:mimeType="vnd.android.cursor.dir/vnd.eyebrowssoftware.free.bp_record" />
-          </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.EDIT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.item/vnd.eyebrowssoftware.free.bp_record" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.INSERT" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="vnd.android.cursor.dir/vnd.eyebrowssoftware.free.bp_record" />
+            </intent-filter>
         </activity>
-          <activity
+        <activity
             android:name=".BPRecordEditorText"
             android:theme="@android:style/Theme.Light"
             android:label="@string/title_alternate_edit"
             android:exported="false"
-      >
-        <intent-filter>
-          <action android:name="android.intent.action.EDIT" />
-          <category android:name="android.intent.category.DEFAULT" />
-          <data android:mimeType="vnd.android.cursor.item/vnd.eyebrowssoftware.free.bp_record" />
-        </intent-filter>
-        <intent-filter>
-          <action android:name="android.intent.action.INSERT" />
-          <category android:name="android.intent.category.DEFAULT" />
-          <data android:mimeType="vnd.android.cursor.dir/vnd.eyebrowssoftware.free.bp_record" />
-        </intent-filter>
-      </activity>
-    <activity
-      android:name=".BPSend"
-      android:theme="@android:style/Theme.Light"
-      android:label="@string/title_send"
-    />
-    <activity
-      android:name=".BPDataManager"
-      android:theme="@android:style/Theme.Light"
-      android:label="@string/label_delete_history"
-      android:icon="@drawable/icon"
-    />
-      <provider
-        android:name=".BPProviderFree"
-        android:authorities="com.eyebrowssoftware.bptrackerfree.bp"
-        android:label="@string/title_provider"
-        android:icon="@drawable/icon"
-      android:readPermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
-      android:writePermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
-      />
-  </application>
+        >
+            <intent-filter>
+              <action android:name="android.intent.action.EDIT" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <data android:mimeType="vnd.android.cursor.item/vnd.eyebrowssoftware.free.bp_record" />
+            </intent-filter>
+            <intent-filter>
+              <action android:name="android.intent.action.INSERT" />
+              <category android:name="android.intent.category.DEFAULT" />
+              <data android:mimeType="vnd.android.cursor.dir/vnd.eyebrowssoftware.free.bp_record" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".BPSend"
+            android:theme="@android:style/Theme.Light"
+            android:label="@string/title_send"
+        />
+        <activity
+            android:name=".BPDataManager"
+            android:theme="@android:style/Theme.Light"
+            android:label="@string/label_delete_history"
+            android:icon="@drawable/icon"
+        />
+        <activity
+            android:name=".BPPreferenceActivity"
+            android:theme="@android:style/Theme.Light"
+            android:label="@string/default_values"
+            android:icon="@drawable/icon"
+        />
+                <provider
+            android:name=".BPProviderFree"
+            android:authorities="com.eyebrowssoftware.bptrackerfree.bp"
+            android:label="@string/title_provider"
+            android:icon="@drawable/icon"
+            android:readPermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
+            android:writePermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
+        />
+    </application>
 </manifest>
