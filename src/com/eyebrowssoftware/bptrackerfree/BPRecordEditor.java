@@ -53,6 +53,10 @@ import android.widget.AdapterView.OnItemSelectedListener;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
+/**
+ * @author brionemde
+ *
+ */
 public class BPRecordEditor extends Activity implements OnDateSetListener,
         OnTimeSetListener, OnItemSelectedListener {
 
@@ -78,9 +82,6 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
     private static final int COLUMN_CREATED_AT_INDEX = 4;
     private static final int COLUMN_MODIFIED_AT_INDEX = 5;
     private static final int COLUMN_NOTE_INDEX = 6;
-
-    // The menu group, for grouped items
-    private static final int MENU_GROUP = Menu.NONE + 1;
 
     // The different distinct states the activity can be run in.
     private static final int STATE_EDIT = 0;

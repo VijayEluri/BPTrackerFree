@@ -18,11 +18,11 @@ package com.eyebrowssoftware.bptrackerfree;
 import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
 import android.content.AsyncQueryHandler;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -31,11 +31,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -46,6 +46,10 @@ import android.widget.Toast;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
+/**
+ * @author brionemde
+ *
+ */
 public class BPRecordList extends ListActivity implements OnClickListener {
 
     private static final String TAG = "BPRecordList";
@@ -119,7 +123,7 @@ public class BPRecordList extends ListActivity implements OnClickListener {
         SimpleCursorAdapter adapter = new SimpleCursorAdapter(this, R.layout.bp_record_list_item, null, VALS, IDS);
         adapter.setViewBinder(new MyViewBinder());
 
-        mMAQH = new MyAsyncQueryHandler(this.getContentResolver(), adapter);
+        mMAQH = new MyAsyncQueryHandler(this, adapter);
         mMAQH.startQuery(BPRECORDS_TOKEN, this, intent.getData(), PROJECTION, null, null, BPRecord.CREATED_DATE + " DESC");
 
         if(savedInstanceState != null) {
@@ -162,21 +166,24 @@ public class BPRecordList extends ListActivity implements OnClickListener {
         }
     }
 
-    private class MyAsyncQueryHandler extends AsyncQueryHandler {
+    private static class MyAsyncQueryHandler extends AsyncQueryHandler {
 
         private WeakReference<SimpleCursorAdapter> mAdapter;
+        private WeakReference<Activity> mActivity;
 
-        public MyAsyncQueryHandler(ContentResolver cr, SimpleCursorAdapter adapter) {
-            super(cr);
+        public MyAsyncQueryHandler(Activity activity, SimpleCursorAdapter adapter) {
+            super(activity.getContentResolver());
+            mActivity = new WeakReference<Activity>(activity);
             mAdapter = new WeakReference<SimpleCursorAdapter>(adapter);
         }
 
         @Override
         protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
             if (cursor != null) {
-                startManagingCursor(cursor);
+                Activity activity = mActivity.get();
                 SimpleCursorAdapter adapter = mAdapter.get();
-                if(adapter != null) {
+                if (activity != null && adapter != null) {
+                    activity.startManagingCursor(cursor);
                     adapter.changeCursor(cursor);
                 }
             }

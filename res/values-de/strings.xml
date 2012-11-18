@@ -19,7 +19,6 @@
     <string name="bp_permission_label">Blutdruck Daten</string>
     <!-- Miscellaneous string for localization -->
     <string name="empty">Klick Hier zum Starten.</string>
-    <string name="insert_error">Insertion Fehler</string>
     <!-- These are Window titles -->
     <string name="title_list">Blutdruck Geschichte</string>
     <string name="title_provider">Blutdruck Ernährer</string>
@@ -72,7 +71,6 @@
     <string name="msg_zero_size_error">Fehler: Zero Dateigröße. Ihre Daten sind sicher.</string>
     <string name="msg_twilight_zone">Wir sind in der Twilight Zone. Ihre Daten sind sicher.</string>
     <!-- Localization fields for CSV file -->
-    <string name="bp_send_delimiter">,</string>
     <string name="bp_send_date">@string/label_date</string>
     <string name="bp_send_time">@string/label_time</string>
     <string name="bp_send_sys">@string/label_systolic</string>

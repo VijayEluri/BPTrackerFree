@@ -81,9 +81,6 @@ public class BPRecordEditorText extends Activity implements OnDateSetListener, O
     private static final int COLUMN_MODIFIED_AT_INDEX = 5;
     private static final int COLUMN_NOTE_INDEX = 6;
 
-    // The menu group, for grouped items
-    private static final int MENU_GROUP = Menu.NONE + 1;
-
     // The different distinct states the activity can be run in.
     private static final int STATE_EDIT = 0;
     private static final int STATE_INSERT = 1;
@@ -251,6 +248,9 @@ public class BPRecordEditorText extends Activity implements OnDateSetListener, O
         }
     }
 
+    /**
+     * Update the date/time display
+     */
     public void updateDateTimeDisplay() {
         mDateButton.setText(BPTrackerFree.getDateString(mCalendar.getTime(),
                 DateFormat.MEDIUM));

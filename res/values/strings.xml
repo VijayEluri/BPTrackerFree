@@ -19,7 +19,6 @@
     <string name="bp_permission_label">personal medical data</string>
     <!-- Miscellaneous string for localization -->
     <string name="empty">No BP Records: Click Here to Start.</string>
-    <string name="insert_error">Failed to insert row</string>
     <!-- These are Window titles -->
     <string name="title_list">BP History</string>
     <string name="title_provider">BP Provider</string>
@@ -72,7 +71,6 @@
     <string name="msg_zero_size_error">Error: Zero file size. Your data is safe.</string>
     <string name="msg_twilight_zone">We have briefly entered the Twilight Zone. Your data is safe.</string>
     <!-- These are the column names for the BPSend Activity, so we can send localized names -->
-    <string name="bp_send_delimiter">,</string>
     <string name="bp_send_date">@string/label_date</string>
     <string name="bp_send_time">@string/label_time</string>
     <string name="bp_send_sys">@string/label_systolic</string>
