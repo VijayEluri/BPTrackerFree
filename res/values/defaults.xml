@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="systolic_default">120</integer>
+    <integer name="diastolic_default">70</integer>
+    <integer name="pulse_default">75</integer>
+</resources>

@@ -81,8 +81,6 @@
     <string name="bp_send_note">@string/label_note</string>
     <!-- This is a plain old Java format string - default is Date Time -->
     <string name="datetime_format">%1$s %2$s</string>
-    <!-- *********************************************************************** -->
-    <!-- ******************VERSION_CODE 9 (v1.2.6) NEW STRINGS****************** -->
     <!-- These strings appear exclusively in the BPRecordEditorText activity -->
     <string name="sys_not_empty">收縮值欄位必須輸入。</string>
     <string name="sys_range_error">收縮值必須介於 %1$d 和 %2$d 之間。</string>
@@ -96,7 +94,11 @@
     <string name="label_delete_history">刪除歷史資料</string>
     <string name="msg_delete">對於歷史資料的刪除將是永久性的！</string>
     <string name="msg_deleted">已刪除 %s 條記錄</string>
-    <!-- ******************VERSION_CODE 9 (v1.2.6) NEW STRINGS****************** -->
     <!-- *********************************************************************** -->
+    <!-- ******************VERSION_CODE 9 (v1.2.8) NEW STRINGS****************** -->
+    <!-- need translation -->
     <string name="menu_settings">Settings</string>
+    <string name="default_values">Defaults</string>
+    <string name="fixed_values">Fixed Values</string>
+    <string name="average_values">Average Values</string>
 </resources>
