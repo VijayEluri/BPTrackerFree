@@ -96,10 +96,11 @@
     <!-- ******************VERSION_CODE 9 (v1.2.8) NEW STRINGS****************** -->
     <string name="menu_settings">Settings</string>
     <string name="default_values">Defaults</string>
-    <string name="fixed_values">Fixed Values</string>
-    <string name="average_values">Average Values</string>
-    <string-array name="default_value_options">
-        <item>@string/fixed_values</item>
-        <item>@string/average_values</item>
-    </string-array>
+    <string name="initial_values">Initial Values</string>
+    <string name="average_values">Average Readings</string>
+    <string name="fixed_chosen">New records will use the fixed settings.</string>
+    <string name="average_chosen">New records will use average previous readings, when possible.</string>
+    <string name="systolic_initial">Initial Systolic for new readings</string>
+    <string name="diastolic_initial">Initial Diastolic for new readings</string>
+    <string name="pulse_initial">Initial Pulse for new readings</string>
 </resources>

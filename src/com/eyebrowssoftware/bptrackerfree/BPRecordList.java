@@ -42,7 +42,6 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.SimpleCursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 

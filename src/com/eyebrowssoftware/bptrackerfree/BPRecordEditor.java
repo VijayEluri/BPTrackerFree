@@ -434,6 +434,9 @@ public class BPRecordEditor extends Activity implements OnDateSetListener,
         case R.id.menu_done:
             finish();
             return true;
+        case R.id.menu_settings:
+            startActivity(new Intent(this, BPPreferenceActivity.class));
+            return true;
         }
         return super.onOptionsItemSelected(item);
     }
