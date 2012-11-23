@@ -23,30 +23,34 @@
         android:layout_above="@+id/button_layout"
         android:layout_alignParentTop="true"
     >
-        <TableLayout
+        <RelativeLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:stretchColumns="1"
-            android:shrinkColumns="0,1"
         >
-            <ViewStub android:id="@+id/spinners_stub" android:inflatedId="@+id/spinners">
-                <include layout="@layout/sys_spinner"/>
-                <include layout="@layout/dia_spinner"/>
-                <include layout="@layout/pls_spinner"/>
-            </ViewStub>
-            <ViewStub android:id="@+id/edit_texts_stub" android:inflatedId="@+id/edit_texts">
-                <include layout="@layout/sys_edit_text"/>
-                <include layout="@layout/dia_edit_text"/>
-                <include layout="@layout/pls_edit_text"/>
-            </ViewStub>
+            <ViewStub
+                android:id="@+id/spinners_stub"
+                android:inflatedId="@+id/spinners"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:layout="@layout/bp_edit_spinners"
+            />
+            <ViewStub
+                android:id="@+id/edit_texts_stub"
+                android:inflatedId="@+id/edit_texts"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:layout="@layout/bp_edit_texts"
+            />
             <EditText
                 android:id="@+id/note"
                 android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
                 android:inputType="text"
                 android:hint="@string/hint_note_entry"
             />
-            <TableRow
+            <LinearLayout
                 android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
             >
                 <TextView
                     android:id="@+id/date_label"
@@ -62,9 +66,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|left"
                 />
-            </TableRow>
-            <TableRow
+            </LinearLayout>
+            <LinearLayout
                 android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
             >
                 <TextView
                     android:id="@+id/time_label"
@@ -80,8 +85,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical|left"
                 />
-            </TableRow>
-        </TableLayout>
+            </LinearLayout>
+        </RelativeLayout>
     </ScrollView>
     <LinearLayout
         android:id="@id/button_layout"

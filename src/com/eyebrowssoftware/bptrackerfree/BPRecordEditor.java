@@ -81,17 +81,17 @@ public class BPRecordEditor extends BPRecordEditorBase implements OnItemSelected
 
         mSpinners = new Spinner[SPINNER_ARRAY_SIZE];
 
-        mSpinners[SYS_IDX] = (Spinner) mySpinners.findViewById(R.id.systolic_spin);
+        mSpinners[SYS_IDX] = (Spinner) mySpinners.findViewById(R.id.systolic_spinner);
         mSpinners[SYS_IDX].setPromptId(R.string.label_sys_spinner);
         mSpinners[SYS_IDX].setOnItemSelectedListener(this);
         mSpinners[SYS_IDX].setAdapter(new RangeAdapter(this, sys_vals, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
 
-        mSpinners[DIA_IDX] = (Spinner) mySpinners.findViewById(R.id.diastolic_spin);
+        mSpinners[DIA_IDX] = (Spinner) mySpinners.findViewById(R.id.diastolic_spinner);
         mSpinners[DIA_IDX].setPromptId(R.string.label_dia_spinner);
         mSpinners[DIA_IDX].setOnItemSelectedListener(this);
         mSpinners[DIA_IDX].setAdapter(new RangeAdapter(this, dia_vals, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
 
-        mSpinners[PLS_IDX] = (Spinner) mySpinners.findViewById(R.id.pulse_spin);
+        mSpinners[PLS_IDX] = (Spinner) mySpinners.findViewById(R.id.pulse_spinner);
         mSpinners[PLS_IDX].setPromptId(R.string.label_pls_spinner);
         mSpinners[PLS_IDX].setOnItemSelectedListener(this);
         mSpinners[PLS_IDX].setAdapter(new RangeAdapter(this, pls_vals, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));

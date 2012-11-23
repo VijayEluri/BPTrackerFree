@@ -25,7 +25,6 @@ import android.view.KeyEvent;
 import android.view.View;
 import android.view.ViewStub;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
@@ -45,10 +44,6 @@ public class BPRecordEditorText extends BPRecordEditorBase {
     private static final int PLS_IDX = 2;
     private static final int VALUES_ARRAY_SIZE  = PLS_IDX + 1;
 
-    private TextView mSysLabel;
-    private TextView mDiaLabel;
-    private TextView mPlsLabel;
-
     private EditText[] mEditValues = new EditText[VALUES_ARRAY_SIZE];
 
     @TargetApi(5)
@@ -59,18 +54,9 @@ public class BPRecordEditorText extends BPRecordEditorBase {
         ViewStub myStub = (ViewStub) findViewById(R.id.edit_texts_stub);
         View myEditTexts = myStub.inflate();
 
-        mSysLabel = (TextView) myEditTexts.findViewById(R.id.systolic_label);
-        mSysLabel.setText(R.string.label_systolic);
-
         mEditValues[SYS_IDX] = (EditText) myEditTexts.findViewById(R.id.systolic_edit_text);
 
-        mDiaLabel = (TextView) myEditTexts.findViewById(R.id.diastolic_label);
-        mDiaLabel.setText(R.string.label_diastolic);
-
         mEditValues[DIA_IDX] = (EditText) myEditTexts.findViewById(R.id.diastolic_edit_text);
-
-        mPlsLabel = (TextView) myEditTexts.findViewById(R.id.pulse_label);
-        mPlsLabel.setText(R.string.label_pulse);
 
         mEditValues[PLS_IDX] = (EditText) myEditTexts.findViewById(R.id.pulse_edit_text);
     }
