@@ -19,13 +19,11 @@
     <string name="bp_permission_label">données médicales personnelles</string>
     <!-- Miscellaneous string for localization -->
     <string name="empty">Non Pression Artérielle: Cliquez ici pour commencer.</string>
-    <string name="insert_error">Le défaut d\'insertion</string>
     <!-- These are Window titles -->
     <string name="title_list">PA Histoire</string>
     <string name="title_provider">Fournisseur</string>
     <string name="title_edit">Modifier le dossier</string>
     <string name="title_create">Insérer un dossier</string>
-    <string name="title_error">Erreur interne</string>
     <!-- These strings appear in the BPRecordEditor activity -->
     <string name="menu_done">Complet</string>
     <string name="menu_cancel">Annuler</string>
@@ -72,7 +70,6 @@
     <string name="msg_zero_size_error">Erreur: Zéro taille du fichier. Vos données sont en sécurité.</string>
     <string name="msg_twilight_zone">Nous sommes dans la zone crépusculaire. Vos données sont en sécurité.</string>
     <!-- These are the column names for the BPSend Activity, so we can send localized names -->
-    <string name="bp_send_delimiter">,</string>
     <string name="bp_send_date">@string/label_date</string>
     <string name="bp_send_time">@string/label_time</string>
     <string name="bp_send_sys">@string/label_systolic</string>
@@ -98,7 +95,12 @@
     <!-- ******************VERSION_CODE 9 (v1.2.8) NEW STRINGS****************** -->
     <string name="menu_settings">Préférences</string>
     <!-- need translation -->
-    <string name="default_values">Defaults</string>
-    <string name="fixed_values">Fixed Values</string>
-    <string name="average_values">Average Values</string>
+    <string name="default_values">Par défaut</string>
+    <string name="average_values">Valeurs Moyennes</string>
+    <string name="fixed_chosen">De nouveaux records utilisera les paramètres fixes.</string>
+    <string name="average_chosen">De nouveaux records utilisera la moyenne des lectures précédentes, lorsque cela est possible.</string>
+    <string name="systolic_initial">Systolique initiale pour les nouveaux enregistrements</string>
+    <string name="diastolic_initial">Diastolique initiale pour de nouveaux enregistrements</string>
+    <string name="pulse_initial">Pulsation initiale pour de nouveaux enregistrements</string>
+    <string name="icon_content_description">Icône</string>
 </resources>

@@ -19,7 +19,6 @@
     <string name="bp_permission_label">个人医疗资料</string>
     <!-- Miscellaneous string for localization -->
     <string name="empty">无血压记录：点击这儿开始。</string>
-    <string name="insert_error">插入行失败</string>
     <!-- These are Window titles -->
     <string name="title_list">血压历史</string>
     <string name="title_provider">血压提供者</string>
@@ -72,7 +71,6 @@
     <string name="msg_zero_size_error">错误：文件大小为0。你的数据是安全的。</string>
     <string name="msg_twilight_zone">我们暂时的进入了模糊状态。你的数据是安全的。</string>
     <!-- These are the column names for the BPSend Activity, so we can send localized names -->
-    <string name="bp_send_delimiter">,</string>
     <string name="bp_send_date">@string/label_date</string>
     <string name="bp_send_time">@string/label_time</string>
     <string name="bp_send_sys">@string/label_systolic</string>
@@ -97,8 +95,13 @@
     <!-- *********************************************************************** -->
     <!-- ******************VERSION_CODE 9 (v1.2.8) NEW STRINGS****************** -->
     <!-- need translation -->
-    <string name="menu_settings">Settings</string>
-    <string name="default_values">Defaults</string>
-    <string name="fixed_values">Fixed Values</string>
-    <string name="average_values">Average Values</string>
+    <string name="menu_settings">设置</string>
+    <string name="default_values">默认值</string>
+    <string name="average_values">平均读数</string>
+    <string name="fixed_chosen">新记录将使用固定的设置。</string>
+    <string name="average_chosen">新记录将使用先前的读数平均，在可能的情况下。</string>
+    <string name="systolic_initial">初始收缩压新记录</string>
+    <string name="diastolic_initial">初步舒张压新记录</string>
+    <string name="pulse_initial">新记录的初始脉冲</string>
+    <string name="icon_content_description">图标</string>
 </resources>

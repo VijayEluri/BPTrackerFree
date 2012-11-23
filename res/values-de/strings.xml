@@ -24,7 +24,6 @@
     <string name="title_provider">Blutdruck Ernährer</string>
     <string name="title_edit">Bearbeiten von Daten</string>
     <string name="title_create">Einfügen von Daten</string>
-    <string name="title_error">Interner Fehler</string>
     <!-- These strings appear in the BPRecordEditor activity -->
     <string name="menu_done">Vollständig</string>
     <string name="menu_cancel">Abbrechen</string>
@@ -97,6 +96,11 @@
     <string name="menu_settings">Einstellungen</string>
     <!-- need translation -->
     <string name="default_values">Defaults</string>
-    <string name="fixed_values">Fixed Values</string>
-    <string name="average_values">Average Values</string>
+    <string name="average_values">Durchschnittliche Messwerte</string>
+    <string name="fixed_chosen">New Datensätze werden mit den festgelegten Einstellungen.</string>
+    <string name="average_chosen">Neue Rekorde wird den durchschnittlichen früheren Messungen, wenn möglich.</string>
+    <string name="systolic_initial">Initial Systolischer für neue Datensätze</string>
+    <string name="diastolic_initial">Initial Diastolische für neue Datensätze</string>
+    <string name="pulse_initial">Initial Puls für neue Datensätze</string>
+    <string name="icon_content_description">Symbol</string>
 </resources>

@@ -24,7 +24,6 @@
     <string name="title_provider">PA jProveedor</string>
     <string name="title_edit">Editar los valores</string>
     <string name="title_create">Insertar los valores</string>
-    <string name="title_error">Error Interno</string>
     <!-- These strings appear in the BPRecordEditor activity -->
     <string name="menu_done">Completo</string>
     <string name="menu_cancel">Cancelar</string>
@@ -97,7 +96,12 @@
     <!-- ******************VERSION_CODE 9 (v1.2.8) NEW STRINGS****************** -->
     <string name="menu_settings">Configuración</string>
     <!-- need translation -->
-    <string name="default_values">Defaults</string>
-    <string name="fixed_values">Fixed Values</string>
-    <string name="average_values">Average Values</string>
+    <string name="default_values">Predeterminados</string>
+    <string name="average_values">Valores medios</string>
+    <string name="fixed_chosen">Los nuevos registros se utilizan los ajustes fijos.</string>
+    <string name="average_chosen">Los nuevos registros se utilizan medios lecturas anteriores, cuando sea posible.</string>
+    <string name="systolic_initial">Sistólica inicial para los nuevos registros</string>
+    <string name="diastolic_initial">Diastólica inicial para los nuevos registros</string>
+    <string name="pulse_initial">Pulso inicial para los nuevos registros</string>
+    <string name="icon_content_description">Icono</string>
 </resources>

@@ -13,6 +13,8 @@ import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
+import android.content.AsyncQueryHandler;
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -37,7 +39,7 @@ import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
  * @author brionemde
  *
  */
-public class BPRecordEditorBase extends Activity  implements OnDateSetListener, OnTimeSetListener {
+public abstract class BPRecordEditorBase extends Activity  implements OnDateSetListener, OnTimeSetListener {
 
     // Static constants
 
@@ -92,12 +94,15 @@ public class BPRecordEditorBase extends Activity  implements OnDateSetListener, 
     protected Calendar mCalendar;
 
     protected Bundle mOriginalValues = null;
+    protected Bundle mCurrentValues = null;
 
     protected Button mDoneButton;
 
     protected Button mCancelButton;
 
     protected static final int BPRECORDS_TOKEN = 0;
+
+    protected MyAsyncQueryHandler mMAQH;
 
     protected WeakReference<EditText> mNoteViewReference;
     protected WeakReference<Calendar> mCalendarReference;
@@ -109,10 +114,10 @@ public class BPRecordEditorBase extends Activity  implements OnDateSetListener, 
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
+        setContentView(R.layout.bp_record_editor);
+
         final Intent intent = getIntent();
         final String action = intent.getAction();
-
-        setContentView(R.layout.bp_record_editor);
 
         if (icicle != null)
             mOriginalValues = new Bundle(icicle);
@@ -137,6 +142,8 @@ public class BPRecordEditorBase extends Activity  implements OnDateSetListener, 
             finish();
             return;
         }
+        mMAQH = new MyAsyncQueryHandler(this.getContentResolver(), this);
+        mMAQH.startQuery(BPRECORDS_TOKEN, this, mUri, PROJECTION, null, null, null);
 
         mCalendar = new GregorianCalendar();
         mDateButton = (Button) findViewById(R.id.date_button);
@@ -175,6 +182,7 @@ public class BPRecordEditorBase extends Activity  implements OnDateSetListener, 
         mCalendarReference = new WeakReference<Calendar>(mCalendar);
         mDateButtonReference = new WeakReference<Button>(mDateButton);
         mTimeButtonReference = new WeakReference<Button>(mTimeButton);
+
     }
 
     @Override
@@ -186,9 +194,9 @@ public class BPRecordEditorBase extends Activity  implements OnDateSetListener, 
         } else if (mState == STATE_INSERT) {
             setTitle(getText(R.string.title_create));
         }
-        if(mCursor != null && mCursor.moveToFirst()) {
-            long datetime = mCursor.getLong(COLUMN_CREATED_AT_INDEX);
-            String note = mCursor.getString(COLUMN_NOTE_INDEX);
+        if(mCurrentValues != null) {
+            long datetime = mCurrentValues.getLong(BPRecord.CREATED_DATE);
+            String note = mCurrentValues.getString(BPRecord.NOTE);
 
             mNoteText.setText(note);
             mCalendar.setTimeInMillis(datetime);
@@ -198,6 +206,7 @@ public class BPRecordEditorBase extends Activity  implements OnDateSetListener, 
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         outState.putAll(mOriginalValues);
         outState.putString(BPTrackerFree.MURI, mUri.toString());
     }
@@ -206,38 +215,44 @@ public class BPRecordEditorBase extends Activity  implements OnDateSetListener, 
     protected void onPause() {
         super.onPause();
 
+        // Try to cancel any async queries we may have started that have not completed
+        if(mMAQH != null)
+            mMAQH.cancelOperation(BPRECORDS_TOKEN);
+
         // The user is going somewhere else, so make sure their current
         // changes are safely saved away in the provider. We don't need
         // to do this if only editing.
-        if (mCursor != null) {
+        if (mCurrentValues != null) {
             long created = (Long) mCalendar.getTimeInMillis();
             String note = (String) mNoteText.getText().toString();
 
-            ContentValues values = new ContentValues();
-            values.put(BPRecord.CREATED_DATE, created);
-            values.put(BPRecord.MODIFIED_DATE, System.currentTimeMillis());
-            values.put(BPRecord.NOTE, note);
-            getContentResolver().update(mUri, values, null, null);
+            mCurrentValues.putLong(BPRecord.CREATED_DATE, created);
+            mCurrentValues.putLong(BPRecord.MODIFIED_DATE, System.currentTimeMillis());
+            mCurrentValues.putString(BPRecord.NOTE, note);
         }
+    }
+
+    protected void updateFromCurrentValues() {
+        ContentValues values = new ContentValues();
+        values.put(BPRecord.SYSTOLIC, mCurrentValues.getInt(BPRecord.SYSTOLIC));
+        values.put(BPRecord.DIASTOLIC, mCurrentValues.getInt(BPRecord.DIASTOLIC));
+        values.put(BPRecord.PULSE, mCurrentValues.getInt(BPRecord.PULSE));
+        values.put(BPRecord.CREATED_DATE, mCurrentValues.getLong(BPRecord.CREATED_DATE));
+        values.put(BPRecord.MODIFIED_DATE, mCurrentValues.getLong(BPRecord.MODIFIED_DATE));
+        values.put(BPRecord.NOTE, mCurrentValues.getString(BPRecord.NOTE));
+        getContentResolver().update(mUri, values, null, null);
     }
 
     @Override
     protected void onDestroy() {
-        if(mCursor != null) {
-            stopManagingCursor(mCursor);
-            mCursor.close();
-            mCursor = null;
-        }
+        closeCursors();
         super.onDestroy();
     }
 
     @Override
-    protected void finalize() {
-        if(mCursor != null) {
-            stopManagingCursor(mCursor);
-            mCursor.close();
-            mCursor = null;
-        }
+    protected void finalize() throws Throwable {
+        closeCursors();
+        super.finalize();
     }
 
 
@@ -294,6 +309,18 @@ public class BPRecordEditorBase extends Activity  implements OnDateSetListener, 
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    protected void closeRecordCursor() {
+        if(mCursor != null) {
+            this.stopManagingCursor(mCursor);
+            mCursor.close();
+            mCursor = null;
+        }
+    }
+
+    protected void closeCursors() {
+        closeRecordCursor();
     }
 
     protected ContentValues getOriginalContentValues() {
@@ -393,5 +420,88 @@ public class BPRecordEditorBase extends Activity  implements OnDateSetListener, 
             mCalendar.setTimeInMillis(now);
         }
         updateDateTimeDisplay();
+    }
+
+    protected void setMyCursor(Cursor cursor) {
+        mCursor = cursor;
+    }
+
+    protected Cursor getCursor() {
+        return mCursor;
+    }
+
+    protected Bundle getOriginalValues() {
+        return mOriginalValues;
+    }
+
+    protected void setOriginalValues(Bundle originalValues) {
+        mOriginalValues = originalValues;
+    }
+
+    protected Bundle getCurrentValues() {
+        return mCurrentValues;
+    }
+
+    protected void setCurrentValues(Bundle currentValues) {
+        mCurrentValues = currentValues;
+        EditText noteView = mNoteViewReference.get();
+        Button dateButton = mDateButtonReference.get();
+        Button timeButton = mTimeButtonReference.get();
+        Calendar calendar = mCalendarReference.get();
+
+        if(calendar != null) {
+            calendar.setTimeInMillis(currentValues.getLong(BPRecord.CREATED_DATE));
+        }
+        Date date = calendar.getTime();
+        if(dateButton != null) {
+            dateButton.setText(BPTrackerFree.getDateString(date, DateFormat.MEDIUM));
+        }
+        if(timeButton != null) {
+            timeButton.setText(BPTrackerFree.getTimeString(date, DateFormat.SHORT));
+        }
+        if(noteView != null) {
+            noteView.setText(currentValues.getString(BPRecord.NOTE));
+        }
+    }
+
+    protected static class MyAsyncQueryHandler extends AsyncQueryHandler {
+        WeakReference<BPRecordEditorBase> mActivityReference;
+
+        public MyAsyncQueryHandler(ContentResolver cr, BPRecordEditorBase parent) {
+            super(cr);
+            mActivityReference = new WeakReference<BPRecordEditorBase>(parent);
+        }
+
+        @Override
+        protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
+            BPRecordEditorBase parent = mActivityReference.get();
+            if (parent != null) {
+                parent.setMyCursor(cursor);
+                if(cursor != null) {
+                    parent.startManagingCursor(cursor);
+                    if (cursor.moveToFirst()) {
+                        Bundle currentValues = parent.getCurrentValues();
+                        if (currentValues == null) {
+                            currentValues = new Bundle();
+                        }
+                        currentValues.putInt(BPRecord.SYSTOLIC, cursor.getInt(COLUMN_SYSTOLIC_INDEX));
+                        currentValues.putInt(BPRecord.PULSE, cursor.getInt(COLUMN_PULSE_INDEX));
+                        currentValues.putInt(BPRecord.DIASTOLIC, cursor.getInt(COLUMN_DIASTOLIC_INDEX));
+                        currentValues.putLong(BPRecord.CREATED_DATE, cursor.getLong(COLUMN_CREATED_AT_INDEX));
+                        currentValues.putLong(BPRecord.MODIFIED_DATE, cursor.getLong(COLUMN_MODIFIED_AT_INDEX));
+                        currentValues.putString(BPRecord.NOTE, cursor.getString(COLUMN_NOTE_INDEX));
+                        parent.setCurrentValues(currentValues);
+
+                        // If we hadn't previously retrieved the original text, do so
+                        // now. This allows the user to revert their changes.
+                        Bundle originalValues = parent.getOriginalValues();
+                        if(originalValues == null) {
+                            originalValues = new Bundle(currentValues);
+                            parent.setOriginalValues(originalValues);
+                        }
+                    }
+                }
+            }
+        }
     }
 }
