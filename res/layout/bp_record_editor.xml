@@ -23,9 +23,10 @@
         android:layout_above="@+id/button_layout"
         android:layout_alignParentTop="true"
     >
-        <RelativeLayout
+        <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
         >
             <ViewStub
                 android:id="@+id/spinners_stub"
@@ -86,7 +87,7 @@
                     android:layout_gravity="center_vertical|left"
                 />
             </LinearLayout>
-        </RelativeLayout>
+        </LinearLayout>
     </ScrollView>
     <LinearLayout
         android:id="@id/button_layout"
