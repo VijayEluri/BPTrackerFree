@@ -23,6 +23,7 @@ import android.view.ViewStub;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
@@ -133,13 +134,13 @@ public class BPRecordEditor extends BPRecordEditorBase implements OnItemSelected
             int systolic = (Integer) ((RangeAdapter) mSpinners[SYS_IDX].getAdapter()).getItem(pos);
             int diastolic = (Integer) mSpinners[DIA_IDX].getSelectedItem();
             if ((systolic - diastolic) < BPTrackerFree.MIN_RANGE) {
-                BPTrackerFree.setSpinner(mSpinners[DIA_IDX], systolic - BPTrackerFree.MIN_RANGE);
+                Toast.makeText(this, R.string.check_values, Toast.LENGTH_SHORT).show();
             }
         } else if (sp.equals(mSpinners[DIA_IDX])) {
             int systolic = (Integer) mSpinners[SYS_IDX].getSelectedItem();
             int diastolic = (Integer) ((RangeAdapter) mSpinners[DIA_IDX].getAdapter()).getItem(pos);
             if ((systolic - diastolic) < BPTrackerFree.MIN_RANGE) {
-                BPTrackerFree.setSpinner(mSpinners[SYS_IDX], diastolic + BPTrackerFree.MIN_RANGE);
+                Toast.makeText(this, R.string.check_values, Toast.LENGTH_SHORT).show();
             }
         }
     }

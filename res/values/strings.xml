@@ -102,4 +102,5 @@
     <string name="diastolic_initial">Initial Diastolic for new records</string>
     <string name="pulse_initial">Initial Pulse for new records</string>
     <string name="icon_content_description">Icon</string>
+    <string name="check_values">Please check your readings for accuracy.</string>
 </resources>

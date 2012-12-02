@@ -85,7 +85,7 @@ public class BPTrackerFree extends Application {
      * Min difference between Systolic and Diastolic or between Max and Min
      * values of anything
      */
-    public static final int MIN_RANGE = 10;
+    public static final int MIN_RANGE = 5;
 
     private static DateFormat mShortDateFormat = DateFormat
             .getDateInstance(DateFormat.SHORT);
