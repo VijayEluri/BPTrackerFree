@@ -177,6 +177,30 @@ public final class BPRecords {
          */
         public static final String NOTE = "note";
 
+        /**
+         * The Average Systolic value
+         * <P>
+         * Type: INTEGER
+         * </P>
+         */
+        public static final String AVERAGE_SYSTOLIC = "average_systolic";
+
+        /**
+         * The Average Diastolic value
+         * <P>
+         * Type: INTEGER
+         * </P>
+         */
+        public static final String AVERAGE_DIASTOLIC = "average_diastolic";
+
+        /**
+         * The Average Pulse value
+         * <P>
+         * Type: INTEGER
+         * </P>
+         */
+        public static final String AVERAGE_PULSE = "average_pulse";
+
 
     }
 }

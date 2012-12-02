@@ -29,6 +29,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
+import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
@@ -279,5 +280,8 @@ public class BPProviderFree extends ContentProvider {
         sBPProjectionMap.put(BPRecord.MAX_CREATED_DATE, String.format("max(%s)", BPRecord.CREATED_DATE));
         sBPProjectionMap.put(BPRecord.MIN_CREATED_DATE, String.format("min(%s)", BPRecord.CREATED_DATE));
         sBPProjectionMap.put(BPRecord.NOTE, BPRecord.NOTE);
+        sBPProjectionMap.put(BPRecord.AVERAGE_SYSTOLIC, String.format("round(avg(%s))", BPRecord.SYSTOLIC));
+        sBPProjectionMap.put(BPRecord.AVERAGE_DIASTOLIC, String.format("round(avg(%s))", BPRecord.DIASTOLIC));
+        sBPProjectionMap.put(BPRecord.AVERAGE_PULSE, String.format("round(avg(%s))", BPRecord.PULSE));
     }
 }
