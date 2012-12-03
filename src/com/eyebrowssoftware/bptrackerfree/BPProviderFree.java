@@ -29,7 +29,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
-import android.os.Bundle;
 import android.text.TextUtils;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;

@@ -211,5 +211,20 @@ public class BPTrackerFree extends Application {
         Log.e(tag, msg);
     }
 
-
+    /**
+     * Shared Preferences Key
+     */
+    public static final String DEFAULT_SYSTOLIC_KEY = "systolic_default";
+    /**
+     * Shared Preferences Key
+     */
+    public static final String DEFAULT_DIASTOLIC_KEY = "diastolic_default";
+    /**
+     * Shared Preferences Key
+     */
+    public static final String DEFAULT_PULSE_KEY = "pulse_default";
+    /**
+     * Shared Preferences Key
+     */
+    public static final String AVERAGE_VALUES_KEY = "average_values_checkbox";
 }

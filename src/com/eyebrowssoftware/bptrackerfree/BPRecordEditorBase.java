@@ -18,9 +18,11 @@ import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -109,6 +111,7 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
     protected WeakReference<Button> mDateButtonReference;
     protected WeakReference<Button> mTimeButtonReference;
 
+    protected SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle icicle) {
@@ -119,8 +122,10 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
         final Intent intent = getIntent();
         final String action = intent.getAction();
 
-        if (icicle != null)
+        if (icicle != null) {
             mOriginalValues = new Bundle(icicle);
+        }
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
 
         if (Intent.ACTION_EDIT.equals(action)) {
             mState = STATE_EDIT;
@@ -131,10 +136,14 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
                 mUri = Uri.parse(icicle.getString(BPTrackerFree.MURI));
             else {
                 ContentValues cv = new ContentValues();
-                cv.put(BPRecord.SYSTOLIC, BPTrackerFree.SYSTOLIC_DEFAULT);
-                cv.put(BPRecord.DIASTOLIC, BPTrackerFree.DIASTOLIC_DEFAULT);
-                cv.put(BPRecord.PULSE, BPTrackerFree.PULSE_DEFAULT);
-                cv.put(BPRecord.CREATED_DATE, GregorianCalendar.getInstance().getTimeInMillis());
+                if (mSharedPreferences.getBoolean(BPTrackerFree.AVERAGE_VALUES_KEY, false)) {
+
+                } else {
+                    cv.put(BPRecord.SYSTOLIC, mSharedPreferences.getInt(BPTrackerFree.DEFAULT_SYSTOLIC_KEY, BPTrackerFree.SYSTOLIC_DEFAULT));
+                    cv.put(BPRecord.DIASTOLIC, mSharedPreferences.getInt(BPTrackerFree.DEFAULT_DIASTOLIC_KEY, BPTrackerFree.DIASTOLIC_DEFAULT));
+                    cv.put(BPRecord.PULSE, mSharedPreferences.getInt(BPTrackerFree.DEFAULT_PULSE_KEY, BPTrackerFree.PULSE_DEFAULT));
+                    cv.put(BPRecord.CREATED_DATE, GregorianCalendar.getInstance().getTimeInMillis());
+                }
                 mUri = this.getContentResolver().insert(intent.getData(), cv);
             }
         } else {
