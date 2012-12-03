@@ -57,7 +57,13 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
         BPRecord.NOTE
     };
 
-    // BP Record Indices
+    private static final String[] AVERAGE_PROJECTION = {
+        BPRecord.AVERAGE_SYSTOLIC,
+        BPRecord.AVERAGE_DIASTOLIC,
+        BPRecord.AVERAGE_PULSE
+    };
+
+   // BP Record Indices
     // protected static final int COLUMN_ID_INDEX = 0;
     protected static final int COLUMN_SYSTOLIC_INDEX = 1;
     protected static final int COLUMN_DIASTOLIC_INDEX = 2;
@@ -135,15 +141,19 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
             if (icicle != null)
                 mUri = Uri.parse(icicle.getString(BPTrackerFree.MURI));
             else {
-                ContentValues cv = new ContentValues();
+                ContentValues cv;
                 if (mSharedPreferences.getBoolean(BPTrackerFree.AVERAGE_VALUES_KEY, false)) {
+                    Cursor c = this.getContentResolver().query(BPRecords.CONTENT_URI, AVERAGE_PROJECTION, null, null, null);
+                    if (c != null && c.moveToFirst() && !c.isNull(0) && !c.isNull(1) && !c.isNull(2)) {
+                        cv = setContentValues(Float.floatToIntBits(c.getFloat(0)), Float.floatToIntBits(c.getFloat(1)), Float.floatToIntBits(c.getFloat(2)));
+                    } else {
+                        cv = setDefaultValues(mSharedPreferences);
+                    }
 
                 } else {
-                    cv.put(BPRecord.SYSTOLIC, mSharedPreferences.getInt(BPTrackerFree.DEFAULT_SYSTOLIC_KEY, BPTrackerFree.SYSTOLIC_DEFAULT));
-                    cv.put(BPRecord.DIASTOLIC, mSharedPreferences.getInt(BPTrackerFree.DEFAULT_DIASTOLIC_KEY, BPTrackerFree.DIASTOLIC_DEFAULT));
-                    cv.put(BPRecord.PULSE, mSharedPreferences.getInt(BPTrackerFree.DEFAULT_PULSE_KEY, BPTrackerFree.PULSE_DEFAULT));
-                    cv.put(BPRecord.CREATED_DATE, GregorianCalendar.getInstance().getTimeInMillis());
+                    cv = setDefaultValues(mSharedPreferences);
                 }
+                cv.put(BPRecord.CREATED_DATE, GregorianCalendar.getInstance().getTimeInMillis());
                 mUri = this.getContentResolver().insert(intent.getData(), cv);
             }
         } else {
@@ -264,6 +274,19 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
         super.finalize();
     }
 
+    private ContentValues setDefaultValues(SharedPreferences prefs) {
+        return setContentValues(prefs.getInt(BPTrackerFree.DEFAULT_SYSTOLIC_KEY, BPTrackerFree.SYSTOLIC_DEFAULT),
+                prefs.getInt(BPTrackerFree.DEFAULT_DIASTOLIC_KEY, BPTrackerFree.DIASTOLIC_DEFAULT),
+                prefs.getInt(BPTrackerFree.DEFAULT_PULSE_KEY, BPTrackerFree.PULSE_DEFAULT));
+    }
+
+    private ContentValues setContentValues(int systolic, int diastolic, int pulse) {
+        ContentValues cv = new ContentValues();
+        cv.put(BPRecord.SYSTOLIC, systolic);
+        cv.put(BPRecord.DIASTOLIC, diastolic);
+        cv.put(BPRecord.PULSE, pulse);
+        return cv;
+    }
 
     /**
     * Update the date and time

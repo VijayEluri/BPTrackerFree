@@ -19,6 +19,7 @@
         android:title="@string/label_systolic"
         android:defaultValue="@integer/systolic_default"
         android:summary="@string/systolic_initial"
+        android:inputType="number"
         android:persistent="true"
     />
     <EditTextPreference
@@ -26,6 +27,7 @@
         android:title="@string/label_diastolic"
         android:defaultValue="@integer/diastolic_default"
         android:summary="@string/diastolic_initial"
+        android:inputType="number"
         android:persistent="true"
     />
     <EditTextPreference
@@ -33,6 +35,7 @@
         android:title="@string/label_pulse"
         android:defaultValue="@integer/pulse_default"
         android:summary="@string/pulse_initial"
+        android:inputType="number"
         android:persistent="true"
     />
     <CheckBoxPreference
