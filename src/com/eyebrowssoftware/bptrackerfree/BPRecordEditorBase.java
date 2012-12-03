@@ -141,11 +141,11 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
             if (icicle != null)
                 mUri = Uri.parse(icicle.getString(BPTrackerFree.MURI));
             else {
-                ContentValues cv;
+                ContentValues cv = null;
                 if (mSharedPreferences.getBoolean(BPTrackerFree.AVERAGE_VALUES_KEY, false)) {
                     Cursor c = this.getContentResolver().query(BPRecords.CONTENT_URI, AVERAGE_PROJECTION, null, null, null);
                     if (c != null && c.moveToFirst() && !c.isNull(0) && !c.isNull(1) && !c.isNull(2)) {
-                        cv = setContentValues(Float.floatToIntBits(c.getFloat(0)), Float.floatToIntBits(c.getFloat(1)), Float.floatToIntBits(c.getFloat(2)));
+                        cv = setContentValues((int) c.getFloat(0), (int) c.getFloat(1), (int) c.getFloat(2));
                     } else {
                         cv = setDefaultValues(mSharedPreferences);
                     }
@@ -275,9 +275,10 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
     }
 
     private ContentValues setDefaultValues(SharedPreferences prefs) {
-        return setContentValues(prefs.getInt(BPTrackerFree.DEFAULT_SYSTOLIC_KEY, BPTrackerFree.SYSTOLIC_DEFAULT),
-                prefs.getInt(BPTrackerFree.DEFAULT_DIASTOLIC_KEY, BPTrackerFree.DIASTOLIC_DEFAULT),
-                prefs.getInt(BPTrackerFree.DEFAULT_PULSE_KEY, BPTrackerFree.PULSE_DEFAULT));
+        return setContentValues(
+                Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_SYSTOLIC_KEY, BPTrackerFree.SYSTOLIC_DEFAULT_STRING)),
+                Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_DIASTOLIC_KEY, BPTrackerFree.DIASTOLIC_DEFAULT_STRING)),
+                Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_PULSE_KEY, BPTrackerFree.PULSE_DEFAULT_STRING)));
     }
 
     private ContentValues setContentValues(int systolic, int diastolic, int pulse) {

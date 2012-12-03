@@ -167,6 +167,6 @@ public class BPRecordEditor extends BPRecordEditorBase implements OnItemSelected
             BPTrackerFree.setSpinner(spinners[DIA_IDX], currentValues.getInt(BPRecord.DIASTOLIC));
             BPTrackerFree.setSpinner(spinners[PLS_IDX], currentValues.getInt(BPRecord.PULSE));
         }
-}
+    }
 
 }

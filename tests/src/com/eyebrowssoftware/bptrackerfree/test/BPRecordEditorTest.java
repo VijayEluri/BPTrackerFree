@@ -69,14 +69,14 @@ public class BPRecordEditorTest extends
         assertNotNull(mRevertButton);
     }
 
-    private static final int SYS_VALUE_1 = 125;
+/*    private static final int SYS_VALUE_1 = 125;
     private static final int DIA_VALUE_1 = 85;
     private static final int PLS_VALUE_1 = 70;
-
+*/
     /**
      *
      */
-    public void testSysSpinnerUI() {
+/*    public void testSysSpinnerUI() {
         mActivity.runOnUiThread(
             new Runnable() {
                 public void run() {
@@ -85,11 +85,11 @@ public class BPRecordEditorTest extends
                 }
             });
     }
-
+*/
     /**
      *
      */
-    public void testDiaSpinnerUI() {
+/*    public void testDiaSpinnerUI() {
         mActivity.runOnUiThread(
             new Runnable() {
                 public void run() {
@@ -98,11 +98,11 @@ public class BPRecordEditorTest extends
                  }
             });
     }
-
+*/
     /**
      *
      */
-    public void testPlsSpinnerUI() {
+/*    public void testPlsSpinnerUI() {
         mActivity.runOnUiThread(
             new Runnable() {
                 public void run() {
@@ -112,4 +112,4 @@ public class BPRecordEditorTest extends
             });
     }
 
-}
+*/}

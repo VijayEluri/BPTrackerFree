@@ -82,6 +82,19 @@ public class BPTrackerFree extends Application {
     public static final int PULSE_MIN_DEFAULT = 40;
 
     /**
+     *
+     */
+    public static final String SYSTOLIC_DEFAULT_STRING = Integer.valueOf(SYSTOLIC_DEFAULT).toString();
+    /**
+     *
+     */
+    public static final String DIASTOLIC_DEFAULT_STRING = Integer.valueOf(DIASTOLIC_DEFAULT).toString();
+    /**
+     *
+     */
+    public static final String PULSE_DEFAULT_STRING = Integer.valueOf(PULSE_DEFAULT).toString();
+
+    /**
      * Min difference between Systolic and Diastolic or between Max and Min
      * values of anything
      */

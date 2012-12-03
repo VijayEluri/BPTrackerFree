@@ -65,14 +65,7 @@ public class BPRecordEditorText extends BPRecordEditorBase {
     protected void onResume() {
         super.onResume();
 
-        // If we didn't have any trouble retrieving the data, it is now
-        // time to get at the stuff.
-        if (mCurrentValues != null) {
-
-            mEditValues[SYS_IDX].setText(String.valueOf(mCurrentValues.getInt(BPRecord.SYSTOLIC)));
-            mEditValues[DIA_IDX].setText(String.valueOf(mCurrentValues.getInt(BPRecord.DIASTOLIC)));
-            mEditValues[PLS_IDX].setText(String.valueOf(mCurrentValues.getInt(BPRecord.PULSE)));
-        }
+        updateUIComponents(mCurrentValues);
     }
 
     @Override
@@ -166,6 +159,20 @@ public class BPRecordEditorText extends BPRecordEditorBase {
             finish();
         }
         return;
+    }
+
+    @Override
+    protected void setCurrentValues(Bundle currentValues) {
+        super.setCurrentValues(currentValues);
+        updateUIComponents(currentValues);
+    }
+
+    private void updateUIComponents(Bundle currentValues) {
+        if (currentValues != null) {
+            mEditValues[SYS_IDX].setText(String.valueOf(mCurrentValues.getInt(BPRecord.SYSTOLIC)));
+            mEditValues[DIA_IDX].setText(String.valueOf(mCurrentValues.getInt(BPRecord.DIASTOLIC)));
+            mEditValues[PLS_IDX].setText(String.valueOf(mCurrentValues.getInt(BPRecord.PULSE)));
+        }
     }
 
 }

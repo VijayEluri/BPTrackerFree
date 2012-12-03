@@ -239,9 +239,9 @@ public class BPProviderFreeTest extends ProviderTestCase2<BPProviderFree> {
         assertNotNull(c);
         assertTrue(c.getCount() == 1);
         assertTrue(c.moveToFirst());
-        assertEquals(Float.floatToIntBits(c.getFloat(0)), Float.floatToIntBits(Math.round((SYS_1 + SYS_2 + SYS_3)/3.0)));
-        assertEquals(Float.floatToIntBits(c.getFloat(1)), Float.floatToIntBits(Math.round((DIA_1 + DIA_2 + DIA_3)/3.0)));
-        assertEquals(Float.floatToIntBits(c.getFloat(2)), Float.floatToIntBits(Math.round((PLS_1 + PLS_2 + PLS_3)/3.0)));
+        assertEquals((int) c.getFloat(0), (int) Math.round((SYS_1 + SYS_2 + SYS_3)/3.0));
+        assertEquals((int) c.getFloat(1), (int) Math.round((DIA_1 + DIA_2 + DIA_3)/3.0));
+        assertEquals((int) c.getFloat(2), (int) Math.round((PLS_1 + PLS_2 + PLS_3)/3.0));
     }
 
     /**
