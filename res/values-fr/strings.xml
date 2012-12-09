@@ -103,4 +103,5 @@
     <string name="diastolic_initial">Diastolique initiale pour de nouveaux enregistrements</string>
     <string name="pulse_initial">Pulsation initiale pour de nouveaux enregistrements</string>
     <string name="icon_content_description">Icône</string>
+    <string name="check_values">S\'il vous plaît vérifiez vos valeurs pour la précision.</string>
 </resources>

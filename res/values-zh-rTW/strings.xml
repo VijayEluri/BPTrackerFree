@@ -24,7 +24,6 @@
     <string name="title_provider">血壓提供者</string>
     <string name="title_edit">編輯閱讀資料</string>
     <string name="title_create">新增新的閱讀資料</string>
-    <string name="title_error">內部錯誤</string>
     <!-- These strings appear in the BPRecordEditor activity -->
     <string name="menu_done">完成</string>
     <string name="menu_revert">還原</string>
@@ -104,4 +103,5 @@
     <string name="diastolic_initial">初步舒張壓新記錄</string>
     <string name="pulse_initial">新記錄的初始脈衝</string>
     <string name="icon_content_description">圖標</string>
+    <string name="check_values">請檢查您的精確值。</string>
 </resources>

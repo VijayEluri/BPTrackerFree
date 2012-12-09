@@ -143,13 +143,7 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
             else {
                 ContentValues cv = null;
                 if (mSharedPreferences.getBoolean(BPTrackerFree.AVERAGE_VALUES_KEY, false)) {
-                    Cursor c = this.getContentResolver().query(BPRecords.CONTENT_URI, AVERAGE_PROJECTION, null, null, null);
-                    if (c != null && c.moveToFirst() && !c.isNull(0) && !c.isNull(1) && !c.isNull(2)) {
-                        cv = setContentValues((int) c.getFloat(0), (int) c.getFloat(1), (int) c.getFloat(2));
-                    } else {
-                        cv = setDefaultValues(mSharedPreferences);
-                    }
-
+                    cv = setAverageValues(mSharedPreferences);
                 } else {
                     cv = setDefaultValues(mSharedPreferences);
                 }
@@ -274,11 +268,23 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
         super.finalize();
     }
 
+    private ContentValues setAverageValues(SharedPreferences prefs) {
+        Cursor c = this.getContentResolver().query(BPRecords.CONTENT_URI, AVERAGE_PROJECTION, null, null, null);
+        ContentValues cv = new ContentValues();
+        if (c != null && c.moveToFirst() && !c.isNull(0) && !c.isNull(1) && !c.isNull(2)) {
+            cv = setContentValues((int) c.getFloat(0), (int) c.getFloat(1), (int) c.getFloat(2));
+        } else {
+            cv = setDefaultValues(mSharedPreferences);
+        }
+        c.close();
+        return cv;
+    }
+
     private ContentValues setDefaultValues(SharedPreferences prefs) {
         return setContentValues(
-                Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_SYSTOLIC_KEY, BPTrackerFree.SYSTOLIC_DEFAULT_STRING)),
-                Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_DIASTOLIC_KEY, BPTrackerFree.DIASTOLIC_DEFAULT_STRING)),
-                Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_PULSE_KEY, BPTrackerFree.PULSE_DEFAULT_STRING)));
+            Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_SYSTOLIC_KEY, BPTrackerFree.SYSTOLIC_DEFAULT_STRING)),
+            Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_DIASTOLIC_KEY, BPTrackerFree.DIASTOLIC_DEFAULT_STRING)),
+            Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_PULSE_KEY, BPTrackerFree.PULSE_DEFAULT_STRING)));
     }
 
     private ContentValues setContentValues(int systolic, int diastolic, int pulse) {

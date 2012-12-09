@@ -97,7 +97,7 @@
     <string name="default_values">Defaults</string>
     <string name="average_values">Average Readings</string>
     <string name="fixed_chosen">New records will use the fixed settings.</string>
-    <string name="average_chosen">New records will use average previous readings, when possible.</string>
+    <string name="average_chosen">New records will use the average of previous readings, when possible.</string>
     <string name="systolic_initial">Initial Systolic for new records</string>
     <string name="diastolic_initial">Initial Diastolic for new records</string>
     <string name="pulse_initial">Initial Pulse for new records</string>

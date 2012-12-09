@@ -103,4 +103,5 @@
     <string name="diastolic_initial">Initial Diastolische für neue Datensätze</string>
     <string name="pulse_initial">Initial Puls für neue Datensätze</string>
     <string name="icon_content_description">Symbol</string>
+    <string name="check_values">Bitte überprüfen Sie Ihre Werte für die Richtigkeit.</string>
 </resources>
