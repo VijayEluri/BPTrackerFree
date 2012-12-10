@@ -17,6 +17,7 @@ package com.eyebrowssoftware.bptrackerfree;
 
 import java.lang.ref.WeakReference;
 
+import android.content.ContentValues;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewStub;
@@ -105,9 +106,9 @@ public class BPRecordEditor extends BPRecordEditorBase implements OnItemSelected
         super.onResume();
 
         if(mCurrentValues != null) {
-            BPTrackerFree.setSpinner(mSpinners[SYS_IDX], mCurrentValues.getInt(BPRecord.SYSTOLIC));
-            BPTrackerFree.setSpinner(mSpinners[DIA_IDX], mCurrentValues.getInt(BPRecord.DIASTOLIC));
-            BPTrackerFree.setSpinner(mSpinners[PLS_IDX], mCurrentValues.getInt(BPRecord.PULSE));
+            BPTrackerFree.setSpinner(mSpinners[SYS_IDX], mCurrentValues.getAsInteger(BPRecord.SYSTOLIC));
+            BPTrackerFree.setSpinner(mSpinners[DIA_IDX], mCurrentValues.getAsInteger(BPRecord.DIASTOLIC));
+            BPTrackerFree.setSpinner(mSpinners[PLS_IDX], mCurrentValues.getAsInteger(BPRecord.PULSE));
         }
     }
 
@@ -118,9 +119,9 @@ public class BPRecordEditor extends BPRecordEditorBase implements OnItemSelected
         // changes are safely saved away in the provider. We don't need
         // to do this if only editing.
         if (mCurrentValues != null) {
-            mCurrentValues.putInt(BPRecord.SYSTOLIC, (Integer) mSpinners[SYS_IDX].getSelectedItem());
-            mCurrentValues.putInt(BPRecord.DIASTOLIC, (Integer) mSpinners[DIA_IDX].getSelectedItem());
-            mCurrentValues.putInt(BPRecord.PULSE, (Integer) mSpinners[PLS_IDX].getSelectedItem());
+            mCurrentValues.put(BPRecord.SYSTOLIC, (Integer) mSpinners[SYS_IDX].getSelectedItem());
+            mCurrentValues.put(BPRecord.DIASTOLIC, (Integer) mSpinners[DIA_IDX].getSelectedItem());
+            mCurrentValues.put(BPRecord.PULSE, (Integer) mSpinners[PLS_IDX].getSelectedItem());
 
             updateFromCurrentValues();
         }
@@ -158,14 +159,14 @@ public class BPRecordEditor extends BPRecordEditorBase implements OnItemSelected
     }
 
     @Override
-    protected void setCurrentValues(Bundle currentValues) {
+    protected void setCurrentValues(ContentValues currentValues) {
         super.setCurrentValues(currentValues);
 
         Spinner[] spinners = mSpinnersReference.get();
         if(spinners != null) {
-            BPTrackerFree.setSpinner(spinners[SYS_IDX], currentValues.getInt(BPRecord.SYSTOLIC));
-            BPTrackerFree.setSpinner(spinners[DIA_IDX], currentValues.getInt(BPRecord.DIASTOLIC));
-            BPTrackerFree.setSpinner(spinners[PLS_IDX], currentValues.getInt(BPRecord.PULSE));
+            BPTrackerFree.setSpinner(spinners[SYS_IDX], currentValues.getAsInteger(BPRecord.SYSTOLIC));
+            BPTrackerFree.setSpinner(spinners[DIA_IDX], currentValues.getAsInteger(BPRecord.DIASTOLIC));
+            BPTrackerFree.setSpinner(spinners[PLS_IDX], currentValues.getAsInteger(BPRecord.PULSE));
         }
     }
 

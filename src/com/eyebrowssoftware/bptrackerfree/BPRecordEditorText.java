@@ -19,6 +19,7 @@ package com.eyebrowssoftware.bptrackerfree;
 import java.lang.reflect.Field;
 
 import android.annotation.TargetApi;
+import android.content.ContentValues;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -76,9 +77,9 @@ public class BPRecordEditorText extends BPRecordEditorBase {
         // changes are safely saved away in the provider. We don't need
         // to do this if only editing.
         if (mCurrentValues != null) {
-            mCurrentValues.putInt(BPRecord.SYSTOLIC, Integer.valueOf(mEditValues[SYS_IDX].getText().toString()));
-            mCurrentValues.putInt(BPRecord.DIASTOLIC, Integer.valueOf(mEditValues[DIA_IDX].getText().toString()));
-            mCurrentValues.putInt(BPRecord.PULSE, Integer.valueOf(mEditValues[PLS_IDX].getText().toString()));
+            mCurrentValues.put(BPRecord.SYSTOLIC, Integer.valueOf(mEditValues[SYS_IDX].getText().toString()));
+            mCurrentValues.put(BPRecord.DIASTOLIC, Integer.valueOf(mEditValues[DIA_IDX].getText().toString()));
+            mCurrentValues.put(BPRecord.PULSE, Integer.valueOf(mEditValues[PLS_IDX].getText().toString()));
 
             updateFromCurrentValues();
         }
@@ -162,16 +163,16 @@ public class BPRecordEditorText extends BPRecordEditorBase {
     }
 
     @Override
-    protected void setCurrentValues(Bundle currentValues) {
+    protected void setCurrentValues(ContentValues currentValues) {
         super.setCurrentValues(currentValues);
         updateUIComponents(currentValues);
     }
 
-    private void updateUIComponents(Bundle currentValues) {
+    private void updateUIComponents(ContentValues currentValues) {
         if (currentValues != null) {
-            mEditValues[SYS_IDX].setText(String.valueOf(mCurrentValues.getInt(BPRecord.SYSTOLIC)));
-            mEditValues[DIA_IDX].setText(String.valueOf(mCurrentValues.getInt(BPRecord.DIASTOLIC)));
-            mEditValues[PLS_IDX].setText(String.valueOf(mCurrentValues.getInt(BPRecord.PULSE)));
+            mEditValues[SYS_IDX].setText(String.valueOf(mCurrentValues.getAsInteger(BPRecord.SYSTOLIC)));
+            mEditValues[DIA_IDX].setText(String.valueOf(mCurrentValues.getAsInteger(BPRecord.DIASTOLIC)));
+            mEditValues[PLS_IDX].setText(String.valueOf(mCurrentValues.getAsInteger(BPRecord.PULSE)));
         }
     }
 

@@ -93,8 +93,6 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
 
     protected Uri mUri;
 
-    protected Cursor mCursor;
-
     protected Button mDateButton;
     protected Button mTimeButton;
     protected EditText mNoteText;
@@ -102,7 +100,7 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
     protected Calendar mCalendar;
 
     protected Bundle mOriginalValues = null;
-    protected Bundle mCurrentValues = null;
+    protected ContentValues mCurrentValues = null;
 
     protected Button mDoneButton;
 
@@ -208,11 +206,11 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
             setTitle(getText(R.string.title_create));
         }
         if(mCurrentValues != null) {
-            long datetime = mCurrentValues.getLong(BPRecord.CREATED_DATE);
-            String note = mCurrentValues.getString(BPRecord.NOTE);
-
-            mNoteText.setText(note);
+            long datetime = mCurrentValues.getAsLong(BPRecord.CREATED_DATE);
             mCalendar.setTimeInMillis(datetime);
+
+            String note = mCurrentValues.getAsString(BPRecord.NOTE);
+            mNoteText.setText(note);
             updateDateTimeDisplay();
         }
     }
@@ -236,36 +234,21 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
         // changes are safely saved away in the provider. We don't need
         // to do this if only editing.
         if (mCurrentValues != null) {
-            long created = (Long) mCalendar.getTimeInMillis();
-            String note = (String) mNoteText.getText().toString();
-
-            mCurrentValues.putLong(BPRecord.CREATED_DATE, created);
-            mCurrentValues.putLong(BPRecord.MODIFIED_DATE, System.currentTimeMillis());
-            mCurrentValues.putString(BPRecord.NOTE, note);
+            mCurrentValues.put(BPRecord.CREATED_DATE, mCalendar.getTimeInMillis());
+            mCurrentValues.put(BPRecord.MODIFIED_DATE, System.currentTimeMillis());
+            mCurrentValues.put(BPRecord.NOTE, mNoteText.getText().toString());
         }
     }
 
     protected void updateFromCurrentValues() {
         ContentValues values = new ContentValues();
-        values.put(BPRecord.SYSTOLIC, mCurrentValues.getInt(BPRecord.SYSTOLIC));
-        values.put(BPRecord.DIASTOLIC, mCurrentValues.getInt(BPRecord.DIASTOLIC));
-        values.put(BPRecord.PULSE, mCurrentValues.getInt(BPRecord.PULSE));
-        values.put(BPRecord.CREATED_DATE, mCurrentValues.getLong(BPRecord.CREATED_DATE));
-        values.put(BPRecord.MODIFIED_DATE, mCurrentValues.getLong(BPRecord.MODIFIED_DATE));
-        values.put(BPRecord.NOTE, mCurrentValues.getString(BPRecord.NOTE));
+        values.put(BPRecord.SYSTOLIC, mCurrentValues.getAsInteger(BPRecord.SYSTOLIC));
+        values.put(BPRecord.DIASTOLIC, mCurrentValues.getAsInteger(BPRecord.DIASTOLIC));
+        values.put(BPRecord.PULSE, mCurrentValues.getAsInteger(BPRecord.PULSE));
+        values.put(BPRecord.CREATED_DATE, mCurrentValues.getAsLong(BPRecord.CREATED_DATE));
+        values.put(BPRecord.MODIFIED_DATE, mCurrentValues.getAsLong(BPRecord.MODIFIED_DATE));
+        values.put(BPRecord.NOTE, mCurrentValues.getAsString(BPRecord.NOTE));
         getContentResolver().update(mUri, values, null, null);
-    }
-
-    @Override
-    protected void onDestroy() {
-        closeCursors();
-        super.onDestroy();
-    }
-
-    @Override
-    protected void finalize() throws Throwable {
-        closeCursors();
-        super.finalize();
     }
 
     private ContentValues setAverageValues(SharedPreferences prefs) {
@@ -350,47 +333,17 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
         return super.onOptionsItemSelected(item);
     }
 
-    protected void closeRecordCursor() {
-        if(mCursor != null) {
-            this.stopManagingCursor(mCursor);
-            mCursor.close();
-            mCursor = null;
-        }
-    }
-
-    protected void closeCursors() {
-        closeRecordCursor();
-    }
-
-    protected ContentValues getOriginalContentValues() {
-        ContentValues cv = new ContentValues();
-        if(mOriginalValues != null) {
-            cv.put(BPRecord.SYSTOLIC, mOriginalValues.getInt(BPRecord.SYSTOLIC));
-            cv.put(BPRecord.DIASTOLIC, mOriginalValues.getInt(BPRecord.DIASTOLIC));
-            cv.put(BPRecord.PULSE, mOriginalValues.getInt(BPRecord.PULSE));
-            cv.put(BPRecord.CREATED_DATE, mOriginalValues.getLong(BPRecord.CREATED_DATE));
-            cv.put(BPRecord.MODIFIED_DATE, mOriginalValues.getLong(BPRecord.MODIFIED_DATE));
-            cv.put(BPRecord.NOTE, mOriginalValues.getString(BPRecord.NOTE));
-        }
-        return cv;
-    }
-
     /**
     * Take care of canceling work on a BPRecord. Deletes the record if we had created
     * it, otherwise reverts to the original record data.
     */
     protected final void cancelRecord() {
-        if (mCursor != null) {
-            if (mState == STATE_EDIT) {
-                // Restore the original information we loaded at first.
-                mCursor.close();
-                // we will end up in onPause() and we don't want it to do anything
-                mCursor = null;
-                getContentResolver().update(mUri, getOriginalContentValues(), null, null);
-            } else if (mState == STATE_INSERT) {
-                // We inserted an empty record, make sure to delete it
-                deleteRecord();
-            }
+        if (mState == STATE_EDIT) {
+            // Restore the original information we loaded at first.
+            getContentResolver().update(mUri, mCurrentValues, null, null);
+        } else if (mState == STATE_INSERT) {
+            // We inserted an empty record, make sure to delete it
+            deleteRecord();
         }
         setResult(RESULT_CANCELED);
         finish();
@@ -400,11 +353,7 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
     * Take care of deleting a record. Simply close the cursor and deletes the entry.
     */
     protected final void deleteRecord() {
-        if (mCursor != null) {
-            mCursor.close();
-            mCursor = null;
-            getContentResolver().delete(mUri, null, null);
-        }
+        getContentResolver().delete(mUri, null, null);
     }
 
     @Override
@@ -461,14 +410,6 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
         updateDateTimeDisplay();
     }
 
-    protected void setMyCursor(Cursor cursor) {
-        mCursor = cursor;
-    }
-
-    protected Cursor getCursor() {
-        return mCursor;
-    }
-
     protected Bundle getOriginalValues() {
         return mOriginalValues;
     }
@@ -477,11 +418,11 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
         mOriginalValues = originalValues;
     }
 
-    protected Bundle getCurrentValues() {
+    protected ContentValues getCurrentValues() {
         return mCurrentValues;
     }
 
-    protected void setCurrentValues(Bundle currentValues) {
+    protected void setCurrentValues(ContentValues currentValues) {
         mCurrentValues = currentValues;
         EditText noteView = mNoteViewReference.get();
         Button dateButton = mDateButtonReference.get();
@@ -489,7 +430,7 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
         Calendar calendar = mCalendarReference.get();
 
         if(calendar != null) {
-            calendar.setTimeInMillis(currentValues.getLong(BPRecord.CREATED_DATE));
+            calendar.setTimeInMillis(currentValues.getAsLong(BPRecord.CREATED_DATE));
         }
         Date date = calendar.getTime();
         if(dateButton != null) {
@@ -499,7 +440,7 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
             timeButton.setText(BPTrackerFree.getTimeString(date, DateFormat.SHORT));
         }
         if(noteView != null) {
-            noteView.setText(currentValues.getString(BPRecord.NOTE));
+            noteView.setText(currentValues.getAsString(BPRecord.NOTE));
         }
     }
 
@@ -513,34 +454,42 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
 
         @Override
         protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-            BPRecordEditorBase parent = mActivityReference.get();
-            if (parent != null) {
-                parent.setMyCursor(cursor);
-                if(cursor != null) {
-                    parent.startManagingCursor(cursor);
-                    if (cursor.moveToFirst()) {
-                        Bundle currentValues = parent.getCurrentValues();
-                        if (currentValues == null) {
-                            currentValues = new Bundle();
-                        }
-                        currentValues.putInt(BPRecord.SYSTOLIC, cursor.getInt(COLUMN_SYSTOLIC_INDEX));
-                        currentValues.putInt(BPRecord.PULSE, cursor.getInt(COLUMN_PULSE_INDEX));
-                        currentValues.putInt(BPRecord.DIASTOLIC, cursor.getInt(COLUMN_DIASTOLIC_INDEX));
-                        currentValues.putLong(BPRecord.CREATED_DATE, cursor.getLong(COLUMN_CREATED_AT_INDEX));
-                        currentValues.putLong(BPRecord.MODIFIED_DATE, cursor.getLong(COLUMN_MODIFIED_AT_INDEX));
-                        currentValues.putString(BPRecord.NOTE, cursor.getString(COLUMN_NOTE_INDEX));
-                        parent.setCurrentValues(currentValues);
+            BPRecordEditorBase activity = mActivityReference.get();
+            if (activity != null && cursor != null && cursor.moveToFirst()) {
+                ContentValues currentValues = activity.getCurrentValues();
+                if (currentValues == null) {
+                    currentValues = new ContentValues();
+                }
+                currentValues.put(BPRecord.SYSTOLIC, cursor.getInt(COLUMN_SYSTOLIC_INDEX));
+                currentValues.put(BPRecord.PULSE, cursor.getInt(COLUMN_PULSE_INDEX));
+                currentValues.put(BPRecord.DIASTOLIC, cursor.getInt(COLUMN_DIASTOLIC_INDEX));
+                currentValues.put(BPRecord.CREATED_DATE, cursor.getLong(COLUMN_CREATED_AT_INDEX));
+                currentValues.put(BPRecord.MODIFIED_DATE, cursor.getLong(COLUMN_MODIFIED_AT_INDEX));
+                currentValues.put(BPRecord.NOTE, cursor.getString(COLUMN_NOTE_INDEX));
+                activity.setCurrentValues(currentValues);
 
-                        // If we hadn't previously retrieved the original text, do so
-                        // now. This allows the user to revert their changes.
-                        Bundle originalValues = parent.getOriginalValues();
-                        if(originalValues == null) {
-                            originalValues = new Bundle(currentValues);
-                            parent.setOriginalValues(originalValues);
-                        }
-                    }
+                // If we hadn't previously retrieved the original values, do so
+                // now. This allows the user to revert their changes.
+                Bundle originalValues = activity.getOriginalValues();
+                if(originalValues == null) {
+                    originalValues = getCurrentValuesBundle(currentValues);
+                    activity.setOriginalValues(originalValues);
                 }
             }
+            if (cursor != null) {
+                cursor.close();
+            }
+        }
+
+        private Bundle getCurrentValuesBundle(ContentValues cv) {
+            Bundle b = new Bundle();
+            b.putInt(BPRecord.SYSTOLIC, cv.getAsInteger(BPRecord.SYSTOLIC));
+            b.putInt(BPRecord.DIASTOLIC, cv.getAsInteger(BPRecord.DIASTOLIC));
+            b.putInt(BPRecord.PULSE, cv.getAsInteger(BPRecord.PULSE));
+            b.putString(BPRecord.NOTE, cv.getAsString(BPRecord.NOTE));
+            b.putLong(BPRecord.CREATED_DATE, cv.getAsLong(BPRecord.CREATED_DATE));
+            b.putLong(BPRecord.MODIFIED_DATE, cv.getAsLong(BPRecord.MODIFIED_DATE));
+            return b;
         }
     }
 }
