@@ -2,7 +2,7 @@ package com.eyebrowssoftware.bptrackerfree.test;
 
 import android.test.ActivityUnitTestCase;
 
-import com.eyebrowssoftware.bptrackerfree.BPRecordEditor;
+import com.eyebrowssoftware.bptrackerfree.activity.BPRecordEditor;
 
 /**
  * @author brionemde

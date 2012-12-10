@@ -36,7 +36,7 @@
         android:allowBackup="false"
         android:name=".BPTrackerFree">
         <activity
-            android:name=".BPRecordList"
+            android:name=".activity.BPRecordList"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Light"
             android:exported="true"
@@ -47,7 +47,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".BPRecordEditor"
+            android:name=".activity.BPRecordEditor"
             android:theme="@android:style/Theme.Light"
             android:label="@string/title_edit"
             android:exported="false"
@@ -64,7 +64,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".BPRecordEditorText"
+            android:name=".activity.BPRecordEditorText"
             android:theme="@android:style/Theme.Light"
             android:label="@string/title_alternate_edit"
             android:exported="false"
@@ -81,18 +81,18 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".BPSend"
+            android:name=".activity.BPSend"
             android:theme="@android:style/Theme.Light"
             android:label="@string/title_send"
         />
         <activity
-            android:name=".BPDataManager"
+            android:name=".activity.BPDataManager"
             android:theme="@android:style/Theme.Light"
             android:label="@string/label_delete_history"
             android:icon="@drawable/icon"
         />
         <activity
-            android:name=".BPPreferenceActivity"
+            android:name=".activity.BPPreferenceActivity"
             android:theme="@android:style/Theme.Light"
             android:label="@string/default_values"
             android:icon="@drawable/icon"

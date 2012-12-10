@@ -1,20 +1,16 @@
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.activity;
 
-import java.lang.ref.WeakReference;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
 import android.app.Dialog;
 import android.app.TimePickerDialog;
 import android.app.TimePickerDialog.OnTimeSetListener;
-import android.content.AsyncQueryHandler;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,6 +19,10 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,27 +35,21 @@ import android.widget.EditText;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
+import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
+import com.eyebrowssoftware.bptrackerfree.R;
 
 /**
  * @author brionemde
  *
  */
-public abstract class BPRecordEditorBase extends Activity  implements OnDateSetListener, OnTimeSetListener {
+public abstract class BPRecordEditorBase extends FragmentActivity
+    implements OnDateSetListener, OnTimeSetListener, LoaderManager.LoaderCallbacks<Cursor> {
 
     // Static constants
 
     protected static final String TAG = "BPRecordEditorBase";
-
-    protected static final String[] PROJECTION = {
-        BPRecord._ID,
-        BPRecord.SYSTOLIC,
-        BPRecord.DIASTOLIC,
-        BPRecord.PULSE,
-        BPRecord.CREATED_DATE,
-        BPRecord.MODIFIED_DATE,
-        BPRecord.NOTE
-    };
 
     private static final String[] AVERAGE_PROJECTION = {
         BPRecord.AVERAGE_SYSTOLIC,
@@ -100,7 +94,7 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
     protected Calendar mCalendar;
 
     protected Bundle mOriginalValues = null;
-    protected ContentValues mCurrentValues = null;
+    protected ContentValues mCurrentValues;
 
     protected Button mDoneButton;
 
@@ -108,14 +102,9 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
 
     protected static final int BPRECORDS_TOKEN = 0;
 
-    protected MyAsyncQueryHandler mMAQH;
-
-    protected WeakReference<EditText> mNoteViewReference;
-    protected WeakReference<Calendar> mCalendarReference;
-    protected WeakReference<Button> mDateButtonReference;
-    protected WeakReference<Button> mTimeButtonReference;
-
     protected SharedPreferences mSharedPreferences;
+
+    private static final int EDITOR_LOADER_ID = 1;
 
     @Override
     protected void onCreate(Bundle icicle) {
@@ -153,8 +142,7 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
             finish();
             return;
         }
-        mMAQH = new MyAsyncQueryHandler(this.getContentResolver(), this);
-        mMAQH.startQuery(BPRECORDS_TOKEN, this, mUri, PROJECTION, null, null, null);
+        this.getSupportLoaderManager().initLoader(EDITOR_LOADER_ID, null, this);
 
         mCalendar = new GregorianCalendar();
         mDateButton = (Button) findViewById(R.id.date_button);
@@ -188,12 +176,6 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
         });
 
         mNoteText = (EditText) findViewById(R.id.note);
-
-        mNoteViewReference = new WeakReference<EditText>(mNoteText);
-        mCalendarReference = new WeakReference<Calendar>(mCalendar);
-        mDateButtonReference = new WeakReference<Button>(mDateButton);
-        mTimeButtonReference = new WeakReference<Button>(mTimeButton);
-
     }
 
     @Override
@@ -205,14 +187,7 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
         } else if (mState == STATE_INSERT) {
             setTitle(getText(R.string.title_create));
         }
-        if(mCurrentValues != null) {
-            long datetime = mCurrentValues.getAsLong(BPRecord.CREATED_DATE);
-            mCalendar.setTimeInMillis(datetime);
-
-            String note = mCurrentValues.getAsString(BPRecord.NOTE);
-            mNoteText.setText(note);
-            updateDateTimeDisplay();
-        }
+        setUIState();
     }
 
     @Override
@@ -226,14 +201,11 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
     protected void onPause() {
         super.onPause();
 
-        // Try to cancel any async queries we may have started that have not completed
-        if(mMAQH != null)
-            mMAQH.cancelOperation(BPRECORDS_TOKEN);
-
         // The user is going somewhere else, so make sure their current
-        // changes are safely saved away in the provider. We don't need
-        // to do this if only editing.
-        if (mCurrentValues != null) {
+        // changes are safely saved away in the provider.
+        //
+        // The leaf subclass is responsible for persisting the current values
+        if(mCurrentValues != null) {
             mCurrentValues.put(BPRecord.CREATED_DATE, mCalendar.getTimeInMillis());
             mCurrentValues.put(BPRecord.MODIFIED_DATE, System.currentTimeMillis());
             mCurrentValues.put(BPRecord.NOTE, mNoteText.getText().toString());
@@ -241,14 +213,7 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
     }
 
     protected void updateFromCurrentValues() {
-        ContentValues values = new ContentValues();
-        values.put(BPRecord.SYSTOLIC, mCurrentValues.getAsInteger(BPRecord.SYSTOLIC));
-        values.put(BPRecord.DIASTOLIC, mCurrentValues.getAsInteger(BPRecord.DIASTOLIC));
-        values.put(BPRecord.PULSE, mCurrentValues.getAsInteger(BPRecord.PULSE));
-        values.put(BPRecord.CREATED_DATE, mCurrentValues.getAsLong(BPRecord.CREATED_DATE));
-        values.put(BPRecord.MODIFIED_DATE, mCurrentValues.getAsLong(BPRecord.MODIFIED_DATE));
-        values.put(BPRecord.NOTE, mCurrentValues.getAsString(BPRecord.NOTE));
-        getContentResolver().update(mUri, values, null, null);
+        getContentResolver().update(mUri, mCurrentValues, null, null);
     }
 
     private ContentValues setAverageValues(SharedPreferences prefs) {
@@ -281,7 +246,7 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
     /**
     * Update the date and time
     */
-    public void updateDateTimeDisplay() {
+    private void updateDateTimeDisplay() {
         Date date = mCalendar.getTime();
         mDateButton.setText(BPTrackerFree.getDateString(date, DateFormat.MEDIUM));
         mTimeButton.setText(BPTrackerFree.getTimeString(date, DateFormat.SHORT));
@@ -340,20 +305,20 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
     protected final void cancelRecord() {
         if (mState == STATE_EDIT) {
             // Restore the original information we loaded at first.
-            getContentResolver().update(mUri, mCurrentValues, null, null);
+            ContentValues cv = new ContentValues();
+            cv.put(BPRecord.SYSTOLIC, mOriginalValues.getInt(BPRecord.SYSTOLIC));
+            cv.put(BPRecord.DIASTOLIC, mOriginalValues.getInt(BPRecord.DIASTOLIC));
+            cv.put(BPRecord.PULSE, mOriginalValues.getInt(BPRecord.PULSE));
+            cv.put(BPRecord.NOTE, mOriginalValues.getString(BPRecord.NOTE));
+            cv.put(BPRecord.CREATED_DATE, mOriginalValues.getLong(BPRecord.CREATED_DATE));
+            cv.put(BPRecord.MODIFIED_DATE, mOriginalValues.getLong(BPRecord.MODIFIED_DATE));
+            getContentResolver().update(mUri, cv, null, null);
         } else if (mState == STATE_INSERT) {
             // We inserted an empty record, make sure to delete it
-            deleteRecord();
+            getContentResolver().delete(mUri, null, null);
         }
         setResult(RESULT_CANCELED);
         finish();
-    }
-
-    /**
-    * Take care of deleting a record. Simply close the cursor and deletes the entry.
-    */
-    protected final void deleteRecord() {
-        getContentResolver().delete(mUri, null, null);
     }
 
     @Override
@@ -365,7 +330,7 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
                 .setCancelable(false)
                 .setPositiveButton(getString(R.string.label_yes), new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
-                        deleteRecord();
+                        getContentResolver().delete(mUri, null, null);
                         setResult(RESULT_OK);
                         finish();
                     }
@@ -414,82 +379,59 @@ public abstract class BPRecordEditorBase extends Activity  implements OnDateSetL
         return mOriginalValues;
     }
 
-    protected void setOriginalValues(Bundle originalValues) {
-        mOriginalValues = originalValues;
-    }
-
     protected ContentValues getCurrentValues() {
         return mCurrentValues;
     }
 
-    protected void setCurrentValues(ContentValues currentValues) {
-        mCurrentValues = currentValues;
-        EditText noteView = mNoteViewReference.get();
-        Button dateButton = mDateButtonReference.get();
-        Button timeButton = mTimeButtonReference.get();
-        Calendar calendar = mCalendarReference.get();
-
-        if(calendar != null) {
-            calendar.setTimeInMillis(currentValues.getAsLong(BPRecord.CREATED_DATE));
-        }
-        Date date = calendar.getTime();
-        if(dateButton != null) {
-            dateButton.setText(BPTrackerFree.getDateString(date, DateFormat.MEDIUM));
-        }
-        if(timeButton != null) {
-            timeButton.setText(BPTrackerFree.getTimeString(date, DateFormat.SHORT));
-        }
-        if(noteView != null) {
-            noteView.setText(currentValues.getAsString(BPRecord.NOTE));
+    protected void setUIState() {
+        if (mCurrentValues != null) {
+            mCalendar.setTimeInMillis(mCurrentValues.getAsLong(BPRecord.CREATED_DATE));
+            mNoteText.setText(mCurrentValues.getAsString(BPRecord.NOTE));
+            updateDateTimeDisplay();
         }
     }
 
-    protected static class MyAsyncQueryHandler extends AsyncQueryHandler {
-        WeakReference<BPRecordEditorBase> mActivityReference;
+    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+        return new CursorLoader(this, mUri, BPTrackerFree.PROJECTION, null, null, null);
+    }
 
-        public MyAsyncQueryHandler(ContentResolver cr, BPRecordEditorBase parent) {
-            super(cr);
-            mActivityReference = new WeakReference<BPRecordEditorBase>(parent);
-        }
-
-        @Override
-        protected void onQueryComplete(int token, Object cookie, Cursor cursor) {
-            BPRecordEditorBase activity = mActivityReference.get();
-            if (activity != null && cursor != null && cursor.moveToFirst()) {
-                ContentValues currentValues = activity.getCurrentValues();
-                if (currentValues == null) {
-                    currentValues = new ContentValues();
-                }
-                currentValues.put(BPRecord.SYSTOLIC, cursor.getInt(COLUMN_SYSTOLIC_INDEX));
-                currentValues.put(BPRecord.PULSE, cursor.getInt(COLUMN_PULSE_INDEX));
-                currentValues.put(BPRecord.DIASTOLIC, cursor.getInt(COLUMN_DIASTOLIC_INDEX));
-                currentValues.put(BPRecord.CREATED_DATE, cursor.getLong(COLUMN_CREATED_AT_INDEX));
-                currentValues.put(BPRecord.MODIFIED_DATE, cursor.getLong(COLUMN_MODIFIED_AT_INDEX));
-                currentValues.put(BPRecord.NOTE, cursor.getString(COLUMN_NOTE_INDEX));
-                activity.setCurrentValues(currentValues);
-
-                // If we hadn't previously retrieved the original values, do so
-                // now. This allows the user to revert their changes.
-                Bundle originalValues = activity.getOriginalValues();
-                if(originalValues == null) {
-                    originalValues = getCurrentValuesBundle(currentValues);
-                    activity.setOriginalValues(originalValues);
-                }
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (cursor != null && cursor.moveToFirst()) {
+            if (mCurrentValues == null) {
+                mCurrentValues = new ContentValues();
             }
-            if (cursor != null) {
-                cursor.close();
+            mCurrentValues.put(BPRecord.SYSTOLIC, cursor.getInt(COLUMN_SYSTOLIC_INDEX));
+            mCurrentValues.put(BPRecord.PULSE, cursor.getInt(COLUMN_PULSE_INDEX));
+            mCurrentValues.put(BPRecord.DIASTOLIC, cursor.getInt(COLUMN_DIASTOLIC_INDEX));
+            mCurrentValues.put(BPRecord.CREATED_DATE, cursor.getLong(COLUMN_CREATED_AT_INDEX));
+            mCurrentValues.put(BPRecord.MODIFIED_DATE, cursor.getLong(COLUMN_MODIFIED_AT_INDEX));
+            mCurrentValues.put(BPRecord.NOTE, cursor.getString(COLUMN_NOTE_INDEX));
+            setUIState();
+
+            // If we hadn't previously retrieved the original values, do so
+            // now. This allows the user to revert their changes.
+            if(mOriginalValues == null) {
+                setOriginalValuesBundle();
             }
         }
-
-        private Bundle getCurrentValuesBundle(ContentValues cv) {
-            Bundle b = new Bundle();
-            b.putInt(BPRecord.SYSTOLIC, cv.getAsInteger(BPRecord.SYSTOLIC));
-            b.putInt(BPRecord.DIASTOLIC, cv.getAsInteger(BPRecord.DIASTOLIC));
-            b.putInt(BPRecord.PULSE, cv.getAsInteger(BPRecord.PULSE));
-            b.putString(BPRecord.NOTE, cv.getAsString(BPRecord.NOTE));
-            b.putLong(BPRecord.CREATED_DATE, cv.getAsLong(BPRecord.CREATED_DATE));
-            b.putLong(BPRecord.MODIFIED_DATE, cv.getAsLong(BPRecord.MODIFIED_DATE));
-            return b;
+        if (cursor != null) {
+            cursor.close();
         }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> arg0) {
+        // Not doing anything right now
+
+    }
+
+    private void setOriginalValuesBundle() {
+        mOriginalValues = new Bundle();
+        mOriginalValues.putInt(BPRecord.SYSTOLIC, mCurrentValues.getAsInteger(BPRecord.SYSTOLIC));
+        mOriginalValues.putInt(BPRecord.DIASTOLIC, mCurrentValues.getAsInteger(BPRecord.DIASTOLIC));
+        mOriginalValues.putInt(BPRecord.PULSE, mCurrentValues.getAsInteger(BPRecord.PULSE));
+        mOriginalValues.putString(BPRecord.NOTE, mCurrentValues.getAsString(BPRecord.NOTE));
+        mOriginalValues.putLong(BPRecord.CREATED_DATE, mCurrentValues.getAsLong(BPRecord.CREATED_DATE));
+        mOriginalValues.putLong(BPRecord.MODIFIED_DATE, mCurrentValues.getAsLong(BPRecord.MODIFIED_DATE));
     }
 }

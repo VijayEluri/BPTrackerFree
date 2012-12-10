@@ -25,6 +25,8 @@ import android.util.Log;
 import android.widget.Spinner;
 import android.widget.Toast;
 
+import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
+
 /**
  * @author brionemde
  *
@@ -108,6 +110,49 @@ public class BPTrackerFree extends Application {
             .getTimeInstance(DateFormat.SHORT);
     private static DateFormat mMediumTimeFormat = DateFormat
             .getTimeInstance(DateFormat.MEDIUM);
+
+    /**
+     * Standard query projection for most activities
+     */
+    public static final String[] PROJECTION = {
+        BPRecord._ID,
+        BPRecord.SYSTOLIC,
+        BPRecord.DIASTOLIC,
+        BPRecord.PULSE,
+        BPRecord.CREATED_DATE,
+        BPRecord.MODIFIED_DATE,
+        BPRecord.NOTE
+    };
+
+    // BP Record Indices
+    /**
+     * _ID column index in the projection
+     */
+    public static final int COLUMN_ID_INDEX = 0;
+    /**
+     * Systolic column index in the projection
+     */
+    public static final int COLUMN_SYSTOLIC_INDEX = 1;
+        /**
+         * Diastolic column index in the projection
+         */
+    public static final int COLUMN_DIASTOLIC_INDEX = 2;
+        /**
+         * Pulse column index in the projection
+         */
+    public static final int COLUMN_PULSE_INDEX = 3;
+        /**
+         * Created At column index in the projection
+         */
+    public static final int COLUMN_CREATED_AT_INDEX = 4;
+        /**
+         * Modified At column index in the projection
+         */
+    public static final int COLUMN_MODIFIED_AT_INDEX = 5;
+        /**
+         * Note column index in the projection
+         */
+    public static final int COLUMN_NOTE_INDEX = 6;
 
     public void onCreate() {
         super.onCreate();

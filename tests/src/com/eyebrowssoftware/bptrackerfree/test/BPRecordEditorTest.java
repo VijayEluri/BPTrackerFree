@@ -6,8 +6,8 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import com.eyebrowssoftware.bptrackerfree.BPRecordEditor;
 import com.eyebrowssoftware.bptrackerfree.BPRecords;
+import com.eyebrowssoftware.bptrackerfree.activity.BPRecordEditor;
 
 /**
  * @author brionemde

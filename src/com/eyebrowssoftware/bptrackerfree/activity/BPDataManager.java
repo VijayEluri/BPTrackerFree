@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.activity;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -24,6 +24,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.eyebrowssoftware.bptrackerfree.BPRecords;
+import com.eyebrowssoftware.bptrackerfree.R;
 
 /**
  * @author brionemde

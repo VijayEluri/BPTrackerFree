@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.activity;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -45,7 +45,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.csvreader.CsvWriter;
+import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
+import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
+import com.eyebrowssoftware.bptrackerfree.R;
 
 /**
  * @author brionemde

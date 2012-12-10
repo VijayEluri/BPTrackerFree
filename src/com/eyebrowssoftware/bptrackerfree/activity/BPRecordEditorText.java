@@ -13,13 +13,12 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.activity;
 
 
 import java.lang.reflect.Field;
 
 import android.annotation.TargetApi;
-import android.content.ContentValues;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.KeyEvent;
@@ -29,6 +28,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
+import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
+import com.eyebrowssoftware.bptrackerfree.R;
 
 /**
  * @author brionemde
@@ -65,8 +66,6 @@ public class BPRecordEditorText extends BPRecordEditorBase {
     @Override
     protected void onResume() {
         super.onResume();
-
-        updateUIComponents(mCurrentValues);
     }
 
     @Override
@@ -163,17 +162,12 @@ public class BPRecordEditorText extends BPRecordEditorBase {
     }
 
     @Override
-    protected void setCurrentValues(ContentValues currentValues) {
-        super.setCurrentValues(currentValues);
-        updateUIComponents(currentValues);
-    }
-
-    private void updateUIComponents(ContentValues currentValues) {
-        if (currentValues != null) {
+    protected void setUIState() {
+        super.setUIState();
+        if (mCurrentValues != null) {
             mEditValues[SYS_IDX].setText(String.valueOf(mCurrentValues.getAsInteger(BPRecord.SYSTOLIC)));
             mEditValues[DIA_IDX].setText(String.valueOf(mCurrentValues.getAsInteger(BPRecord.DIASTOLIC)));
             mEditValues[PLS_IDX].setText(String.valueOf(mCurrentValues.getAsInteger(BPRecord.PULSE)));
         }
     }
-
 }

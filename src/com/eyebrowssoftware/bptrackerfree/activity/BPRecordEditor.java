@@ -13,11 +13,10 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.activity;
 
 import java.lang.ref.WeakReference;
 
-import android.content.ContentValues;
 import android.os.Bundle;
 import android.view.View;
 import android.view.ViewStub;
@@ -27,6 +26,9 @@ import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
+import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
+import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.RangeAdapter;
 
 /**
  * @author brionemde
@@ -104,12 +106,6 @@ public class BPRecordEditor extends BPRecordEditorBase implements OnItemSelected
     @Override
     protected void onResume() {
         super.onResume();
-
-        if(mCurrentValues != null) {
-            BPTrackerFree.setSpinner(mSpinners[SYS_IDX], mCurrentValues.getAsInteger(BPRecord.SYSTOLIC));
-            BPTrackerFree.setSpinner(mSpinners[DIA_IDX], mCurrentValues.getAsInteger(BPRecord.DIASTOLIC));
-            BPTrackerFree.setSpinner(mSpinners[PLS_IDX], mCurrentValues.getAsInteger(BPRecord.PULSE));
-        }
     }
 
     @Override
@@ -159,14 +155,13 @@ public class BPRecordEditor extends BPRecordEditorBase implements OnItemSelected
     }
 
     @Override
-    protected void setCurrentValues(ContentValues currentValues) {
-        super.setCurrentValues(currentValues);
+    protected void setUIState() {
+        super.setUIState();
 
-        Spinner[] spinners = mSpinnersReference.get();
-        if(spinners != null) {
-            BPTrackerFree.setSpinner(spinners[SYS_IDX], currentValues.getAsInteger(BPRecord.SYSTOLIC));
-            BPTrackerFree.setSpinner(spinners[DIA_IDX], currentValues.getAsInteger(BPRecord.DIASTOLIC));
-            BPTrackerFree.setSpinner(spinners[PLS_IDX], currentValues.getAsInteger(BPRecord.PULSE));
+        if(mCurrentValues != null) {
+            BPTrackerFree.setSpinner(mSpinners[SYS_IDX], mCurrentValues.getAsInteger(BPRecord.SYSTOLIC));
+            BPTrackerFree.setSpinner(mSpinners[DIA_IDX], mCurrentValues.getAsInteger(BPRecord.DIASTOLIC));
+            BPTrackerFree.setSpinner(mSpinners[PLS_IDX], mCurrentValues.getAsInteger(BPRecord.PULSE));
         }
     }
 

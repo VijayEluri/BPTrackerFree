@@ -1,7 +1,9 @@
-package com.eyebrowssoftware.bptrackerfree;
+package com.eyebrowssoftware.bptrackerfree.activity;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;
+
+import com.eyebrowssoftware.bptrackerfree.R;
 
 /**
  * @author brionemde
