@@ -34,6 +34,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -46,6 +47,10 @@ import android.widget.Toast;
 import com.csvreader.CsvWriter;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 
+/**
+ * @author brionemde
+ *
+ */
 public class BPSend extends Activity implements CompoundButton.OnCheckedChangeListener, OnClickListener {
 
     private static final String TAG = "BPSend";
@@ -75,12 +80,11 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
     private Button mSendButton;
     private Button mCancelButton;
 
-    private String mMsgLabelString;
+    private static String mMsgLabelString;
 
     private MyAsyncQueryHandler mMAQH;
 
-    public static final boolean ALL_DATES = true;
-    public static final String REVERSE = "reverse";
+    private static final String REVERSE = "reverse";
 
     // These are key names for saving things in the icicle
     private static final String SEND_TEXT = "tsend";
@@ -119,7 +123,7 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
         mCancelButton = (Button) findViewById(R.id.cancel);
         mCancelButton.setOnClickListener(this);
 
-        mMAQH = new MyAsyncQueryHandler(getContentResolver(), mMsgLabelView, mMsgView);
+        mMAQH = new MyAsyncQueryHandler(getContentResolver(), this.getResources(), mMsgLabelView, mMsgView);
 
         if(icicle != null) {
             mSendText.setChecked(icicle.getBoolean(SEND_TEXT));
@@ -131,6 +135,7 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
         querySendData();
     }
 
+    @Override
     public void onSaveInstanceState(Bundle icicle) {
         icicle.putBoolean(SEND_TEXT, mSendText.isChecked());
         icicle.putBoolean(SEND_FILE, mSendFile.isChecked());
@@ -140,12 +145,14 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
         mMAQH.startQuery(0, this, mUri, PROJECTION, null, null, BPRecord.CREATED_DATE + ((mReverse) ? " DESC" : "ASC"));
     }
 
-    private class MyAsyncQueryHandler extends AsyncQueryHandler {
+    private static class MyAsyncQueryHandler extends AsyncQueryHandler {
         private WeakReference<TextView> mLabelView;
         private WeakReference<TextView> mMsgView;
+        private Resources mRes;
 
-        public MyAsyncQueryHandler(ContentResolver cr, TextView labelView, TextView msgView) {
+        public MyAsyncQueryHandler(ContentResolver cr, Resources res, TextView labelView, TextView msgView) {
             super(cr);
+            mRes = res;
             mLabelView = new WeakReference<TextView>(labelView);
             mMsgView = new WeakReference<TextView>(msgView);
         }
@@ -156,7 +163,7 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
                 TextView labelView = mLabelView.get();
                 TextView msgView = mMsgView.get();
                 if(labelView != null && msgView != null) {
-                    String msg = getMessage(cursor);
+                    String msg = getMessage(cursor, mRes);
                     labelView.setText(String.format(mMsgLabelString, msg.length()));
                     msgView.setText(msg);
                 }
@@ -242,7 +249,7 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 
 
     // Uses the member Cursor mRecordsCursor
-    private String getMessage(Cursor cursor) {
+    private static String getMessage(Cursor cursor, Resources res) {
 
         String date_localized;
         String time_localized;
@@ -251,7 +258,6 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
         String pls_localized;
         String note_localized;
 
-        Resources res = getResources();
         date_localized = res.getString(R.string.bp_send_date);
         time_localized = res.getString(R.string.bp_send_time);
         sys_localized = res.getString(R.string.bp_send_sys);
@@ -314,17 +320,11 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
         return baos.toString();
     }
 
-    // Identifiers of our menu items
-    private static final int SEND_ID = Menu.FIRST;
-    private static final int CANCEL_ID = Menu.FIRST + 1;
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
-
-        // Build the menus that are shown when editing.
-        menu.add(Menu.NONE, SEND_ID, 0, R.string.menu_send);
-        menu.add(Menu.NONE, CANCEL_ID, 1, R.string.menu_cancel);
+        MenuInflater inflater = this.getMenuInflater();
+        inflater.inflate(R.menu.bp_send_options_menu, menu);
         return true;
     }
 
@@ -332,10 +332,10 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle all of the possible menu actions.
         switch (item.getItemId()) {
-        case CANCEL_ID:
+        case R.id.menu_cancel:
             finish();
             return true;
-        case SEND_ID:
+        case R.id.menu_send:
             if(sendData())
                 finish();
             return true;

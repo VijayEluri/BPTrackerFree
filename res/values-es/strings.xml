@@ -19,13 +19,11 @@
     <string name="bp_permission_label">información médica personal</string>
     <!-- Miscellaneous string for localization -->
     <string name="empty">No hay registros: Haga clic aquí para empezar.</string>
-    <string name="insert_error">No Insertar</string>
     <!-- These are Window titles -->
     <string name="title_list">TA Historia</string>
     <string name="title_provider">PA jProveedor</string>
     <string name="title_edit">Editar los valores</string>
     <string name="title_create">Insertar los valores</string>
-    <string name="title_error">Error Interno</string>
     <!-- These strings appear in the BPRecordEditor activity -->
     <string name="menu_done">Completo</string>
     <string name="menu_cancel">Cancelar</string>
@@ -72,7 +70,6 @@
     <string name="msg_zero_size_error">Error: Zero tamaño del archivo. Sus datos es segura.</string>
     <string name="msg_twilight_zone">Hemos entrado brevemente la Dimensión Desconocida. Sus datos es segura.</string>
     <!-- These are the column names for the BPSend Activity, so we can send localized names -->
-    <string name="bp_send_delimiter">,</string>
     <string name="bp_send_date">@string/label_date</string>
     <string name="bp_send_time">@string/label_time</string>
     <string name="bp_send_sys">@string/label_systolic</string>
@@ -95,4 +92,17 @@
     <string name="label_delete_history">Borrar los datos históricos</string>
     <string name="msg_delete">Supresión de los datos históricos es permanente!</string>
     <string name="msg_deleted">%s Registros Eliminados</string>
+    <!-- *********************************************************************** -->
+    <!-- ******************VERSION_CODE 9 (v1.2.8) NEW STRINGS****************** -->
+    <string name="menu_settings">Configuración</string>
+    <!-- need translation -->
+    <string name="default_values">Predeterminados</string>
+    <string name="average_values">Valores medios</string>
+    <string name="fixed_chosen">Los nuevos registros se utilizan los ajustes fijos.</string>
+    <string name="average_chosen">Los nuevos registros se utilizan medios lecturas anteriores, cuando sea posible.</string>
+    <string name="systolic_initial">Sistólica inicial para los nuevos registros</string>
+    <string name="diastolic_initial">Diastólica inicial para los nuevos registros</string>
+    <string name="pulse_initial">Pulso inicial para los nuevos registros</string>
+    <string name="icon_content_description">Icono</string>
+    <string name="check_values">Se recomienda consultar los valores de precisión.</string>
 </resources>

@@ -13,21 +13,14 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<TableRow
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="wrap_content"
-  android:layout_height="wrap_content">
-	<TextView 
-		android:id="@+id/pulse_label"
-		android:text="@string/label_pulse" 
-		android:layout_width="wrap_content"
-		android:layout_height="wrap_content"
-		android:layout_gravity="center_vertical|right" 
-		style="@style/bp_label" 
-	/>
-	<Spinner 
-		android:id="@+id/pulse_spin" 
-		android:layout_width="wrap_content" 
-		android:layout_height="wrap_content"
-	/>
-</TableRow>
+<menu xmlns:android="http://schemas.android.com/apk/res/android" >
+    <item android:id="@+id/menu_send"
+        android:title="@string/menu_send"
+    />
+    <item android:id="@+id/menu_data"
+        android:title="@string/menu_data"
+    />
+    <item android:id="@+id/menu_settings"
+        android:title="@string/menu_settings"
+    />
+</menu>

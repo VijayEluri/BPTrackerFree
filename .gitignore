@@ -2,4 +2,4 @@ bin
 gen
 .metadata
 .settings
-
+lint.xml
