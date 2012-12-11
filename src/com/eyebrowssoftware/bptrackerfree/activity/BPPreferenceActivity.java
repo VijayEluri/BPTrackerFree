@@ -11,6 +11,7 @@ import com.eyebrowssoftware.bptrackerfree.R;
  */
 public class BPPreferenceActivity extends PreferenceActivity {
 
+    @SuppressWarnings("deprecation")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

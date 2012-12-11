@@ -5,14 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import android.app.AlertDialog;
-import android.app.DatePickerDialog;
-import android.app.DatePickerDialog.OnDateSetListener;
-import android.app.Dialog;
-import android.app.TimePickerDialog;
-import android.app.TimePickerDialog.OnTimeSetListener;
 import android.content.ContentValues;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
@@ -30,22 +23,25 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TimePicker;
 import android.widget.Toast;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment;
+import com.eyebrowssoftware.bptrackerfree.fragments.BPDialogFragment;
+import com.eyebrowssoftware.bptrackerfree.fragments.DatePickerFragment;
+import com.eyebrowssoftware.bptrackerfree.fragments.TimePickerFragment;
 
 /**
  * @author brionemde
  *
  */
-public abstract class BPRecordEditorBase extends FragmentActivity
-    implements OnDateSetListener, OnTimeSetListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class BPRecordEditorBase extends FragmentActivity
+    implements LoaderManager.LoaderCallbacks<Cursor>, BPDialogFragment.Callback,
+        TimePickerFragment.Callbacks, DatePickerFragment.Callbacks {
 
     // Static constants
 
@@ -148,14 +144,25 @@ public abstract class BPRecordEditorBase extends FragmentActivity
         mDateButton = (Button) findViewById(R.id.date_button);
         mDateButton.setOnClickListener(new OnClickListener() {
             public void onClick(View arg0) {
-                showDialog(DATE_DIALOG_ID);
+                DatePickerFragment dateFrag = new DatePickerFragment();
+                Bundle b = new Bundle();
+                b.putInt(DatePickerFragment.YEAR_KEY, mCalendar.get(Calendar.YEAR));
+                b.putInt(DatePickerFragment.MONTH_KEY, mCalendar.get(Calendar.MONTH));
+                b.putInt(DatePickerFragment.DAY_KEY, mCalendar.get(Calendar.DAY_OF_MONTH));
+                dateFrag.setArguments(b);
+                dateFrag.show(BPRecordEditorBase.this.getSupportFragmentManager(), "date");
             }
         });
 
         mTimeButton = (Button) findViewById(R.id.time_button);
         mTimeButton.setOnClickListener(new OnClickListener() {
             public void onClick(View arg0) {
-                showDialog(TIME_DIALOG_ID);
+                TimePickerFragment timeFrag = new TimePickerFragment();
+                Bundle b = new Bundle();
+                b.putInt(TimePickerFragment.HOUR_KEY, mCalendar.get(Calendar.HOUR));
+                b.putInt(TimePickerFragment.MINUTE_KEY, mCalendar.get(Calendar.MINUTE));
+                timeFrag.setArguments(b);
+                timeFrag.show(BPRecordEditorBase.this.getSupportFragmentManager(), "time");
             }
         });
 
@@ -280,7 +287,7 @@ public abstract class BPRecordEditorBase extends FragmentActivity
         // Handle all of the possible menu actions.
         switch (item.getItemId()) {
         case R.id.menu_delete:
-            showDialog(DELETE_DIALOG_ID);
+            showDeleteConfirmationDialog();
             return true;
         case R.id.menu_discard:
             cancelRecord();
@@ -297,6 +304,24 @@ public abstract class BPRecordEditorBase extends FragmentActivity
         }
         return super.onOptionsItemSelected(item);
     }
+
+    private void showDeleteConfirmationDialog() {
+        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
+        diagFrag.show(this.getSupportFragmentManager(), "delete");
+    }
+
+    @Override
+    public void onNegativeButtonClicked() {
+        // nothing to do, dialog is cancelled already
+    }
+
+    @Override
+    public void onPositiveButtonClicked() {
+        getContentResolver().delete(mUri, null, null);
+        setResult(RESULT_OK);
+        finish();
+    }
+
 
     /**
     * Take care of canceling work on a BPRecord. Deletes the record if we had created
@@ -322,39 +347,7 @@ public abstract class BPRecordEditorBase extends FragmentActivity
     }
 
     @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-        case DELETE_DIALOG_ID:
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(getString(R.string.really_delete))
-                .setCancelable(false)
-                .setPositiveButton(getString(R.string.label_yes), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        getContentResolver().delete(mUri, null, null);
-                        setResult(RESULT_OK);
-                        finish();
-                    }
-                })
-                .setNegativeButton(getString(R.string.label_no), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-            return builder.create();
-        case DATE_DIALOG_ID:
-            return new DatePickerDialog(this, this, mCalendar
-                    .get(Calendar.YEAR), mCalendar.get(Calendar.MONTH),
-                    mCalendar.get(Calendar.DAY_OF_MONTH));
-        case TIME_DIALOG_ID:
-            return new TimePickerDialog(this, this, mCalendar
-                    .get(Calendar.HOUR_OF_DAY), mCalendar.get(Calendar.MINUTE),
-                    false);
-        default:
-            return null;
-        }
-    }
-
-    public void onDateSet(DatePicker view, int year, int month, int day) {
+    public void setDate(int year, int month, int day) {
         mCalendar.set(year, month, day);
         long now = new GregorianCalendar().getTimeInMillis();
         if (mCalendar.getTimeInMillis() > now) {
@@ -364,7 +357,8 @@ public abstract class BPRecordEditorBase extends FragmentActivity
         updateDateTimeDisplay();
     }
 
-    public void onTimeSet(TimePicker view, int hour, int minute) {
+    @Override
+    public void setTime(int hour, int minute) {
         mCalendar.set(Calendar.HOUR_OF_DAY, hour);
         mCalendar.set(Calendar.MINUTE, minute);
         long now = new GregorianCalendar().getTimeInMillis();
@@ -413,9 +407,6 @@ public abstract class BPRecordEditorBase extends FragmentActivity
             if(mOriginalValues == null) {
                 setOriginalValuesBundle();
             }
-        }
-        if (cursor != null) {
-            cursor.close();
         }
     }
 

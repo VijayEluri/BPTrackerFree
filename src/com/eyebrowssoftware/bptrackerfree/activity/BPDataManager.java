@@ -15,11 +15,8 @@
  */
 package com.eyebrowssoftware.bptrackerfree.activity;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -27,16 +24,16 @@ import android.widget.Toast;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment;
+import com.eyebrowssoftware.bptrackerfree.fragments.BPDialogFragment;
 
 /**
  * @author brionemde
  *
  */
-public class BPDataManager extends Activity implements OnClickListener {
+public class BPDataManager extends FragmentActivity implements OnClickListener, BPDialogFragment.Callback {
 
     private Button mDeleteButton;
-
-    private static final int DELETE_DIALOG_ID = 0;
 
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -49,32 +46,26 @@ public class BPDataManager extends Activity implements OnClickListener {
 
     public void onClick(View v) {
         if(v.equals(mDeleteButton)) {
-            showDialog(DELETE_DIALOG_ID);
+            showDeleteConfirmationDialog();
         }
     }
 
-    @Override
-    protected Dialog onCreateDialog(int id) {
-        switch (id) {
-        case DELETE_DIALOG_ID:
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder.setMessage(getString(R.string.msg_delete))
-                .setCancelable(false)
-                .setPositiveButton(getString(R.string.label_yes), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        deleteHistory();
-                    }
-                })
-                .setNegativeButton(getString(R.string.label_no), new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.cancel();
-                    }
-                });
-            return builder.create();
-        default:
-            return null;
-        }
+    private void showDeleteConfirmationDialog() {
+        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
+        diagFrag.show(this.getSupportFragmentManager(), "delete");
     }
+
+    @Override
+    public void onNegativeButtonClicked() {
+        // nothing to do, dialog is cancelled already
+    }
+
+    @Override
+    public void onPositiveButtonClicked() {
+        deleteHistory();
+        finish();
+    }
+
 
     private void deleteHistory() {
         int deleted = getContentResolver().delete(BPRecords.CONTENT_URI, null, null);
