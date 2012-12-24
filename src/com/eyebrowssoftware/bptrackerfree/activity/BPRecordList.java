@@ -122,6 +122,4 @@ public class BPRecordList extends FragmentActivity implements BPRecordListFragme
     public void editItem(Uri uri) {
         startActivity(new Intent(Intent.ACTION_EDIT, uri));
     }
-
-
 }
