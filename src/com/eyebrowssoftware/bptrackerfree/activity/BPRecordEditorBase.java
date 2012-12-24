@@ -53,15 +53,6 @@ public class BPRecordEditorBase extends FragmentActivity
         BPRecord.AVERAGE_PULSE
     };
 
-   // BP Record Indices
-    // protected static final int COLUMN_ID_INDEX = 0;
-    protected static final int COLUMN_SYSTOLIC_INDEX = 1;
-    protected static final int COLUMN_DIASTOLIC_INDEX = 2;
-    protected static final int COLUMN_PULSE_INDEX = 3;
-    protected static final int COLUMN_CREATED_AT_INDEX = 4;
-    protected static final int COLUMN_MODIFIED_AT_INDEX = 5;
-    protected static final int COLUMN_NOTE_INDEX = 6;
-
     // The different distinct states the activity can be run in.
     protected static final int STATE_EDIT = 0;
     protected static final int STATE_INSERT = 1;
@@ -394,12 +385,12 @@ public class BPRecordEditorBase extends FragmentActivity
             if (mCurrentValues == null) {
                 mCurrentValues = new ContentValues();
             }
-            mCurrentValues.put(BPRecord.SYSTOLIC, cursor.getInt(COLUMN_SYSTOLIC_INDEX));
-            mCurrentValues.put(BPRecord.PULSE, cursor.getInt(COLUMN_PULSE_INDEX));
-            mCurrentValues.put(BPRecord.DIASTOLIC, cursor.getInt(COLUMN_DIASTOLIC_INDEX));
-            mCurrentValues.put(BPRecord.CREATED_DATE, cursor.getLong(COLUMN_CREATED_AT_INDEX));
-            mCurrentValues.put(BPRecord.MODIFIED_DATE, cursor.getLong(COLUMN_MODIFIED_AT_INDEX));
-            mCurrentValues.put(BPRecord.NOTE, cursor.getString(COLUMN_NOTE_INDEX));
+            mCurrentValues.put(BPRecord.SYSTOLIC, cursor.getInt(BPTrackerFree.COLUMN_SYSTOLIC_INDEX));
+            mCurrentValues.put(BPRecord.PULSE, cursor.getInt(BPTrackerFree.COLUMN_PULSE_INDEX));
+            mCurrentValues.put(BPRecord.DIASTOLIC, cursor.getInt(BPTrackerFree.COLUMN_DIASTOLIC_INDEX));
+            mCurrentValues.put(BPRecord.CREATED_DATE, cursor.getLong(BPTrackerFree.COLUMN_CREATED_AT_INDEX));
+            mCurrentValues.put(BPRecord.MODIFIED_DATE, cursor.getLong(BPTrackerFree.COLUMN_MODIFIED_AT_INDEX));
+            mCurrentValues.put(BPRecord.NOTE, cursor.getString(BPTrackerFree.COLUMN_NOTE_INDEX));
             setUIState();
 
             // If we hadn't previously retrieved the original values, do so

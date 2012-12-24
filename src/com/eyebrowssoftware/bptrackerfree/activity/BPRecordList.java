@@ -18,6 +18,8 @@ package com.eyebrowssoftware.bptrackerfree.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.R;
@@ -50,5 +52,43 @@ public class BPRecordList extends FragmentActivity {
         setTitle(R.string.title_list);
 
         mListFragment = (BPRecordListFragment) this.getSupportFragmentManager().findFragmentById(R.id.list_fragment);
+    }
+
+
+    private void doSendAction() {
+        startActivity(new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this, BPSend.class));
+    }
+
+    private void doDataManagerAction() {
+        startActivity(new Intent(this, BPDataManager.class));
+    }
+
+    private void doSettingsAction() {
+        startActivity(new Intent(this, BPPreferenceActivity.class));
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        super.onCreateOptionsMenu(menu);
+        this.getMenuInflater().inflate(R.menu.bp_list_options_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+        case R.id.menu_send:
+            doSendAction();
+            return true;
+        case R.id.menu_data:
+            doDataManagerAction();
+            return true;
+        case R.id.menu_settings:
+            doSettingsAction();
+            return true;
+        default:
+            return false;
+        }
     }
 }

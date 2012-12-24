@@ -17,7 +17,6 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,8 +31,6 @@ import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
-import com.eyebrowssoftware.bptrackerfree.activity.BPDataManager;
-import com.eyebrowssoftware.bptrackerfree.activity.BPPreferenceActivity;
 import com.eyebrowssoftware.bptrackerfree.activity.BPSend;
 
 /**
@@ -253,6 +250,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(null);
     }
 
+<<<<<<< HEAD
     private void doSendAction() {
         Intent intent = new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this.getActivity(), BPSend.class);
         startActivity(intent);
@@ -290,6 +288,8 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         }
     }
 
+=======
+>>>>>>> Move the options menu from the ListFragment to the
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
 
