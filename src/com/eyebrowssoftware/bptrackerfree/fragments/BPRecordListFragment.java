@@ -17,7 +17,6 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -32,8 +31,6 @@ import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
-import com.eyebrowssoftware.bptrackerfree.activity.BPDataManager;
-import com.eyebrowssoftware.bptrackerfree.activity.BPPreferenceActivity;
 import com.eyebrowssoftware.bptrackerfree.activity.BPSend;
 
 /**
@@ -236,40 +233,6 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
      */
     public void onLoaderReset(Loader<Cursor> arg0) {
         ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(null);
-    }
-
-    private void doSendAction() {
-        Intent intent = new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this.getActivity(), BPSend.class);
-        startActivity(intent);
-    }
-
-    private void doDataManagerAction() {
-        Intent intent = new Intent(this.getActivity(), BPDataManager.class);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.bp_list_options_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-        case R.id.menu_send:
-            doSendAction();
-            return true;
-        case R.id.menu_data:
-            doDataManagerAction();
-            return true;
-        case R.id.menu_settings:
-            startActivity(new Intent(this.getActivity(), BPPreferenceActivity.class));
-            return true;
-        default:
-            return false;
-        }
     }
 
     @Override
