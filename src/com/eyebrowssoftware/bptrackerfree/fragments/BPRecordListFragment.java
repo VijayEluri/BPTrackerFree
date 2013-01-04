@@ -250,46 +250,6 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(null);
     }
 
-<<<<<<< HEAD
-    private void doSendAction() {
-        Intent intent = new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this.getActivity(), BPSend.class);
-        startActivity(intent);
-    }
-
-    private void doDataManagerAction() {
-        Intent intent = new Intent(this.getActivity(), BPDataManager.class);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        super.onCreateOptionsMenu(menu, inflater);
-        inflater.inflate(R.menu.bp_list_options_menu, menu);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-
-        switch (item.getItemId()) {
-        case R.id.menu_new:
-            insertRecord();
-            return true;
-        case R.id.menu_send:
-            doSendAction();
-            return true;
-        case R.id.menu_data:
-            doDataManagerAction();
-            return true;
-        case R.id.menu_settings:
-            startActivity(new Intent(this.getActivity(), BPPreferenceActivity.class));
-            return true;
-        default:
-            return false;
-        }
-    }
-
-=======
->>>>>>> Move the options menu from the ListFragment to the
     @Override
     public void onCreateContextMenu(ContextMenu menu, View view, ContextMenuInfo menuInfo) {
 
