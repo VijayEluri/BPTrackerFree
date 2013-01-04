@@ -220,11 +220,6 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
      * Called when the load of the cursor is finished
      */
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        if(cursor.getCount() == 0) {
-            // this.mEmptyControls.setVisibility(View.VISIBLE);
-        } else {
-            // this.mEmptyControls.setVisibility(View.GONE);
-        }
         ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(cursor);
     }
 
