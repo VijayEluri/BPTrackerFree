@@ -35,7 +35,6 @@
     <string name="label_pulse">Puls</string>
     <string name="label_date">Datum</string>
     <string name="label_time">Zeit</string>
-    <string name="really_delete">Löschen?</string>
     <string name="label_yes">Ja</string>
     <string name="label_no">Nein</string>
     <string name="label_sys_spinner">Wahl die systolische Wert</string>

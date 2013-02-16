@@ -39,7 +39,7 @@ import com.eyebrowssoftware.bptrackerfree.fragments.TimePickerFragment;
  * @author brionemde
  *
  */
-public class BPRecordEditorBase extends FragmentActivity
+public abstract class BPRecordEditorBase extends FragmentActivity
     implements LoaderManager.LoaderCallbacks<Cursor>, BPDialogFragment.Callback,
         TimePickerFragment.Callbacks, DatePickerFragment.Callbacks {
 
