@@ -35,7 +35,6 @@
     <string name="label_pulse">脉搏</string>
     <string name="label_date">修改时间</string>
     <string name="label_time">耗时</string>
-    <string name="really_delete">删除这个？</string>
     <string name="label_yes">是</string>
     <string name="label_no">否</string>
     <string name="label_sys_spinner">获取心脏收缩值</string>
