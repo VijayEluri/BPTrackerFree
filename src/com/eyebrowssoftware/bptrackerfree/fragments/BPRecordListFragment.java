@@ -42,6 +42,39 @@ import com.eyebrowssoftware.bptrackerfree.activity.BPSend;
 public class BPRecordListFragment extends ListFragment implements OnClickListener, LoaderManager.LoaderCallbacks<Cursor>,
     AlertDialogFragment.Callback {
 
+    /**
+     * Hosting activities must provide this interface
+     *
+     * @author brionemde
+     *
+     */
+    public interface Listener {
+        /**
+         * User has selected an item in the list
+         * @param id
+         *
+         */
+        public void itemSelected(long id);
+
+        /**
+         * Inform the host activity that the user has elected to delete the item with _id == id
+         * @param id : id > 0 is a real item; id < 0 signals insertion
+         */
+        public void deleteItem(long id);
+
+        /**
+         * Inform the host activity that the user has elected to send the item with _id == id
+         * @param id
+         */
+        public void sendItem(long id);
+
+        /**
+         * Inform the host activity that the user has elected to edit the item with _id == id
+         * @param id
+         */
+        public void editItem(long id);
+    };
+
     private static final String TAG = "BPListFragment";
 
     private static final String[] VALS = {
@@ -72,6 +105,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
     private static final int LIST_LOADER_ID = 0;
 
     private Uri mStartUri;
+    private Listener mListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -99,6 +133,23 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         super.onSaveInstanceState(outState);
         outState.putLong(CONTEXT_URI, mContextMenuRecordId);
         outState.putInt(SELECTION, mCurrentCheckPosition);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        if (activity instanceof Listener) {
+            mListener = (Listener) activity;
+          } else {
+            throw new ClassCastException(activity.toString()
+                + " must implemenet BPRecordListFragment.Listener");
+          }
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mListener = null;
     }
 
     @Override
@@ -132,14 +183,21 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Log.i(TAG, "Got a click at position: " + position + " id: " + id);
+        mListener.itemSelected(id);
         showDetails(position);
     }
 
-    private void showDetails(int position) {
+    /**
+     * Can be called from host activity
+     *
+     * @param position
+     */
+    public void showDetails(int position) {
         Log.i(TAG,  "showDetails for position: " + position);
 
         Uri data = BPRecords.CONTENT_URI;
         long id = getListView().getItemIdAtPosition(position);
+        mListener.itemSelected(id);
 
         Log.i(TAG, "Firing off conventional activity");
         if(id < 0) {
