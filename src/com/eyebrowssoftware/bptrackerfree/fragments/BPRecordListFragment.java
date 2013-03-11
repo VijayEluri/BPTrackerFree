@@ -323,7 +323,11 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
             mContextMenuRecordId = info.id;
             switch (item.getItemId()) {
             case R.id.menu_delete:
+                mListener.deleteItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
+                //----
+                // Code to be moved to parent activity
                 showDeleteConfirmationDialog();
+                // End of code to be moved
                 return true;
             case R.id.menu_edit:
                 mListener.editItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
@@ -343,6 +347,8 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
         startActivity(intent);
     }
 
+    //----
+    // Code to be moved to parent activity
     private void showDeleteConfirmationDialog() {
         AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
         diagFrag.setTargetFragment(this, 0);
