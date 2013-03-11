@@ -29,7 +29,7 @@ import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordListFragment;
  * @author brionemde
  *
  */
-public class BPRecordList extends FragmentActivity {
+public class BPRecordList extends FragmentActivity implements BPRecordListFragment.Listener {
 
     @SuppressWarnings("unused")
     private static final String TAG = "BPRecordList";
@@ -90,5 +90,33 @@ public class BPRecordList extends FragmentActivity {
         default:
             return false;
         }
+    }
+
+
+    @Override
+    public void newItem() {
+        // TODO Auto-generated method stub
+
+    }
+
+
+    @Override
+    public void deleteItem(long id) {
+        // TODO Auto-generated method stub
+
+    }
+
+
+    @Override
+    public void sendItem(long id) {
+        // TODO Auto-generated method stub
+
+    }
+
+
+    @Override
+    public void editItem(long id) {
+        // TODO Auto-generated method stub
+
     }
 }
