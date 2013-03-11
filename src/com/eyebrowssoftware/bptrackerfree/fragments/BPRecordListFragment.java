@@ -54,7 +54,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
          * @param id
          *
          */
-        public void itemSelected(long id);
+        public void newItem();
 
         /**
          * Inform the host activity that the user has elected to delete the item with _id == id
@@ -183,7 +183,11 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         Log.i(TAG, "Got a click at position: " + position + " id: " + id);
-        mListener.itemSelected(id);
+        if (id < 0) {
+            mListener.newItem();
+        } else {
+            mListener.editItem(id);
+        }
         showDetails(position);
     }
 
@@ -197,7 +201,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 
         Uri data = BPRecords.CONTENT_URI;
         long id = getListView().getItemIdAtPosition(position);
-        mListener.itemSelected(id);
+        mListener.editItem(id);
 
         Log.i(TAG, "Firing off conventional activity");
         if(id < 0) {
@@ -224,7 +228,10 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 
 
     // This is only used when the empty view is up
+    @Override
     public void onClick(View v) {
+        mListener.newItem();
+        // needs to be moved
         Uri data = BPRecords.CONTENT_URI;
         Intent intent = new Intent(Intent.ACTION_INSERT, data);
         startActivity(intent);
@@ -233,6 +240,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
     private class MyViewBinder implements SimpleCursorAdapter.ViewBinder {
         String val;
 
+        @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
             int id = view.getId();
 
@@ -267,6 +275,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
     /**
      * Called when the Cursor Loader is created
      */
+    @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
         // Create a CursorLoader that will take care of creating a cursor for the data
         CursorLoader loader = new CursorLoader(getActivity(), mStartUri,
@@ -277,6 +286,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
     /**
      * Called when the load of the cursor is finished
      */
+    @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(cursor);
     }
@@ -284,6 +294,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
     /**
      * Called when the loader is reset, we swap out the current cursor with null
      */
+    @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
         ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(null);
     }
@@ -321,15 +332,27 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
             Uri contextMenuUri = ContentUris.withAppendedId(mStartUri, mContextMenuRecordId);
             switch (item.getItemId()) {
             case R.id.menu_delete:
+                mListener.deleteItem(info.id);
+                //----
+                // Code to be moved to parent activity
                 showDeleteConfirmationDialog();
+                // End of code to be moved
                 return true;
             case R.id.menu_edit:
+                mListener.editItem(info.id);
+                //----
+                // Code to be moved to parent activity
                 Intent edit_intent = new Intent(Intent.ACTION_EDIT, contextMenuUri);
                 startActivity(edit_intent);
+                // End of code to be moved
                 return true;
             case R.id.menu_send:
+                mListener.sendItem(info.id);
+                //----
+                // Code to be moved to parent activity
                 Intent send_intent = new Intent(Intent.ACTION_SEND, contextMenuUri, this.getActivity(), BPSend.class);
                 startActivity(send_intent);
+                // End of code to be moved
                 return true;
             }
         } catch (ClassCastException e) {
@@ -338,6 +361,8 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         return super.onContextItemSelected(item);
     }
 
+    //----
+    // Code to be moved to parent activity
     private void showDeleteConfirmationDialog() {
         AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
         diagFrag.setTargetFragment(this, 0);
@@ -358,4 +383,6 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
     public void onPositiveButtonClicked() {
         deleteRecord();
     }
+
+    // End of code to be moved
 }
