@@ -15,6 +15,7 @@
  */
 package com.eyebrowssoftware.bptrackerfree.activity;
 
+import android.content.ContentUris;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
@@ -95,28 +96,27 @@ public class BPRecordList extends FragmentActivity implements BPRecordListFragme
 
     @Override
     public void newItem() {
-        // TODO Auto-generated method stub
-
+        startActivity(new Intent(Intent.ACTION_INSERT, BPRecords.CONTENT_URI));
     }
 
 
     @Override
     public void deleteItem(long id) {
-        // TODO Auto-generated method stub
-
+        getContentResolver().delete(ContentUris.withAppendedId(BPRecords.CONTENT_URI, id), null, null);
     }
 
 
     @Override
     public void sendItem(long id) {
-        // TODO Auto-generated method stub
-
+        startActivity(new Intent(Intent.ACTION_SEND, ContentUris.withAppendedId(BPRecords.CONTENT_URI, id), this, BPSend.class));
+        // End of code to be moved
     }
 
 
     @Override
     public void editItem(long id) {
-        // TODO Auto-generated method stub
-
+        startActivity(new Intent(Intent.ACTION_EDIT, ContentUris.withAppendedId(BPRecords.CONTENT_URI, id)));
     }
+
+
 }
