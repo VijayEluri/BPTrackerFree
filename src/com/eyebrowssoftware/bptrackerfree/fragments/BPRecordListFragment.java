@@ -3,7 +3,6 @@ package com.eyebrowssoftware.bptrackerfree.fragments;
 import java.text.DateFormat;
 
 import android.app.Activity;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -31,7 +30,6 @@ import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
-import com.eyebrowssoftware.bptrackerfree.activity.BPSend;
 
 /**
  * Main Fragment for the list view
@@ -188,53 +186,12 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         } else {
             mListener.editItem(id);
         }
-        showDetails(position);
     }
-
-    /**
-     * Can be called from host activity
-     *
-     * @param position
-     */
-    public void showDetails(int position) {
-        Log.i(TAG,  "showDetails for position: " + position);
-
-        Uri data = BPRecords.CONTENT_URI;
-        long id = getListView().getItemIdAtPosition(position);
-        mListener.editItem(id);
-
-        Log.i(TAG, "Firing off conventional activity");
-        if(id < 0) {
-            if (data == null) {
-                data = BPRecords.CONTENT_URI;
-            }
-            Intent intent = new Intent(Intent.ACTION_INSERT, data);
-            startActivity(intent);
-        } else {
-            Uri uri = ContentUris.withAppendedId(data, id);
-            String action = getActivity().getIntent().getAction();
-            if (Intent.ACTION_PICK.equals(action)
-                    || Intent.ACTION_GET_CONTENT.equals(action)) {
-                // The caller is waiting for us to return a note selected by
-                // the user. The have clicked on one, so return it now.
-                getActivity().setResult(Activity.RESULT_OK, new Intent().setData(uri));
-            } else {
-                // Launch activity to view/edit the currently selected item
-                Intent intent = new Intent(Intent.ACTION_EDIT, uri);
-                startActivity(intent);
-            }
-        }
-    }
-
 
     // This is only used when the empty view is up
     @Override
     public void onClick(View v) {
         mListener.newItem();
-        // needs to be moved
-        Uri data = BPRecords.CONTENT_URI;
-        Intent intent = new Intent(Intent.ACTION_INSERT, data);
-        startActivity(intent);
     }
 
     private class MyViewBinder implements SimpleCursorAdapter.ViewBinder {
@@ -329,30 +286,15 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
             info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
             // Get the Uri of the record we're intending to operate on
             mContextMenuRecordId = info.id;
-            Uri contextMenuUri = ContentUris.withAppendedId(mStartUri, mContextMenuRecordId);
             switch (item.getItemId()) {
             case R.id.menu_delete:
-                mListener.deleteItem(info.id);
-                //----
-                // Code to be moved to parent activity
                 showDeleteConfirmationDialog();
-                // End of code to be moved
                 return true;
             case R.id.menu_edit:
                 mListener.editItem(info.id);
-                //----
-                // Code to be moved to parent activity
-                Intent edit_intent = new Intent(Intent.ACTION_EDIT, contextMenuUri);
-                startActivity(edit_intent);
-                // End of code to be moved
                 return true;
             case R.id.menu_send:
                 mListener.sendItem(info.id);
-                //----
-                // Code to be moved to parent activity
-                Intent send_intent = new Intent(Intent.ACTION_SEND, contextMenuUri, this.getActivity(), BPSend.class);
-                startActivity(send_intent);
-                // End of code to be moved
                 return true;
             }
         } catch (ClassCastException e) {
@@ -361,17 +303,10 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         return super.onContextItemSelected(item);
     }
 
-    //----
-    // Code to be moved to parent activity
     private void showDeleteConfirmationDialog() {
         AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
         diagFrag.setTargetFragment(this, 0);
         diagFrag.show(this.getFragmentManager(), "delete");
-    }
-
-    private void deleteRecord() {
-        Uri contextMenuUri = ContentUris.withAppendedId(mStartUri, mContextMenuRecordId);
-        getActivity().getContentResolver().delete(contextMenuUri, null, null);
     }
 
     @Override
@@ -381,7 +316,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 
     @Override
     public void onPositiveButtonClicked() {
-        deleteRecord();
+        mListener.deleteItem(mContextMenuRecordId);
     }
 
     // End of code to be moved
