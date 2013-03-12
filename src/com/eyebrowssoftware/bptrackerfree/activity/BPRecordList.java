@@ -15,6 +15,7 @@
  */
 package com.eyebrowssoftware.bptrackerfree.activity;
 
+import android.content.ContentUris;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -122,4 +123,6 @@ public class BPRecordList extends FragmentActivity implements BPRecordListFragme
     public void editItem(Uri uri) {
         startActivity(new Intent(Intent.ACTION_EDIT, uri));
     }
+
+
 }

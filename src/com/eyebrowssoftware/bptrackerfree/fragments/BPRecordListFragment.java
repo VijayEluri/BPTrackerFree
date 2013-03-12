@@ -310,7 +310,6 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
                 //----
                 // Code to be moved to parent activity
                 showDeleteConfirmationDialog();
-                // End of code to be moved
                 return true;
             case R.id.menu_edit:
                 mListener.editItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
@@ -325,8 +324,6 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
         return super.onContextItemSelected(item);
     }
 
-    //----
-    // Code to be moved to parent activity
     private void showDeleteConfirmationDialog() {
         AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
         diagFrag.setTargetFragment(this, 0);
