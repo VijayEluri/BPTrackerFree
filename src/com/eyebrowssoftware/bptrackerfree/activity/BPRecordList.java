@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 - Brion Noble Emde
+ * Copyright 2012 - Brion Noble Emde
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,8 @@
  */
 package com.eyebrowssoftware.bptrackerfree.activity;
 
-import android.content.ContentUris;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
@@ -95,27 +95,27 @@ public class BPRecordList extends FragmentActivity implements BPRecordListFragme
 
 
     @Override
-    public void newItem() {
-        startActivity(new Intent(Intent.ACTION_INSERT, BPRecords.CONTENT_URI));
+    public void newItem(Uri uri) {
+        startActivity(new Intent(Intent.ACTION_INSERT, uri));
     }
 
 
     @Override
-    public void deleteItem(long id) {
-        getContentResolver().delete(ContentUris.withAppendedId(BPRecords.CONTENT_URI, id), null, null);
+    public void deleteItem(Uri uri) {
+        getContentResolver().delete(uri, null, null);
     }
 
 
     @Override
-    public void sendItem(long id) {
-        startActivity(new Intent(Intent.ACTION_SEND, ContentUris.withAppendedId(BPRecords.CONTENT_URI, id), this, BPSend.class));
+    public void sendItem(Uri uri) {
+        startActivity(new Intent(Intent.ACTION_SEND, uri, this, BPSend.class));
         // End of code to be moved
     }
 
 
     @Override
-    public void editItem(long id) {
-        startActivity(new Intent(Intent.ACTION_EDIT, ContentUris.withAppendedId(BPRecords.CONTENT_URI, id)));
+    public void editItem(Uri uri) {
+        startActivity(new Intent(Intent.ACTION_EDIT, uri));
     }
 
 
