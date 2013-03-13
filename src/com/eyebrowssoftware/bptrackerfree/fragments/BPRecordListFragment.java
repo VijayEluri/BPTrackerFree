@@ -1,8 +1,24 @@
+/*
+ * Copyright 2012 - Brion Noble Emde
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package com.eyebrowssoftware.bptrackerfree.fragments;
 
 import java.text.DateFormat;
 
 import android.app.Activity;
+import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
@@ -48,29 +64,29 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
      */
     public interface Listener {
         /**
-         * User has selected an item in the list
-         * @param id
+         * Insert a new item of the content uri
+         * @param uri : Group content uri (BPRecords.CONTENT_URI for this app)
          *
          */
-        public void newItem();
+        public void newItem(Uri uri);
 
         /**
          * Inform the host activity that the user has elected to delete the item with _id == id
-         * @param id : id > 0 is a real item; id < 0 signals insertion
+         * @param uri : the content uri of the item to delete
          */
-        public void deleteItem(long id);
+        public void deleteItem(Uri uri);
 
         /**
          * Inform the host activity that the user has elected to send the item with _id == id
-         * @param id
+         * @param uri : the content uri of the item to be sent
          */
-        public void sendItem(long id);
+        public void sendItem(Uri uri);
 
         /**
          * Inform the host activity that the user has elected to edit the item with _id == id
-         * @param id
+         * @param uri : the content uri of the item to be edited
          */
-        public void editItem(long id);
+        public void editItem(Uri uri);
     };
 
     private static final String TAG = "BPListFragment";
@@ -182,16 +198,16 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
     public void onListItemClick(ListView l, View v, int position, long id) {
         Log.i(TAG, "Got a click at position: " + position + " id: " + id);
         if (id < 0) {
-            mListener.newItem();
+            mListener.newItem(BPRecords.CONTENT_URI);
         } else {
-            mListener.editItem(id);
+            mListener.editItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, id));
         }
     }
 
     // This is only used when the empty view is up
     @Override
     public void onClick(View v) {
-        mListener.newItem();
+        mListener.newItem(BPRecords.CONTENT_URI);
     }
 
     private class MyViewBinder implements SimpleCursorAdapter.ViewBinder {
@@ -291,10 +307,10 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
                 showDeleteConfirmationDialog();
                 return true;
             case R.id.menu_edit:
-                mListener.editItem(info.id);
+                mListener.editItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
                 return true;
             case R.id.menu_send:
-                mListener.sendItem(info.id);
+                mListener.sendItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
                 return true;
             }
         } catch (ClassCastException e) {
@@ -316,7 +332,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 
     @Override
     public void onPositiveButtonClicked() {
-        mListener.deleteItem(mContextMenuRecordId);
+        mListener.deleteItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, mContextMenuRecordId));
     }
 
     // End of code to be moved
