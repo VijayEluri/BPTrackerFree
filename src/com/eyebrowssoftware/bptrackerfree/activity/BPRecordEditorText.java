@@ -93,10 +93,8 @@ public class BPRecordEditorText extends BPRecordEditorBase {
             sdk_field = android.os.Build.VERSION.class.getField("SDK_INT");
             Build build = new android.os.Build();
             sdk = sdk_field.getInt(build);
-        } catch (SecurityException e) {
-        } catch (NoSuchFieldException e) {
-        } catch (IllegalArgumentException e) {
-        } catch (IllegalAccessException e) {
+        } catch (Exception e) {
+            // Don't care
         }
         if(sdk_field == null) {
             sdk = 0;
