@@ -35,7 +35,6 @@ import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -53,7 +52,7 @@ import com.eyebrowssoftware.bptrackerfree.R;
  * @author brione
  *
  */
-public class BPRecordListFragment extends ListFragment implements OnClickListener, LoaderManager.LoaderCallbacks<Cursor>,
+public class BPRecordListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>,
     AlertDialogFragment.Callback {
 
     /**
@@ -126,7 +125,12 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         // Inflate the layout for this fragment
         View layout = inflater.inflate(R.layout.bp_record_list_fragment, container, false);
         RelativeLayout mEmptyContent = (RelativeLayout) layout.findViewById(R.id.empty_content);
-        mEmptyContent.setOnClickListener(this);
+        mEmptyContent.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.newItem(BPRecords.CONTENT_URI);
+            }
+        });
         return layout;
     }
 
@@ -180,7 +184,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
             mStartUri = BPRecords.CONTENT_URI;
         }
         ListView lv = this.getListView();
-        lv.setItemsCanFocus(false);
+        // lv.setItemsCanFocus(false);
         lv.setOnCreateContextMenuListener(this);
         lv.addHeaderView(this.getLayoutInflater(null).inflate(R.layout.bp_record_list_header, null), null, true);
 
@@ -202,12 +206,6 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         } else {
             mListener.editItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, id));
         }
-    }
-
-    // This is only used when the empty view is up
-    @Override
-    public void onClick(View v) {
-        mListener.newItem(BPRecords.CONTENT_URI);
     }
 
     private class MyViewBinder implements SimpleCursorAdapter.ViewBinder {
