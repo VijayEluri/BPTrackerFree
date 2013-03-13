@@ -83,7 +83,7 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
     private Button mSendButton;
     private Button mCancelButton;
 
-    private static String mMsgLabelString;
+    static String mMsgLabelString;
 
     private MyAsyncQueryHandler mMAQH;
 
@@ -252,7 +252,7 @@ public class BPSend extends Activity implements CompoundButton.OnCheckedChangeLi
 
 
     // Uses the member Cursor mRecordsCursor
-    private static String getMessage(Cursor cursor, Resources res) {
+    static String getMessage(Cursor cursor, Resources res) {
 
         String date_localized;
         String time_localized;

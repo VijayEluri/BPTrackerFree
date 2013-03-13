@@ -121,7 +121,7 @@ public abstract class BPRecordEditorBase extends FragmentActivity
                 } else {
                     cv = setDefaultValues(mSharedPreferences);
                 }
-                cv.put(BPRecord.CREATED_DATE, GregorianCalendar.getInstance().getTimeInMillis());
+                cv.put(BPRecord.CREATED_DATE, Calendar.getInstance().getTimeInMillis());
                 mUri = this.getContentResolver().insert(intent.getData(), cv);
             }
         } else {
