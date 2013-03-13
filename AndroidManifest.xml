@@ -38,7 +38,6 @@
         <activity
             android:name=".activity.BPRecordList"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Light"
             android:exported="true"
         >
             <intent-filter>
@@ -48,7 +47,6 @@
         </activity>
         <activity
             android:name=".activity.BPRecordEditor"
-            android:theme="@android:style/Theme.Light"
             android:label="@string/title_edit"
             android:exported="false"
         >
@@ -65,7 +63,6 @@
         </activity>
         <activity
             android:name=".activity.BPRecordEditorText"
-            android:theme="@android:style/Theme.Light"
             android:label="@string/title_alternate_edit"
             android:exported="false"
         >
@@ -82,18 +79,15 @@
         </activity>
         <activity
             android:name=".activity.BPSend"
-            android:theme="@android:style/Theme.Light"
             android:label="@string/title_send"
         />
         <activity
             android:name=".activity.BPDataManager"
-            android:theme="@android:style/Theme.Light"
             android:label="@string/label_delete_history"
             android:icon="@drawable/icon"
         />
         <activity
             android:name=".activity.BPPreferenceActivity"
-            android:theme="@android:style/Theme.Light"
             android:label="@string/default_values"
             android:icon="@drawable/icon"
         />
