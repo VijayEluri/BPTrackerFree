@@ -121,6 +121,10 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
     private boolean mListShown = true; // default state of list container is shown, progress hidden
     private Listener mListener;
 
+    public Listener getListener() {
+        return mListener;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
