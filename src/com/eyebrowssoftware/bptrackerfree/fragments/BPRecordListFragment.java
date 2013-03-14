@@ -120,6 +120,10 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
     private Uri mStartUri;
     private Listener mListener;
 
+    public Listener getListener() {
+        return mListener;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -128,7 +132,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
         mEmptyContent.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.newItem(BPRecords.CONTENT_URI);
+                getListener().newItem(BPRecords.CONTENT_URI);
             }
         });
         return layout;
