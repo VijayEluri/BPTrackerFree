@@ -215,10 +215,6 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
     private class MyViewBinder implements SimpleCursorAdapter.ViewBinder {
         String val;
 
-        public MyViewBinder() {
-            // Constructor stub avoids warning
-        }
-
         @Override
         public boolean setViewValue(View view, Cursor cursor, int columnIndex) {
             int id = view.getId();
