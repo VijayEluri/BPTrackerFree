@@ -17,23 +17,29 @@
     <group android:id="@+id/edit_menu_group">
       <item android:id="@+id/menu_done"
           android:title="@string/menu_done"
+          android:showAsAction="always"
       />
       <item android:id="@+id/menu_revert"
           android:title="@string/menu_revert"
+          android:showAsAction="always"
       />
       <item android:id="@+id/menu_delete"
           android:title="@string/menu_delete"
+          android:showAsAction="ifRoom"
       />
     </group>
     <group android:id="@+id/create_menu_group">
         <item android:id="@id/menu_done"
             android:title="@string/menu_done"
+            android:showAsAction="always"
         />
         <item android:id="@+id/menu_discard"
             android:title="@string/menu_discard"
+            android:showAsAction="always"
         />
     </group>
     <item android:id="@+id/menu_settings"
         android:title="@string/menu_settings"
+        android:showAsAction="ifRoom"
     />
 </menu>
