@@ -188,7 +188,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
             mStartUri = BPRecords.CONTENT_URI;
         }
         ListView lv = this.getListView();
-        // lv.setItemsCanFocus(false);
+        lv.setItemsCanFocus(false);
         lv.setOnCreateContextMenuListener(this);
         lv.addHeaderView(this.getLayoutInflater(null).inflate(R.layout.bp_record_list_header, null), null, true);
 
