@@ -231,15 +231,14 @@ public class RangeAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parentView) {
 
         TextView tv;
-        View v;
 
         if (convertView == null) {
             if (mResId <= 0) {
-                v = tv = new TextView(mContext);
-                tv.setId(mTextId);
+                convertView = tv = new TextView(mContext);
+                convertView.setId(mTextId);
             } else {
-                v = mLI.inflate(mResId, null);
-                tv = (TextView) v.findViewById(mTextId);
+                convertView = mLI.inflate(mResId, null);
+                tv = (TextView) convertView.findViewById(mTextId);
             }
         } else {
             if (mResId <= 0) {
