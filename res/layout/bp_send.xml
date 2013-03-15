@@ -62,7 +62,6 @@ xmlns:tools="http://schemas.android.com/tools">
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                style="@style/bp_label"
                 android:textIsSelectable="false"
             />
             <TextView
@@ -71,7 +70,6 @@ xmlns:tools="http://schemas.android.com/tools">
                 android:layout_height="wrap_content"
                 android:textIsSelectable="true"
                 style="@style/bp_text"
-                android:textIsSelectable="true"
             />
         </LinearLayout>
     </ScrollView>
