@@ -21,6 +21,8 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.FrameLayout;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.R;
@@ -35,9 +37,13 @@ public class BPRecordList extends FragmentActivity implements BPRecordListFragme
     @SuppressWarnings("unused")
     private static final String TAG = "BPRecordList";
 
+    public static final String DUAL_PANE_TAG = "dual_pane";
+
 
     @SuppressWarnings("unused")
     private BPRecordListFragment mListFragment;
+    private FrameLayout mDetailsLayout;
+    private boolean mDualPane = false;
 
     /** Called when the activity is first created. */
     @Override
@@ -53,19 +59,30 @@ public class BPRecordList extends FragmentActivity implements BPRecordListFragme
         setTitle(R.string.title_list);
 
         mListFragment = (BPRecordListFragment) this.getSupportFragmentManager().findFragmentById(R.id.list_fragment);
+        mDetailsLayout = (FrameLayout) this.findViewById(R.id.details);
+        mDualPane = mDetailsLayout != null && mDetailsLayout.getVisibility() == View.VISIBLE;
     }
 
+    public boolean isDualPane() {
+        return mDualPane;
+    }
 
     private void doSendAction() {
-        startActivity(new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this, BPSend.class));
+        Intent intent = new Intent(Intent.ACTION_SEND, BPRecords.CONTENT_URI, this, BPSend.class);
+        intent.putExtra(DUAL_PANE_TAG, mDualPane);
+        startActivity(intent);
     }
 
     private void doDataManagerAction() {
-        startActivity(new Intent(this, BPDataManager.class));
+        Intent intent = new Intent(this, BPDataManager.class);
+        intent.putExtra(DUAL_PANE_TAG, mDualPane);
+        startActivity(intent);
     }
 
     private void doSettingsAction() {
-        startActivity(new Intent(this, BPPreferenceActivity.class));
+        Intent intent = new Intent(this, BPPreferenceActivity.class);
+        intent.putExtra(DUAL_PANE_TAG, mDualPane);
+        startActivity(intent);
     }
 
     @Override
