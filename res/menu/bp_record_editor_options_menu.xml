@@ -17,11 +17,11 @@
     <group android:id="@+id/edit_menu_group">
       <item android:id="@+id/menu_done"
           android:title="@string/menu_done"
-          android:showAsAction="always"
+          android:showAsAction="ifRoom"
       />
       <item android:id="@+id/menu_revert"
           android:title="@string/menu_revert"
-          android:showAsAction="always"
+          android:showAsAction="ifRoom"
       />
       <item android:id="@+id/menu_delete"
           android:title="@string/menu_delete"
@@ -31,11 +31,11 @@
     <group android:id="@+id/create_menu_group">
         <item android:id="@id/menu_done"
             android:title="@string/menu_done"
-            android:showAsAction="always"
+            android:showAsAction="ifRoom"
         />
         <item android:id="@+id/menu_discard"
             android:title="@string/menu_discard"
-            android:showAsAction="always"
+            android:showAsAction="ifRoom"
         />
     </group>
     <item android:id="@+id/menu_settings"

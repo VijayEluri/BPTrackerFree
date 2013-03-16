@@ -15,7 +15,7 @@
 -->
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.eyebrowssoftware.bptrackerfree"
-    android:versionName="1.3.1" android:versionCode="12">
+    android:versionName="1.3.2" android:versionCode="13">
     <uses-sdk
         android:minSdkVersion="4"
         android:targetSdkVersion="17"
@@ -91,11 +91,12 @@
             android:label="@string/default_values"
             android:icon="@drawable/icon"
         />
-                <provider
+        <provider
             android:name=".BPProviderFree"
             android:authorities="com.eyebrowssoftware.bptrackerfree.bp"
             android:label="@string/title_provider"
             android:icon="@drawable/icon"
+            android:exported="false"
             android:readPermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
             android:writePermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
         />
