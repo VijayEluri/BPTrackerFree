@@ -91,11 +91,12 @@
             android:label="@string/default_values"
             android:icon="@drawable/icon"
         />
-                <provider
+        <provider
             android:name=".BPProviderFree"
             android:authorities="com.eyebrowssoftware.bptrackerfree.bp"
             android:label="@string/title_provider"
             android:icon="@drawable/icon"
+            android:exported="false"
             android:readPermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
             android:writePermission="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
         />
