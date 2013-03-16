@@ -62,8 +62,8 @@ xmlns:tools="http://schemas.android.com/tools">
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center_horizontal"
-                tools:ignore="SelectableText" />
-
+                android:textIsSelectable="false"
+            />
             <TextView
                 android:id="@+id/message"
                 android:layout_width="fill_parent"
@@ -85,6 +85,7 @@ xmlns:tools="http://schemas.android.com/tools">
             android:layout_height="wrap_content"
             android:text="@string/menu_cancel"
             android:id="@+id/cancel"
+            android:layout_weight="1.0"
             android:layout_gravity="center_horizontal"
         />
         <Button
@@ -92,6 +93,7 @@ xmlns:tools="http://schemas.android.com/tools">
             android:layout_height="wrap_content"
             android:text="@string/label_send"
             android:id="@+id/send"
+            android:layout_weight="1.0"
             android:layout_gravity="center_horizontal"
         />
     </LinearLayout>
