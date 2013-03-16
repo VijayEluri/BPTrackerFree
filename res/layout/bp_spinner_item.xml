@@ -23,6 +23,6 @@
     android:id="@android:id/text1"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:textIsSelectable="true"
+    android:textIsSelectable="false"
     style="@style/bp_spinner_item"
 />
