@@ -15,6 +15,7 @@
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
     <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!-- Customizations to pre V11 go here -->
     </style>
 
     <!-- Used for list text and editor text -->
