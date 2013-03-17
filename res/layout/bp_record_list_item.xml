@@ -17,6 +17,7 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
+    android:background="@drawable/bp_record_list_states"
 >
     <TableLayout
         android:layout_width="fill_parent"
@@ -34,6 +35,7 @@
                 android:layout_width="wrap_content"
                 android:gravity="center_vertical|right"
                 android:textIsSelectable="false"
+                android:textColor="@color/bp_record_list_text_states"
                 style="@style/bp_label"
             />
             <TextView
@@ -42,6 +44,7 @@
                 android:layout_width="wrap_content"
                 android:gravity="center_vertical|left"
                 android:textIsSelectable="false"
+                android:textColor="@color/bp_record_list_text_states"
                 style="@style/bp_text"
             />
             <TextView
@@ -50,6 +53,7 @@
                 android:layout_width="wrap_content"
                 android:gravity="center_vertical|right"
                 android:textIsSelectable="false"
+                android:textColor="@color/bp_record_list_text_states"
                 style="@style/bp_label"
             />
             <TextView
@@ -59,6 +63,7 @@
                 android:gravity="center_vertical|left"
                 android:textIsSelectable="false"
                 style="@style/bp_text"
+                android:textColor="@color/bp_record_list_text_states"
             />
         </TableRow>
         <TableRow android:layout_height="wrap_content">
@@ -69,6 +74,7 @@
                 android:gravity="center_vertical|right"
                 android:textIsSelectable="false"
                 style="@style/bp_label"
+                android:textColor="@color/bp_record_list_text_states"
             />
             <TableRow
                 android:layout_height="wrap_content"
@@ -81,12 +87,14 @@
                     android:gravity="center_vertical|right"
                     android:textIsSelectable="false"
                     style="@style/bp_text"
+                    android:textColor="@color/bp_record_list_text_states"
                 />
                 <TextView
                     android:layout_height="wrap_content"
                     android:layout_width="wrap_content"
                     android:text="@string/bp_separator"
                     android:textIsSelectable="false"
+                    android:textColor="@color/bp_record_list_text_states"
                 />
                 <TextView
                     android:id="@+id/dia_value"
@@ -95,6 +103,7 @@
                     android:gravity="center_vertical|left"
                     android:textIsSelectable="false"
                     style="@style/bp_text"
+                    android:textColor="@color/bp_record_list_text_states"
                 />
             </TableRow>
             <TextView
@@ -104,6 +113,7 @@
                 android:gravity="center_vertical|right"
                 android:textIsSelectable="false"
                 style="@style/bp_label"
+                android:textColor="@color/bp_record_list_text_states"
             />
             <TextView
                 android:id="@+id/pulse_value"
@@ -112,6 +122,7 @@
                 android:gravity="center_vertical|left"
                 android:textIsSelectable="false"
                 style="@style/bp_text"
+                android:textColor="@color/bp_record_list_text_states"
             />
         </TableRow>
     </TableLayout>
@@ -120,6 +131,6 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:textIsSelectable="false"
-        style="@style/bp_text"
+        style="@style/bp_item_note_text"
     />
 </LinearLayout>
