@@ -86,6 +86,13 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
          * @param uri : the content uri of the item to be edited
          */
         public void editItem(Uri uri);
+
+        /**
+         * Interrogate the host activity whether we're in dual-pane mode or not
+         *
+         * @return true if dual-pane, false if single-pane
+         */
+        public boolean isDualPane();
     };
 
     private static final String TAG = "BPListFragment";
@@ -184,18 +191,22 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
             mContextMenuRecordId = savedInstanceState.getLong(CONTEXT_URI);
             mCurrentCheckPosition = savedInstanceState.getInt(SELECTION);
         }
-        Intent intent = getActivity().getIntent();
+        Activity hostActivity = this.getActivity();
+        Intent intent = hostActivity.getIntent();
         mStartUri = intent.getData();
         if(mStartUri == null) {
             mStartUri = BPRecords.CONTENT_URI;
         }
         ListView lv = this.getListView();
         lv.setItemsCanFocus(false);
+        if (mListener.isDualPane()) {
+            lv.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+        }
         lv.setOnCreateContextMenuListener(this);
         lv.addHeaderView(this.getLayoutInflater(null).inflate(R.layout.bp_record_list_header, null), null, true);
 
         // No cursor yet. Will be assigned when the CursorLoader query is complete
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(),
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(hostActivity,
                 R.layout.bp_record_list_item, null, VALS, IDS, 0);
         adapter.setViewBinder(new MyViewBinder());
         this.setListAdapter(adapter);
