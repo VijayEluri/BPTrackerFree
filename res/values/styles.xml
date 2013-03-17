@@ -13,45 +13,50 @@
      See the License for the specific language governing permissions and
      limitations under the License.
 -->
-<resources>
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+    <style name="bp_default_theme" parent="android:Theme.Light">
+    </style>
 
-	<!-- Used for list text and editor text -->
-	<style name="bp_text">
-		<item name="android:padding">2dp</item>
-	</style>
+    <!-- Used for list text and editor text -->
+    <style name="bp_text">
+        <item name="android:padding">2dp</item>
+    </style>
 
-	<!-- Used for label text -->
-	<style name="bp_label">
-		<item name="android:textStyle">bold</item>
-		<item name="android:padding">2dp</item>
-	</style>
+    <!-- Used for label text -->
+    <style name="bp_label">
+        <item name="android:textStyle">bold</item>
+        <item name="android:padding">2dp</item>
+    </style>
 
-	<!-- Style for the TextView that's shown when the list is empty  -->
-	<style name="empty_list_view">
-		<item name="android:gravity">center_vertical</item>
-		<item name="android:padding">6dp</item>
-	</style>
-	
-	<style name="bp_list_header">
-		<item name="android:paddingTop">10dp</item>
-		<item name="android:paddingBottom">10dp</item>
-	</style>
+    <!-- Style for the TextView that's shown when the list is empty  -->
+    <style name="empty_list_view">
+        <item name="android:gravity">center_vertical</item>
+        <item name="android:padding">6dp</item>
+    </style>
 
-	<style name="bp_list_item">
-		<item name="android:padding">4dp</item>
-	</style>
+    <style name="bp_list_header" parent="bp_label">
+        <item name="android:paddingTop">10dp</item>
+        <item name="android:paddingBottom">10dp</item>
+    </style>
 
-	<style name="bp_spinner_item">
-		<item name="android:singleLine">true</item>
-		<item name="android:padding">4dp</item>
-	</style>
+    <style name="bp_list_item">
+        <item name="android:padding">4dp</item>
+    </style>
 
-	<style name="bp_send_to_group">
-		<item name="android:padding">4dp</item>
-	</style>
+    <style name="bp_spinner_item">
+        <item name="android:singleLine">true</item>
+        <item name="android:padding">4dp</item>
+    </style>
 
-	<style name="bp_send_from_group">
-		<item name="android:padding">4dp</item>
-	</style>
-	
+    <style name="bp_send_to_group">
+        <item name="android:padding">4dp</item>
+    </style>
+
+    <style name="bp_send_from_group">
+        <item name="android:padding">4dp</item>
+    </style>
+    <style name="bp_item_note_text" parent="bp_text">
+        <item name="android:padding">5dp</item>
+    </style>
+
 </resources>
