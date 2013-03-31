@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="bp_default_theme" parent="android:Theme.Holo.Light">
+    <!--
+        Base application theme for API 11-13. This theme completely replaces
+        AppBaseTheme from res/values/styles.xml on API 11-API 13 devices.
+    -->
+    <style name="AppBaseTheme"
+        parent="android:Theme.Holo.Light">
+         <!-- API 11-13 theme customizations can go here. -->
     </style>
 </resources>
