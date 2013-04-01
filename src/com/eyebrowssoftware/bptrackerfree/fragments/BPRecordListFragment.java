@@ -21,11 +21,9 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords;
@@ -42,7 +40,7 @@ import com.eyebrowssoftware.bptrackerfree.activity.BPSend;
  * @author brione
  *
  */
-public class BPRecordListFragment extends ListFragment implements OnClickListener, LoaderManager.LoaderCallbacks<Cursor>,
+public class BPRecordListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>,
     AlertDialogFragment.Callback {
 
     private static final String TAG = "BPListFragment";
@@ -74,15 +72,13 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 
     private static final int LIST_LOADER_ID = 0;
 
+    private SimpleCursorAdapter mAdapter;
+
     private Uri mStartUri;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        View layout = inflater.inflate(R.layout.bp_record_list_fragment, container, false);
-        RelativeLayout mEmptyContent = (RelativeLayout) layout.findViewById(R.id.empty_content);
-        mEmptyContent.setOnClickListener(this);
-        return layout;
+        return super.onCreateView(inflater, container, savedInstanceState);
     }
 
     @Override
@@ -123,12 +119,14 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         lv.addHeaderView(this.getLayoutInflater(null).inflate(R.layout.bp_record_list_header, null), null, true);
 
         // No cursor yet. Will be assigned when the CursorLoader query is complete
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(getActivity(),
+        mAdapter = new SimpleCursorAdapter(getActivity(),
                 R.layout.bp_record_list_item, null, VALS, IDS, 0);
-        adapter.setViewBinder(new MyViewBinder());
-        this.setListAdapter(adapter);
+        mAdapter.setViewBinder(new MyViewBinder());
+        this.setListAdapter(mAdapter);
 
         // Set up our cursor loader. It manages the cursors from now on
+        this.setEmptyText(this.getText(R.string.empty));
+        this.setListShown(false);
         this.getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
     }
 
@@ -168,8 +166,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
     }
 
 
-    // This is only used when the empty view is up
-    public void onClick(View v) {
+    private void insertNewItem() {
         Uri data = BPRecords.CONTENT_URI;
         Intent intent = new Intent(Intent.ACTION_INSERT, data);
         startActivity(intent);
@@ -223,19 +220,19 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
      * Called when the load of the cursor is finished
      */
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        if(cursor.getCount() == 0) {
-            // this.mEmptyControls.setVisibility(View.VISIBLE);
+        mAdapter.swapCursor(cursor);
+        if (this.isResumed()) {
+            this.setListShown(true);
         } else {
-            // this.mEmptyControls.setVisibility(View.GONE);
+            this.setListShownNoAnimation(true);
         }
-        ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(cursor);
     }
 
     /**
      * Called when the loader is reset, we swap out the current cursor with null
      */
     public void onLoaderReset(Loader<Cursor> arg0) {
-        ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(null);
+        mAdapter.swapCursor(null);
     }
 
     private void doSendAction() {
@@ -258,6 +255,9 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+        case R.id.menu_new:
+            insertNewItem();
+            return true;
         case R.id.menu_send:
             doSendAction();
             return true;
