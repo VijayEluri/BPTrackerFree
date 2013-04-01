@@ -18,51 +18,8 @@
     android:layout_height="fill_parent"
 >
     <ListView
-        android:id="@android:id/list"
+        android:id="@id/android:list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
     />
-    <ScrollView
-        android:id="@android:id/empty"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-    >
-        <RelativeLayout
-            android:id="@+id/empty_content"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            style="@style/empty_list_view"
-        >
-            <ImageView
-                android:id="@+id/plus_sign_id"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:src="@android:drawable/ic_menu_add"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentLeft="true"
-                android:contentDescription="@string/icon_content_description"
-            />
-            <TextView
-                android:id="@+id/empty_text_id"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/empty"
-                android:layout_alignParentRight="true"
-                android:layout_alignBottom="@id/plus_sign_id"
-                android:layout_alignParentTop="true"
-                android:layout_toRightOf="@id/plus_sign_id"
-                android:layout_gravity="center_vertical|left"
-                android:gravity="center_vertical|left"
-            />
-            <ImageView
-                android:src="@drawable/bptracker"
-                android:gravity="center_horizontal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/plus_sign_id"
-                android:contentDescription="@string/icon_content_description"
-            />
-        </RelativeLayout>
-    </ScrollView>
 </FrameLayout>

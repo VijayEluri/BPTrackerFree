@@ -45,6 +45,7 @@
     <string name="msg_future_date">Future date!</string>
     <string name="hint_note_entry">Write something here</string>
     <!-- These values are for the BPRecordList activity -->
+    <string name="menu_new">New</string>
     <string name="menu_edit">Edit</string>
     <string name="menu_send">@string/label_send</string>
     <string name="list_label_date">Date:</string>
