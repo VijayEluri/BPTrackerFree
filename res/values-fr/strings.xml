@@ -35,7 +35,6 @@
     <string name="label_diastolic">Diastolique</string>
     <string name="label_date">Date</string>
     <string name="label_time">Heure</string>
-    <string name="really_delete">Supprimer ce?</string>
     <string name="label_yes">Oui</string>
     <string name="label_no">Non</string>
     <string name="label_sys_spinner">Sélectionnez Systolique Valeur</string>
@@ -53,6 +52,8 @@
     <string name="list_label_pulse">Pouls:</string>
     <string name="msg_add">Cliquez sur Ajouter</string>
     <string name="bp_separator">/</string>
+    <string name="menu_new">Nouveau</string>
+    <string name="msg_loading">Chargement en cours&#8230;</string>
     <!-- These strings are used on the BPSend Activity layout -->
     <string name="title_send">@string/label_send</string>
     <string name="label_send">Envoyer</string>

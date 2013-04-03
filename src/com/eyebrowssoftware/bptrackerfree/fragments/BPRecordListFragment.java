@@ -23,9 +23,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords;
@@ -64,23 +64,27 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         R.id.pulse_value,
         R.id.note
     };
-
+    private static final int LIST_LOADER_ID = 0;
     private static final String CONTEXT_URI = "context_uri";
     private static final String SELECTION = "selection";
 
     // The state that needs to be saved and stored
     private int mCurrentCheckPosition = 0;
     private long mContextMenuRecordId = 0;
-
-    private static final int LIST_LOADER_ID = 0;
-
+    private View mProgressContainer;
+    private View mListContainer;
+    private View mEmptyContent;
     private Uri mStartUri;
+    private boolean mListShown = true; // default state of list container is shown, progress hidden
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View layout = inflater.inflate(R.layout.bp_record_list_fragment, container, false);
-        RelativeLayout mEmptyContent = (RelativeLayout) layout.findViewById(R.id.empty_content);
+        // The list group is visible by default
+        mProgressContainer = layout.findViewById(R.id.progressContainer);
+        mListContainer = layout.findViewById(R.id.listContainer);
+        mEmptyContent = layout.findViewById(R.id.empty_content);
         mEmptyContent.setOnClickListener(this);
         return layout;
     }
@@ -89,6 +93,9 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
     public void onDestroyView() {
         super.onDestroyView();
         this.getListView().setOnCreateContextMenuListener(null);
+        mProgressContainer = null;
+        mListContainer = null;
+        mEmptyContent = null;
     }
 
     @Override
@@ -127,9 +134,19 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
                 R.layout.bp_record_list_item, null, VALS, IDS, 0);
         adapter.setViewBinder(new MyViewBinder());
         this.setListAdapter(adapter);
-
+        this.setListShown(false);
         // Set up our cursor loader. It manages the cursors from now on
         this.getLoaderManager().initLoader(LIST_LOADER_ID, null, this);
+    }
+
+    @Override
+    public void setListShown(boolean show) {
+        setListShown(show, true);
+    }
+
+    @Override
+    public void setListShownNoAnimation(boolean show) {
+        setListShown(show, false);
     }
 
     @Override
@@ -170,9 +187,7 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
 
     // This is only used when the empty view is up
     public void onClick(View v) {
-        Uri data = BPRecords.CONTENT_URI;
-        Intent intent = new Intent(Intent.ACTION_INSERT, data);
-        startActivity(intent);
+        insertRecord();
     }
 
     private class MyViewBinder implements SimpleCursorAdapter.ViewBinder {
@@ -223,10 +238,10 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
      * Called when the load of the cursor is finished
      */
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        if(cursor.getCount() == 0) {
-            // this.mEmptyControls.setVisibility(View.VISIBLE);
+        if(this.isResumed()) {
+            this.setListShown(true);
         } else {
-            // this.mEmptyControls.setVisibility(View.GONE);
+            this.setListShownNoAnimation(true);
         }
         ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(cursor);
     }
@@ -258,6 +273,9 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
+        case R.id.menu_new:
+            insertRecord();
+            return true;
         case R.id.menu_send:
             doSendAction();
             return true;
@@ -321,6 +339,11 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         }
         return super.onContextItemSelected(item);
     }
+    private void insertRecord() {
+        Uri data = BPRecords.CONTENT_URI;
+        Intent intent = new Intent(Intent.ACTION_INSERT, data);
+        startActivity(intent);
+    }
 
     private void showDeleteConfirmationDialog() {
         AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
@@ -342,4 +365,50 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
     public void onPositiveButtonClicked() {
         deleteRecord();
     }
+
+    /**
+     * Control whether the list is being displayed.  You can make it not
+     * displayed if you are waiting for the initial data to show in it.  During
+     * this time an indeterminant progress indicator will be shown instead.
+     *
+     * @param shown If true, the list view is shown; if false, the progress
+     * indicator.  The initial value is true.
+     * @param animate If true, an animation will be used to transition to the
+     * new state.
+     */
+    private void setListShown(boolean shown, boolean animate) {
+        if (mProgressContainer == null) {
+            throw new IllegalStateException("Can't be used with a custom content view");
+        }
+        if (mListShown == shown) {
+            return;
+        }
+        mListShown = shown;
+        if (shown) {
+            if (animate) {
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(
+                        getActivity(), android.R.anim.fade_out));
+                mListContainer.startAnimation(AnimationUtils.loadAnimation(
+                        getActivity(), android.R.anim.fade_in));
+            } else {
+                mProgressContainer.clearAnimation();
+                mListContainer.clearAnimation();
+            }
+            mProgressContainer.setVisibility(View.GONE);
+            mListContainer.setVisibility(View.VISIBLE);
+        } else {
+            if (animate) {
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(
+                        getActivity(), android.R.anim.fade_in));
+                mListContainer.startAnimation(AnimationUtils.loadAnimation(
+                        getActivity(), android.R.anim.fade_out));
+            } else {
+                mProgressContainer.clearAnimation();
+                mListContainer.clearAnimation();
+            }
+            mProgressContainer.setVisibility(View.VISIBLE);
+            mListContainer.setVisibility(View.GONE);
+        }
+    }
+
 }

@@ -35,7 +35,6 @@
     <string name="label_pulse">Pulso</string>
     <string name="label_date">Fecha</string>
     <string name="label_time">Hora</string>
-    <string name="really_delete">¿Eliminar este?</string>
     <string name="label_yes">Si</string>
     <string name="label_no">No</string>
     <string name="label_sys_spinner">Seleccione el valor sistólico</string>
@@ -53,6 +52,8 @@
     <string name="list_label_pulse">Pulso:</string>
     <string name="msg_add">Haga clic para añadir</string>
     <string name="bp_separator">/</string>
+    <string name="menu_new">Nuevo</string>
+    <string name="msg_loading">Loading&#8230;</string>
     <!-- These strings are used on the BPSend Activity layout -->
     <string name="title_send">@string/label_send</string>
     <string name="label_send">Enviar</string>
