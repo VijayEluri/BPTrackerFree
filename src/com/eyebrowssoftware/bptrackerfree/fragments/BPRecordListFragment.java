@@ -358,8 +358,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
     }
 
     private void showDeleteConfirmationDialog() {
-        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
-        diagFrag.setTargetFragment(this, 0);
+        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no, this);
         diagFrag.show(this.getFragmentManager(), "delete");
     }
 

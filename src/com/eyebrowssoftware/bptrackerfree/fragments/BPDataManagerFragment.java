@@ -59,7 +59,7 @@ public class BPDataManagerFragment extends Fragment implements OnClickListener, 
     }
 
     private void showDeleteConfirmationDialog() {
-        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
+        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no, this);
         diagFrag.show(this.getFragmentManager(), "delete");
     }
 

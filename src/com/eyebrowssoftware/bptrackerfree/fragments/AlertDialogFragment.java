@@ -1,6 +1,6 @@
 package com.eyebrowssoftware.bptrackerfree.fragments;
 
-import android.app.Activity;
+import junit.framework.Assert;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -35,41 +35,39 @@ public class AlertDialogFragment extends DialogFragment {
     private static final String TITLE_STRING = "title";
     private static final String POSITIVE_BUTTON_STRING = "positive";
     private static final String NEGATIVE_BUTTON_STRING = "negative";
-    private AlertDialogListener mCallback;
+    private AlertDialogListener mListener;
 
-    public static AlertDialogFragment getNewInstance(int title_res, int positive_res, int negative_res) {
+    public static AlertDialogFragment getNewInstance(int title_res, int positive_res, int negative_res, AlertDialogListener listener) {
+        Assert.assertNotNull(listener);
         AlertDialogFragment fragment = new AlertDialogFragment();
         Bundle args = new Bundle();
         args.putInt(TITLE_STRING, title_res);
         args.putInt(POSITIVE_BUTTON_STRING, positive_res);
         args.putInt(NEGATIVE_BUTTON_STRING, negative_res);
         fragment.setArguments(args);
+        fragment.setListener(listener);
         return fragment;
     }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mCallback = (AlertDialogListener) activity;
+    public void setListener(AlertDialogListener listener) {
+        mListener = listener;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceData) {
-
         Bundle args = this.getArguments();
-        final AlertDialogListener cb = mCallback;
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setMessage(args.getInt(TITLE_STRING))
             .setCancelable(false)
             .setPositiveButton(args.getInt(POSITIVE_BUTTON_STRING), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    cb.onPositiveButtonClicked(AlertDialogFragment.this);
+                    mListener.onPositiveButtonClicked(AlertDialogFragment.this);
                 }
             })
             .setNegativeButton(args.getInt(NEGATIVE_BUTTON_STRING), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
-                    cb.onNegativeButtonClicked(AlertDialogFragment.this);
+                    mListener.onNegativeButtonClicked(AlertDialogFragment.this);
                 }
             });
         return builder.create();
