@@ -43,5 +43,4 @@ public class BPSend extends FragmentActivity {
     public void onSaveInstanceState(Bundle icicle) {
         super.onSaveInstanceState(icicle);
     }
-
 }

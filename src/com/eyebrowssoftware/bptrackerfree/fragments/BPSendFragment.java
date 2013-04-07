@@ -80,6 +80,10 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
 
     private static final int SEND_ID = 9;
 
+    private static final String FILENAME = "data.csv";
+    private static final String MSGNAME = "bpdata.csv";
+
+
     // This may or may not be used
     private boolean mReverse = true;
 
@@ -105,7 +109,14 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
         mCancelButton = (Button) v.findViewById(R.id.cancel);
         mCancelButton.setOnClickListener(this);
 
-return v;
+        if(icicle != null) {
+            mSendText.setChecked(icicle.getBoolean(SEND_TEXT));
+            mSendFile.setChecked(icicle.getBoolean(SEND_FILE));
+        } else {
+            mSendText.setChecked(true);
+            mSendFile.setChecked(true);
+        }
+        return v;
 
     }
 
@@ -126,13 +137,29 @@ return v;
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-        if(icicle != null) {
-            mSendText.setChecked(icicle.getBoolean(SEND_TEXT));
-            mSendFile.setChecked(icicle.getBoolean(SEND_FILE));
-        } else {
-            mSendText.setChecked(true);
-            mSendFile.setChecked(true);
-        }
+        this.setHasOptionsMenu(true);
+    }
+
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+        Activity activity = this.getActivity();
+        CursorLoader loader = new CursorLoader(activity, mUri, BPTrackerFree.PROJECTION, null, null,
+                        BPRecord.CREATED_DATE + ((mReverse) ? " DESC" : " ASC"));
+        return loader;
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        String msg = getMessage(this.getActivity(), cursor);
+        mMsgLabelView.setText(String.format(mMsgLabelString, msg.length()));
+        mMsgView.setText(msg);
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> arg0) {
+        mMsgLabelView.setText(String.format(mMsgLabelString, 0));
+        mMsgView.setText("");
     }
 
     public void onClick(View v) {
@@ -147,10 +174,6 @@ return v;
             activity.finish();
         }
     }
-
-    private static final String FILENAME = "data.csv";
-    private static final String MSGNAME = "bpdata.csv";
-
     private boolean sendData() {
         Activity activity = this.getActivity();
         String msg = mMsgView.getText().toString();
@@ -237,7 +260,9 @@ return v;
                 int columns = cnames.length;
 
                 for (int j = 0; j < columns; ++j) {
-                    if (j == BPTrackerFree.COLUMN_ID_INDEX) { // put out nothing for the id column
+                    if (j == BPTrackerFree.COLUMN_ID_INDEX
+                            || j == BPTrackerFree.COLUMN_MODIFIED_AT_INDEX) {
+                        // put out nothing for certain columns
                         continue;
                     }
                     else if (j == BPTrackerFree.COLUMN_SYSTOLIC_INDEX) {
@@ -307,27 +332,5 @@ return v;
             return super.onOptionsItemSelected(item);
         }
     }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        Activity activity = this.getActivity();
-        CursorLoader loader = new CursorLoader(activity, mUri, BPTrackerFree.PROJECTION, null, null,
-                        BPRecord.CREATED_DATE + ((mReverse) ? " DESC" : " ASC"));
-        return loader;
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        String msg = getMessage(this.getActivity(), cursor);
-        mMsgLabelView.setText(String.format(mMsgLabelString, msg.length()));
-        mMsgView.setText(msg);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> arg0) {
-        mMsgLabelView.setText(String.format(mMsgLabelString, 0));
-        mMsgView.setText("");
-    }
-
 
 }
