@@ -49,11 +49,11 @@ public class BPRecordEditor extends FragmentActivity implements EditorSelectionD
         super.onResume();
         boolean isText = mSharedPreferences.getBoolean(BPTrackerFree.IS_TEXT_EDITOR_KEY, false);
         Log.d(TAG, "onResume: isText: " + (isText ? "true" : "false"));
-        loadEditorFragment(isText, false);
+        loadEditorFragment(isText);
         boolean isUserSet = mSharedPreferences.getBoolean(BPTrackerFree.USER_SELECTED_EDITOR_KEY, false);
         Log.d(TAG, "onResume: isText: " + (isText ? "true" : "false"));
         if (!isUserSet && !this.mWasEditorSelectionDialogShown) {
-            EditorSelectionDialogFragment dialog = EditorSelectionDialogFragment.getNewInstance();
+            EditorSelectionDialogFragment dialog = EditorSelectionDialogFragment.getNewInstance(this);
             dialog.show(this.getSupportFragmentManager(), "editor");
             this.mWasEditorSelectionDialogShown = true;
         }
@@ -70,7 +70,15 @@ public class BPRecordEditor extends FragmentActivity implements EditorSelectionD
         super.onPause();
     }
 
-    private void loadEditorFragment(boolean isText, boolean persist) {
+    private void lockEditor(boolean locked) {
+        if (locked) {
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putBoolean(BPTrackerFree.USER_SELECTED_EDITOR_KEY, true);
+            editor.commit();
+        }
+    }
+
+    private void loadEditorFragment(boolean isText) {
         FragmentManager fm = this.getSupportFragmentManager();
         String key = isText ? "text" : "spinner";
         Fragment current = fm.findFragmentByTag(key);
@@ -80,23 +88,24 @@ public class BPRecordEditor extends FragmentActivity implements EditorSelectionD
             ft.replace(R.id.container, fragment, key);
             ft.commit();
         }
-        if (persist) {
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putBoolean(BPTrackerFree.USER_SELECTED_EDITOR_KEY, true);
-            editor.commit();
-        }
     }
 
     @Override
     public void onNegativeButtonClicked(EditorSelectionDialogFragment dialog) {
-        boolean isText = dialog.getIsText();
-        loadEditorFragment(isText, false);
+        loadEditorFragment(dialog.getIsText());
+        lockEditor(false);
     }
 
     @Override
     public void onPositiveButtonClicked(EditorSelectionDialogFragment dialog) {
+        loadEditorFragment(dialog.getIsText());
+        lockEditor(true);
+    }
+
+    @Override
+    public void onIsTextChanged(EditorSelectionDialogFragment dialog) {
         boolean isText = dialog.getIsText();
-        loadEditorFragment(isText, true);
+        loadEditorFragment(isText);
     }
 
 }

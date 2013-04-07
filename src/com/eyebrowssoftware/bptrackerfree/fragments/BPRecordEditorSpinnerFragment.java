@@ -17,6 +17,8 @@ package com.eyebrowssoftware.bptrackerfree.fragments;
 
 import java.lang.ref.WeakReference;
 
+import junit.framework.Assert;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -81,16 +83,20 @@ public class BPRecordEditorSpinnerFragment extends BPRecordEditorBaseFragment {
         View v = super.onCreateView(inflater, container, savedInstanceState);
         ViewStub myStub = (ViewStub) v.findViewById(R.id.spinners_stub);
         View mySpinners = myStub.inflate();
+        Activity activity = this.getActivity();
 
         mSpinners = new Spinner[SPINNER_ARRAY_SIZE];
         mSpinners[SYS_IDX] = (Spinner) mySpinners.findViewById(R.id.systolic_spinner);
         mSpinners[SYS_IDX].setPromptId(R.string.label_sys_spinner);
+        mSpinners[SYS_IDX].setAdapter(new RangeAdapter(activity, SYSTOLIC_RANGE_SETUP, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
 
         mSpinners[DIA_IDX] = (Spinner) mySpinners.findViewById(R.id.diastolic_spinner);
         mSpinners[DIA_IDX].setPromptId(R.string.label_dia_spinner);
+        mSpinners[DIA_IDX].setAdapter(new RangeAdapter(activity, DIASTOLIC_RANGE_SETUP, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
 
         mSpinners[PLS_IDX] = (Spinner) mySpinners.findViewById(R.id.pulse_spinner);
         mSpinners[PLS_IDX].setPromptId(R.string.label_pls_spinner);
+        mSpinners[PLS_IDX].setAdapter(new RangeAdapter(activity, PULSE_RANGE_SETUP, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
 
         return v;
     }
@@ -105,10 +111,6 @@ public class BPRecordEditorSpinnerFragment extends BPRecordEditorBaseFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        Activity activity = this.getActivity();
-        mSpinners[SYS_IDX].setAdapter(new RangeAdapter(activity, SYSTOLIC_RANGE_SETUP, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
-        mSpinners[DIA_IDX].setAdapter(new RangeAdapter(activity, DIASTOLIC_RANGE_SETUP, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
-        mSpinners[PLS_IDX].setAdapter(new RangeAdapter(activity, PULSE_RANGE_SETUP, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
     }
 
     @Override
@@ -131,14 +133,27 @@ public class BPRecordEditorSpinnerFragment extends BPRecordEditorBaseFragment {
         }
     }
 
+    /**
+     * @param s
+     * @param value
+     */
+    private void setSpinner(Spinner s, int value) {
+        RangeAdapter sa = (RangeAdapter) s.getAdapter();
+        Assert.assertNotNull(sa);
+        s.setSelection(sa.getPosition(value));
+        sa.notifyDataSetChanged();
+    }
+
+
+
     @Override
     protected void setUIState() {
         super.setUIState();
 
         if(mCurrentValues != null) {
-            BPTrackerFree.setSpinner(mSpinners[SYS_IDX], mCurrentValues.getAsInteger(BPRecord.SYSTOLIC));
-            BPTrackerFree.setSpinner(mSpinners[DIA_IDX], mCurrentValues.getAsInteger(BPRecord.DIASTOLIC));
-            BPTrackerFree.setSpinner(mSpinners[PLS_IDX], mCurrentValues.getAsInteger(BPRecord.PULSE));
+            this.setSpinner(mSpinners[SYS_IDX], mCurrentValues.getAsInteger(BPRecord.SYSTOLIC));
+            this.setSpinner(mSpinners[DIA_IDX], mCurrentValues.getAsInteger(BPRecord.DIASTOLIC));
+            this.setSpinner(mSpinners[PLS_IDX], mCurrentValues.getAsInteger(BPRecord.PULSE));
         }
     }
 

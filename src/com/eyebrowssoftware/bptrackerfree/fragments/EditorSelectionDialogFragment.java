@@ -19,18 +19,19 @@ public class EditorSelectionDialogFragment extends DialogFragment {
     public interface EditorSelectionDialogListener {
         public void onPositiveButtonClicked(EditorSelectionDialogFragment dialog);
         public void onNegativeButtonClicked(EditorSelectionDialogFragment dialog);
+        public void onIsTextChanged(EditorSelectionDialogFragment dialog);
     }
 
-    public static EditorSelectionDialogFragment getNewInstance() {
-        return new EditorSelectionDialogFragment();
+    public static EditorSelectionDialogFragment getNewInstance(EditorSelectionDialogListener listener) {
+        EditorSelectionDialogFragment fragment = new EditorSelectionDialogFragment();
+        fragment.setListener(listener);
+        return fragment;
     }
-    private EditorSelectionDialogListener mCallback;
+    private EditorSelectionDialogListener mListener;
     private boolean mIsText = false;
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        mCallback = (EditorSelectionDialogListener) activity;
+    public void setListener(EditorSelectionDialogListener listener) {
+        mListener = listener;
     }
 
     @Override
@@ -44,18 +45,19 @@ public class EditorSelectionDialogFragment extends DialogFragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 setIsText(which == 1 ? true : false);
+                mListener.onIsTextChanged(EditorSelectionDialogFragment.this);
             }
         });
         builder.setPositiveButton(R.string.forever, new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mCallback.onPositiveButtonClicked(EditorSelectionDialogFragment.this);
+                mListener.onPositiveButtonClicked(EditorSelectionDialogFragment.this);
             }
         });
         builder.setNegativeButton(R.string.now, new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                mCallback.onNegativeButtonClicked(EditorSelectionDialogFragment.this);
+                mListener.onNegativeButtonClicked(EditorSelectionDialogFragment.this);
             }
         });
         return builder.create();

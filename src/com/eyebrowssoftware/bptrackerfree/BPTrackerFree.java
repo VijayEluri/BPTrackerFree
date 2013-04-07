@@ -103,16 +103,6 @@ public class BPTrackerFree extends Application {
     }
 
     /**
-     * @param s
-     * @param value
-     */
-    public static void setSpinner(Spinner s, int value) {
-        RangeAdapter sa = (RangeAdapter) s.getAdapter();
-        s.setSelection(sa.getPosition(value));
-        sa.notifyDataSetChanged();
-    }
-
-    /**
      *
      * @param date
      * @param length
