@@ -13,17 +13,17 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.eyebrowssoftware.bptrackerfree.activity;
+package com.eyebrowssoftware.bptrackerfree.fragments;
 
 import java.lang.ref.WeakReference;
 
+import android.app.Activity;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.Spinner;
-import android.widget.Toast;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
@@ -34,12 +34,35 @@ import com.eyebrowssoftware.bptrackerfree.RangeAdapter;
  * @author brionemde
  *
  */
-public class BPRecordEditor extends BPRecordEditorBase implements OnItemSelectedListener {
+public class BPRecordEditorSpinnerFragment extends BPRecordEditorBaseFragment {
 
     // Static constants
 
     protected static final String TAG = "BPRecordEditor";
 
+    private static final int[] SYSTOLIC_RANGE_SETUP = {
+            BPTrackerFree.SYSTOLIC_MAX_DEFAULT,
+            RangeAdapter.NO_ZONE,
+            RangeAdapter.NO_ZONE,
+            RangeAdapter.NO_ZONE,
+            BPTrackerFree.SYSTOLIC_MIN_DEFAULT
+        };
+
+    private static final int[] DIASTOLIC_RANGE_SETUP = {
+            BPTrackerFree.DIASTOLIC_MAX_DEFAULT,
+            RangeAdapter.NO_ZONE,
+            RangeAdapter.NO_ZONE,
+            RangeAdapter.NO_ZONE,
+            BPTrackerFree.DIASTOLIC_MIN_DEFAULT
+        };
+
+    private static final int[] PULSE_RANGE_SETUP = {
+            BPTrackerFree.PULSE_MAX_DEFAULT,
+            RangeAdapter.NO_ZONE,
+            RangeAdapter.NO_ZONE,
+            RangeAdapter.NO_ZONE,
+            BPTrackerFree.PULSE_MIN_DEFAULT
+        };
     protected static final int SYS_IDX = 0;
     protected static final int DIA_IDX = 1;
     protected static final int PLS_IDX = 2;
@@ -54,62 +77,47 @@ public class BPRecordEditor extends BPRecordEditorBase implements OnItemSelected
     protected WeakReference<Spinner[]> mSpinnersReference;
 
     @Override
-    protected void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-
-        int[] sys_vals = {
-            BPTrackerFree.SYSTOLIC_MAX_DEFAULT,
-            RangeAdapter.NO_ZONE,
-            RangeAdapter.NO_ZONE,
-            RangeAdapter.NO_ZONE,
-            BPTrackerFree.SYSTOLIC_MIN_DEFAULT
-        };
-
-        int[] dia_vals = {
-            BPTrackerFree.DIASTOLIC_MAX_DEFAULT,
-            RangeAdapter.NO_ZONE,
-            RangeAdapter.NO_ZONE,
-            RangeAdapter.NO_ZONE,
-            BPTrackerFree.DIASTOLIC_MIN_DEFAULT
-        };
-
-        int[] pls_vals = {
-            BPTrackerFree.PULSE_MAX_DEFAULT,
-            RangeAdapter.NO_ZONE,
-            RangeAdapter.NO_ZONE,
-            RangeAdapter.NO_ZONE,
-            BPTrackerFree.PULSE_MIN_DEFAULT
-        };
-        ViewStub myStub = (ViewStub) findViewById(R.id.spinners_stub);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        View v = super.onCreateView(inflater, container, savedInstanceState);
+        ViewStub myStub = (ViewStub) v.findViewById(R.id.spinners_stub);
         View mySpinners = myStub.inflate();
 
         mSpinners = new Spinner[SPINNER_ARRAY_SIZE];
-
         mSpinners[SYS_IDX] = (Spinner) mySpinners.findViewById(R.id.systolic_spinner);
         mSpinners[SYS_IDX].setPromptId(R.string.label_sys_spinner);
-        mSpinners[SYS_IDX].setOnItemSelectedListener(this);
-        mSpinners[SYS_IDX].setAdapter(new RangeAdapter(this, sys_vals, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
 
         mSpinners[DIA_IDX] = (Spinner) mySpinners.findViewById(R.id.diastolic_spinner);
         mSpinners[DIA_IDX].setPromptId(R.string.label_dia_spinner);
-        mSpinners[DIA_IDX].setOnItemSelectedListener(this);
-        mSpinners[DIA_IDX].setAdapter(new RangeAdapter(this, dia_vals, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
 
         mSpinners[PLS_IDX] = (Spinner) mySpinners.findViewById(R.id.pulse_spinner);
         mSpinners[PLS_IDX].setPromptId(R.string.label_pls_spinner);
-        mSpinners[PLS_IDX].setOnItemSelectedListener(this);
-        mSpinners[PLS_IDX].setAdapter(new RangeAdapter(this, pls_vals, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
+
+        return v;
+    }
+
+    @Override
+    public void onCreate(Bundle icicle) {
+        super.onCreate(icicle);
 
         mSpinnersReference = new WeakReference<Spinner[]>(mSpinners);
     }
 
     @Override
-    protected void onResume() {
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        Activity activity = this.getActivity();
+        mSpinners[SYS_IDX].setAdapter(new RangeAdapter(activity, SYSTOLIC_RANGE_SETUP, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
+        mSpinners[DIA_IDX].setAdapter(new RangeAdapter(activity, DIASTOLIC_RANGE_SETUP, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
+        mSpinners[PLS_IDX].setAdapter(new RangeAdapter(activity, PULSE_RANGE_SETUP, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
+    }
+
+    @Override
+    public void onResume() {
         super.onResume();
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
         // The user is going somewhere else, so make sure their current
         // changes are safely saved away in the provider. We don't need
@@ -120,36 +128,6 @@ public class BPRecordEditor extends BPRecordEditorBase implements OnItemSelected
             mCurrentValues.put(BPRecord.PULSE, (Integer) mSpinners[PLS_IDX].getSelectedItem());
 
             updateFromCurrentValues();
-        }
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-        Spinner sp = (Spinner) parent;
-        if (sp.equals(mSpinners[SYS_IDX])) {
-            int systolic = ((RangeAdapter) mSpinners[SYS_IDX].getAdapter()).getItem(pos);
-            int diastolic = (Integer) mSpinners[DIA_IDX].getSelectedItem();
-            if ((systolic - diastolic) < BPTrackerFree.MIN_RANGE) {
-                Toast.makeText(this, R.string.check_values, Toast.LENGTH_SHORT).show();
-            }
-        } else if (sp.equals(mSpinners[DIA_IDX])) {
-            int systolic = (Integer) mSpinners[SYS_IDX].getSelectedItem();
-            int diastolic = ((RangeAdapter) mSpinners[DIA_IDX].getAdapter()).getItem(pos);
-            if ((systolic - diastolic) < BPTrackerFree.MIN_RANGE) {
-                Toast.makeText(this, R.string.check_values, Toast.LENGTH_SHORT).show();
-            }
-        }
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        Spinner sp = (Spinner) parent;
-        if (sp.equals(mSpinners[SYS_IDX])) {
-            BPTrackerFree.setSpinner(mSpinners[SYS_IDX], mOriginalValues.getInt(BPRecord.SYSTOLIC));
-        } else if (sp.equals(mSpinners[DIA_IDX])) {
-            BPTrackerFree.setSpinner(mSpinners[DIA_IDX], mOriginalValues.getInt(BPRecord.DIASTOLIC));
-        } else if (sp.equals(mSpinners[PLS_IDX])) {
-            BPTrackerFree.setSpinner(mSpinners[PLS_IDX], mOriginalValues.getInt(BPRecord.PULSE));
         }
     }
 

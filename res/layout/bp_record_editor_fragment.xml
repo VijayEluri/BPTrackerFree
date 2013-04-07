@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2010 Brion Noble Emde
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<RelativeLayout  xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+>
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button_layout"
+        android:layout_alignParentTop="true"
+    >
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+        >
+            <ViewStub
+                android:id="@+id/spinners_stub"
+                android:inflatedId="@+id/spinners"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:layout="@layout/bp_edit_spinners"
+            />
+            <ViewStub
+                android:id="@+id/edit_texts_stub"
+                android:inflatedId="@+id/edit_texts"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:layout="@layout/bp_edit_texts"
+            />
+            <EditText
+                android:id="@+id/note"
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+                android:inputType="text"
+                android:hint="@string/hint_note_entry"
+            />
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+            >
+                <TextView
+                    android:id="@+id/date_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_date"
+                    android:layout_gravity="center_vertical|right"
+                    style="@style/bp_label"
+                />
+                <Button
+                    android:id="@+id/date_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|left"
+                />
+            </LinearLayout>
+            <LinearLayout
+                android:layout_height="wrap_content"
+                android:layout_width="fill_parent"
+            >
+                <TextView
+                    android:id="@+id/time_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/label_time"
+                    android:layout_gravity="center_vertical|right"
+                    style="@style/bp_label"
+                />
+                <Button
+                    android:id="@+id/time_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical|left"
+                />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+    <LinearLayout
+        android:id="@id/button_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+    >
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_done"
+            android:id="@+id/done_button"
+            android:layout_weight="1.0"
+        />
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/menu_revert"
+            android:id="@+id/revert_button"
+            android:layout_weight="1.0"
+        />
+    </LinearLayout>
+</RelativeLayout>

@@ -25,13 +25,12 @@ import android.widget.Toast;
 import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment;
-import com.eyebrowssoftware.bptrackerfree.fragments.BPDialogFragment;
 
 /**
  * @author brionemde
  *
  */
-public class BPDataManager extends FragmentActivity implements OnClickListener, BPDialogFragment.Callback {
+public class BPDataManager extends FragmentActivity implements OnClickListener, AlertDialogFragment.AlertDialogListener {
 
     private Button mDeleteButton;
 
@@ -56,12 +55,12 @@ public class BPDataManager extends FragmentActivity implements OnClickListener, 
     }
 
     @Override
-    public void onNegativeButtonClicked() {
+    public void onNegativeButtonClicked(AlertDialogFragment dialog) {
         // nothing to do, dialog is cancelled already
     }
 
     @Override
-    public void onPositiveButtonClicked() {
+    public void onPositiveButtonClicked(AlertDialogFragment dialog) {
         deleteHistory();
         finish();
     }

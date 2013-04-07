@@ -20,16 +20,6 @@
         android:minSdkVersion="4"
         android:targetSdkVersion="17"
     />
-    <permission
-        android:name="com.eyebrowssoftware.BPTracker.permission.MEDICAL"
-        android:permissionGroup="android.permission-group.PERSONAL_INFO"
-        android:label="@string/bp_permission_label"
-        android:description="@string/bp_permission_description"
-        android:protectionLevel="dangerous"
-    />
-
-    <uses-permission android:name="com.eyebrowssoftware.BPTracker.permission.MEDICAL" />
-
     <application
         android:icon="@drawable/icon"
         android:label="@string/app_name"
@@ -48,7 +38,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.BPRecordEditor"
+            android:name=".activity.BPRecordEditorBase"
             android:label="@string/title_edit"
             android:exported="false"
         >
@@ -61,22 +51,6 @@
                 <action android:name="android.intent.action.INSERT" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <data android:mimeType="vnd.android.cursor.dir/vnd.eyebrowssoftware.free.bp_record" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".activity.BPRecordEditorText"
-            android:label="@string/title_alternate_edit"
-            android:exported="false"
-        >
-            <intent-filter>
-              <action android:name="android.intent.action.EDIT" />
-              <category android:name="android.intent.category.DEFAULT" />
-              <data android:mimeType="vnd.android.cursor.item/vnd.eyebrowssoftware.free.bp_record" />
-            </intent-filter>
-            <intent-filter>
-              <action android:name="android.intent.action.INSERT" />
-              <category android:name="android.intent.category.DEFAULT" />
-              <data android:mimeType="vnd.android.cursor.dir/vnd.eyebrowssoftware.free.bp_record" />
             </intent-filter>
         </activity>
         <activity

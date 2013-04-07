@@ -53,7 +53,7 @@ import com.eyebrowssoftware.bptrackerfree.R;
  *
  */
 public class BPRecordListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>,
-    AlertDialogFragment.Callback, View.OnClickListener {
+    AlertDialogFragment.AlertDialogListener, View.OnClickListener {
 
     /**
      * Hosting activities must provide this interface
@@ -364,12 +364,12 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
     }
 
     @Override
-    public void onNegativeButtonClicked() {
+    public void onNegativeButtonClicked(AlertDialogFragment dialog) {
         // nothing to do, dialog is cancelled already
     }
 
     @Override
-    public void onPositiveButtonClicked() {
+    public void onPositiveButtonClicked(AlertDialogFragment dialog) {
         mListener.deleteItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, mContextMenuRecordId));
     }
 

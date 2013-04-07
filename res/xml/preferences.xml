@@ -46,4 +46,13 @@
         android:summaryOff="@string/fixed_chosen"
         android:persistent="true"
     />
+    <SwitchPreference
+        android:key="is_text_editor"
+        android:title="@string/editor_selection"
+        android:summaryOff="@string/spinner_based_editor"
+        android:summaryOn="@string/text_based_editor"
+        android:switchTextOff="@string/editor_switch_off"
+        android:switchTextOn="@string/editor_switch_on"
+        android:defaultValue="false"
+    />
 </PreferenceScreen>

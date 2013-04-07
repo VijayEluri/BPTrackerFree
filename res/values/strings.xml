@@ -24,7 +24,7 @@
     <string name="title_provider">BP Provider</string>
     <string name="title_edit">Edit Readings</string>
     <string name="title_create">Add New Reading</string>
-    <!-- These strings appear in the BPRecordEditor activity -->
+    <!-- These strings appear in the BPRecordEditor fragments -->
     <string name="menu_done">Done</string>
     <string name="menu_revert">Revert</string>
     <string name="menu_cancel">Cancel</string>
@@ -43,7 +43,7 @@
     <string name="label_pls_spinner">Pick Pulse Value</string>
     <string name="msg_future_date">Future date!</string>
     <string name="hint_note_entry">Write something here</string>
-    <!-- These values are for the BPRecordList activity -->
+    <!-- These values are for the BPRecordList fragment -->
     <string name="menu_edit">Edit</string>
     <string name="menu_send">@string/label_send</string>
     <string name="list_label_date">Date:</string>
@@ -104,4 +104,17 @@
     <string name="pulse_initial">Initial Pulse for new records</string>
     <string name="icon_content_description">Icon</string>
     <string name="check_values">Please check your readings for accuracy.</string>
+    <!-- New -->
+        <string name="editor_selection">Editor selection</string>
+    <string name="spinner_based_editor">Using spinner-based editor</string>
+    <string name="text_based_editor">Using keyboard-based editor</string>
+    <string name="editor_switch_off">Spinner</string>
+    <string name="editor_switch_on">Keyboard</string>
+    <string-array name="editor_options">
+        <item>@string/title_edit</item>
+        <item>@string/title_alternate_edit</item>
+    </string-array>
+    <string name="now">Now</string>
+    <string name="forever">Forever</string>
+
 </resources>
