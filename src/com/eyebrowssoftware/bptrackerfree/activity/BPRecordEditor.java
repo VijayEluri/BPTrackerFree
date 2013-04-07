@@ -19,11 +19,11 @@ import com.eyebrowssoftware.bptrackerfree.fragments.EditorSelectionDialogFragmen
  * @author brionemde
  *
  */
-public class BPRecordEditorBase extends FragmentActivity implements EditorSelectionDialogFragment.EditorSelectionDialogListener {
+public class BPRecordEditor extends FragmentActivity implements EditorSelectionDialogFragment.EditorSelectionDialogListener {
 
     // Static constants
 
-    static final String TAG = BPRecordEditorBase.class.toString();
+    static final String TAG = BPRecordEditor.class.toString();
 
     private static final String DIALOG_SHOWN_KEY = "dialog_shown";
     private SharedPreferences mSharedPreferences;

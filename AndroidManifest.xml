@@ -38,7 +38,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.BPRecordEditorBase"
+            android:name=".activity.BPRecordEditor"
             android:label="@string/title_edit"
             android:exported="false"
         >

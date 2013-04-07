@@ -30,7 +30,7 @@ public class BPRecordEditorTest extends
      *
      */
     public BPRecordEditorTest() {
-        super("com.eyebrowssoftware.bptrackerfree", BPRecordEditor.class);
+        super(BPRecordEditor.class);
 }
 
 
