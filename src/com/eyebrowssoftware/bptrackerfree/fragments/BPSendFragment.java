@@ -28,6 +28,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -40,6 +41,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -57,7 +59,7 @@ import com.eyebrowssoftware.bptrackerfree.R;
  *
  */
 public class BPSendFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
-    CompoundButton.OnCheckedChangeListener, OnClickListener {
+    CompoundButton.OnCheckedChangeListener {
 
     private static final String TAG = "BPSend";
 
@@ -69,6 +71,10 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
     private CheckBox mSendFile;
     private Button mSendButton;
     private Button mCancelButton;
+    private boolean mContentShown = true;
+    private View mProgressContainer = null;
+    private View mContentContainer = null;
+
 
     private static String mMsgLabelString;
 
@@ -92,22 +98,35 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
 
         View v = inflater.inflate(R.layout.bp_send_fragment, container, false);
 
+        mContentContainer = v.findViewById(R.id.content_container);
+        mProgressContainer = v.findViewById(R.id.progress_container);
+
         mMsgLabelView = (TextView) v.findViewById(R.id.message_label);
         mMsgLabelString = getString(R.string.label_message_format);
 
         mMsgView = (TextView) v.findViewById(R.id.message);
 
         mSendText = (CheckBox) v.findViewById(R.id.text);
-        mSendText.setOnCheckedChangeListener(this);
 
         mSendFile = (CheckBox) v.findViewById(R.id.attach);
-        mSendFile.setOnCheckedChangeListener(this);
 
         mSendButton = (Button) v.findViewById(R.id.send);
-        mSendButton.setOnClickListener(this);
+        mSendButton.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                sendData();
+            }
+        });
 
         mCancelButton = (Button) v.findViewById(R.id.cancel);
-        mCancelButton.setOnClickListener(this);
+        mCancelButton.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                BPSendFragment.this.getActivity().finish();
+            }
+
+        });
 
         if(icicle != null) {
             mSendText.setChecked(icicle.getBoolean(SEND_TEXT));
@@ -130,6 +149,7 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
         mReverse = intent.getBooleanExtra(REVERSE, true);
 
         mUri = intent.getData();
+        this.setShown(false, true);
         // Set up our cursor loader. It manages the cursors from now on
         this.getLoaderManager().initLoader(SEND_ID, null, this);
     }
@@ -138,6 +158,21 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         this.setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mSendFile.setOnCheckedChangeListener(this);
+        mSendText.setOnCheckedChangeListener(this);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mSendFile.setOnCheckedChangeListener(null);
+        mSendText.setOnCheckedChangeListener(null);
+
     }
 
 
@@ -151,9 +186,7 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        String msg = getMessage(this.getActivity(), cursor);
-        mMsgLabelView.setText(String.format(mMsgLabelString, msg.length()));
-        mMsgView.setText(msg);
+        (new CreateMessageTask(this.getActivity())).execute(cursor);
     }
 
     @Override
@@ -162,151 +195,193 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
         mMsgView.setText("");
     }
 
-    public void onClick(View v) {
-        Activity activity = this.getActivity();
-        if (v.equals(mSendButton)) {
-            if (sendData()) {
-                activity.finish();
-            } else {
-                Toast.makeText(activity, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
-            }
-        } else if (v.equals(mCancelButton)) {
-            activity.finish();
-        }
+    private void sendData() {
+        Void[] params = new Void[0];
+        (new SendDataTask()).execute(params);
     }
-    private boolean sendData() {
-        Activity activity = this.getActivity();
-        String msg = mMsgView.getText().toString();
-        // We're going to send the data as message text and/or as an attachment
-        if (msg == null || !(mSendText.isChecked() || mSendFile.isChecked())) {
-            Toast.makeText(activity, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
+
+    private class SendDataTask extends AsyncTask<Void, Void, Boolean> {
+
+        String mMsg;
+        int mToastMessageResource = -1;
+        Activity mActivity;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mMsg = mMsgView.getText().toString();
+            // We're going to send the data as message text and/or as an attachment
+            if (mMsg == null || !(mSendText.isChecked() || mSendFile.isChecked())) {
+                Toast.makeText(BPSendFragment.this.getActivity(), R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
+                this.cancel(true);
+            }
+            mActivity = BPSendFragment.this.getActivity();
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            if (this.isCancelled()) {
+                return false;
+            }
+            try {
+                Intent sendIntent = new Intent(Intent.ACTION_SEND);
+                sendIntent.setType("text/plain");
+                sendIntent.putExtra(Intent.EXTRA_TITLE, MSGNAME);
+                sendIntent.putExtra(Intent.EXTRA_SUBJECT, MSGNAME);
+                if (mSendText.isChecked())
+                    sendIntent.putExtra(Intent.EXTRA_TEXT, mMsg);
+                if (mSendFile.isChecked()) {
+                    File fileDir = mActivity.getFilesDir();
+                    if(fileDir.exists()) {
+                        FileOutputStream fos = mActivity.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+                        fos.write(mMsg.getBytes());
+                        fos.close();
+                        File streamPath = mActivity.getFileStreamPath(FILENAME);
+                        if(streamPath != null && streamPath.exists() && streamPath.length() > 0) {
+                            sendIntent.setType("text/csv");
+                            sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(streamPath));
+                        } else if (streamPath == null) {
+                            mToastMessageResource = R.string.msg_null_file_error;
+                        } else if (!streamPath.exists()) {
+                            mToastMessageResource = R.string.msg_no_file_error;
+                        } else if(streamPath.length() == 0) {
+                            mToastMessageResource = R.string.msg_zero_size_error;
+                        } else {
+                            mToastMessageResource = R.string.msg_twilight_zone;
+                        }
+
+                    } else {
+                        mToastMessageResource = R.string.msg_directory_error;
+                    }
+                }
+                startActivity(Intent.createChooser(sendIntent, getString(R.string.msg_choose_send_method)));
+                return true;
+            } catch (FileNotFoundException e) {
+                mToastMessageResource = R.string.msg_file_not_found_error;
+                e.printStackTrace();
+            } catch (IOException e) {
+                mToastMessageResource = R.string.msg_io_exception_error;
+                e.printStackTrace();
+            }
             return false;
         }
-        try {
-            Intent sendIntent = new Intent(Intent.ACTION_SEND);
-            sendIntent.setType("text/plain");
-            sendIntent.putExtra(Intent.EXTRA_TITLE, MSGNAME);
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, MSGNAME);
-            if (mSendText.isChecked())
-                sendIntent.putExtra(Intent.EXTRA_TEXT, msg);
-            if (mSendFile.isChecked()) {
-                File fileDir = activity.getFilesDir();
-                if(fileDir.exists()) {
-                    FileOutputStream fos = activity.openFileOutput(FILENAME, Context.MODE_PRIVATE);
-                    fos.write(msg.getBytes());
-                    fos.close();
-                    File streamPath = activity.getFileStreamPath(FILENAME);
-                    if(streamPath != null && streamPath.exists() && streamPath.length() > 0) {
-                        sendIntent.setType("text/csv");
-                        sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(streamPath));
-                    } else if (streamPath == null) {
-                        BPTrackerFree.logErrorAndToast(activity, TAG, R.string.msg_null_file_error);
-                    } else if (!streamPath.exists()) {
-                        BPTrackerFree.logErrorAndToast(activity, TAG, R.string.msg_no_file_error);
-                    } else if(streamPath.length() == 0) {
-                        BPTrackerFree.logErrorAndToast(activity, TAG, R.string.msg_zero_size_error);
-                    } else {
-                        BPTrackerFree.logErrorAndToast(activity, TAG, R.string.msg_twilight_zone);
-                    }
 
-                } else {
-                    BPTrackerFree.logErrorAndToast(activity, TAG, R.string.msg_directory_error);
-                }
+        @Override
+        protected void onPostExecute(Boolean result) {
+            super.onPostExecute(result);
+            if (!result && this.mToastMessageResource > 0) {
+                BPTrackerFree.logErrorAndToast(BPSendFragment.this.getActivity(), TAG, R.string.msg_null_file_error);
             }
-            startActivity(Intent.createChooser(sendIntent, getString(R.string.msg_choose_send_method)));
-            return true;
-        } catch (FileNotFoundException e) {
-            BPTrackerFree.logErrorAndToast(activity, TAG, R.string.msg_file_not_found_error);
-            e.printStackTrace();
-        } catch (IOException e) {
-            BPTrackerFree.logErrorAndToast(activity, TAG, R.string.msg_io_exception_error);
-            e.printStackTrace();
         }
-        return false;
+
     }
+
 
     public void onCheckedChanged(CompoundButton check_box, boolean checked) {
         Activity activity = this.getActivity();
-        if (check_box.equals(mSendText) && !checked && !mSendFile.isChecked())
+        if (check_box.equals(mSendText) && !checked && !mSendFile.isChecked()) {
             Toast.makeText(activity, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
-
-        if (check_box.equals(mSendFile) && !checked && !mSendText.isChecked())
+        } else if (check_box.equals(mSendFile) && !checked && !mSendText.isChecked()) {
             Toast.makeText(activity, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
+        }
     }
 
+    private class CreateMessageTask extends AsyncTask<Cursor, Void, String > {
 
-    // Uses the member Cursor mRecordsCursor
-    private static String getMessage(Context context, Cursor cursor) {
+        Context mContext;
 
-        String date_localized;
-        String time_localized;
-        String sys_localized;
-        String dia_localized;
-        String pls_localized;
-        String note_localized;
+        public CreateMessageTask(Context context) {
+            super();
+            mContext = context;
+        }
 
-        date_localized = context.getString(R.string.bp_send_date);
-        time_localized = context.getString(R.string.bp_send_time);
-        sys_localized = context.getString(R.string.bp_send_sys);
-        dia_localized = context.getString(R.string.bp_send_dia);
-        pls_localized = context.getString(R.string.bp_send_pls);
-        note_localized = context.getString(R.string.bp_send_note);
+        @Override
+        protected String doInBackground(Cursor... cursors) {
+            String date_localized;
+            String time_localized;
+            String sys_localized;
+            String dia_localized;
+            String pls_localized;
+            String note_localized;
 
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        CsvWriter csvw = new CsvWriter(baos, ',', Charset.forName("UTF-8"));
-        if (cursor != null && cursor.moveToFirst()) {
-            try {
-                String[] cnames = cursor.getColumnNames();
-                int columns = cnames.length;
+            Cursor cursor = cursors[0];
 
-                for (int j = 0; j < columns; ++j) {
-                    if (j == BPTrackerFree.COLUMN_ID_INDEX
-                            || j == BPTrackerFree.COLUMN_MODIFIED_AT_INDEX) {
-                        // put out nothing for certain columns
-                        continue;
-                    }
-                    else if (j == BPTrackerFree.COLUMN_SYSTOLIC_INDEX) {
-                        csvw.write(sys_localized);
-                    } else if (j == BPTrackerFree.COLUMN_DIASTOLIC_INDEX) {
-                        csvw.write(dia_localized);
-                    } else if (j == BPTrackerFree.COLUMN_PULSE_INDEX) {
-                        csvw.write(pls_localized);
-                    } else if (j == BPTrackerFree.COLUMN_CREATED_AT_INDEX) {
-                        // This turns into two columns
-                        csvw.write(date_localized);
-                        csvw.write(time_localized);
-                    } else if (j == BPTrackerFree.COLUMN_NOTE_INDEX) {
-                        csvw.write(note_localized);
-                    } else
-                        csvw.write(cnames[j]);
-                }
-                csvw.endRecord();
-                do {
-                    // the final separator of each field is put on at the end.
+            date_localized = mContext.getString(R.string.bp_send_date);
+            time_localized = mContext.getString(R.string.bp_send_time);
+            sys_localized = mContext.getString(R.string.bp_send_sys);
+            dia_localized = mContext.getString(R.string.bp_send_dia);
+            pls_localized = mContext.getString(R.string.bp_send_pls);
+            note_localized = mContext.getString(R.string.bp_send_note);
+
+            ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            CsvWriter csvw = new CsvWriter(baos, ',', Charset.forName("UTF-8"));
+            if (cursor != null && cursor.moveToFirst()) {
+                try {
+                    String[] cnames = cursor.getColumnNames();
+                    int columns = cnames.length;
+
                     for (int j = 0; j < columns; ++j) {
                         if (j == BPTrackerFree.COLUMN_ID_INDEX) {
+                            // put out nothing for certain columns
                             continue;
+                        } else if (j == BPTrackerFree.COLUMN_MODIFIED_AT_INDEX) {
+                            continue;
+                        } else if (j == BPTrackerFree.COLUMN_SYSTOLIC_INDEX) {
+                            csvw.write(sys_localized);
+                        } else if (j == BPTrackerFree.COLUMN_DIASTOLIC_INDEX) {
+                            csvw.write(dia_localized);
+                        } else if (j == BPTrackerFree.COLUMN_PULSE_INDEX) {
+                            csvw.write(pls_localized);
                         } else if (j == BPTrackerFree.COLUMN_CREATED_AT_INDEX) {
-                            String date = BPTrackerFree.getDateString(cursor
-                                    .getLong(j), DateFormat.SHORT);
-                            String time = BPTrackerFree.getTimeString(cursor
-                                    .getLong(j), DateFormat.SHORT);
-                            csvw.write(date);
-                            csvw.write(time);
+                            // This turns into two columns
+                            csvw.write(date_localized);
+                            csvw.write(time_localized);
                         } else if (j == BPTrackerFree.COLUMN_NOTE_INDEX) {
-                            csvw.write(String.valueOf(cursor.getString(j)));
+                            csvw.write(note_localized);
                         } else
-                            csvw.write(String.valueOf(cursor.getInt(j)));
+                            csvw.write(cnames[j]);
                     }
                     csvw.endRecord();
-                } while (cursor.moveToNext());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                csvw.close();
+                    do {
+                        // the final separator of each field is put on at the end.
+                        for (int j = 0; j < columns; ++j) {
+                            if (j == BPTrackerFree.COLUMN_ID_INDEX) {
+                                continue;
+                            } else if (j == BPTrackerFree.COLUMN_MODIFIED_AT_INDEX) {
+                                continue;
+                            } else if (j == BPTrackerFree.COLUMN_CREATED_AT_INDEX) {
+                                String date = BPTrackerFree
+                                        .getDateString(cursor.getLong(j), DateFormat.SHORT);
+                                String time = BPTrackerFree.getTimeString(cursor
+                                        .getLong(j), DateFormat.SHORT);
+                                csvw.write(date);
+                                csvw.write(time);
+                            } else if (j == BPTrackerFree.COLUMN_NOTE_INDEX) {
+                                csvw.write(cursor.getString(j));
+                            } else
+                                csvw.write(String.valueOf(cursor.getInt(j)));
+                        }
+                        csvw.endRecord();
+                    } while (cursor.moveToNext());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    csvw.close();
+                }
+            }
+            return baos.toString();
+        }
+
+        @Override
+        protected void onPostExecute(String msg) {
+            mMsgLabelView.setText(String.format(mMsgLabelString, msg.length()));
+            mMsgView.setText(msg);
+            if (BPSendFragment.this.isResumed()) {
+                BPSendFragment.this.setShown(true,  true);
+            } else {
+                BPSendFragment.this.setShown(true, false);
             }
         }
-        return baos.toString();
     }
 
     @Override
@@ -324,13 +399,61 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
             activity.finish();
             return true;
         case R.id.menu_send:
-            if(sendData()) {
-                activity.finish();
-            }
+            sendData();
             return true;
         default:
             return super.onOptionsItemSelected(item);
         }
     }
+
+    /**
+     * Control whether the content is being displayed.  You can make it not
+     * displayed if you are waiting for the initial data to show in it.  During
+     * this time an indeterminant progress indicator will be shown instead.
+     *
+     * @param shown If true, the list view is shown; if false, the progress
+     * indicator.  The initial value is true.
+     * @param animate If true, an animation will be used to transition to the
+     * new state.
+     */
+    private void setShown(boolean shown, boolean animate) {
+        if (mProgressContainer == null) {
+            throw new IllegalStateException("Can't be used with a custom content view");
+        }
+        if (mContentContainer == null) {
+            throw new IllegalStateException("Empty content container");
+        }
+        if (mContentShown == shown) {
+            return;
+        }
+        mContentShown = shown;
+        if (shown) {
+            if (animate) {
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(
+                        getActivity(), android.R.anim.fade_out));
+                mContentContainer.startAnimation(AnimationUtils.loadAnimation(
+                        getActivity(), android.R.anim.fade_in));
+            } else {
+                mProgressContainer.clearAnimation();
+                mContentContainer.clearAnimation();
+            }
+            mProgressContainer.setVisibility(View.GONE);
+            mContentContainer.setVisibility(View.VISIBLE);
+        } else {
+            if (animate) {
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(
+                        getActivity(), android.R.anim.fade_in));
+                mContentContainer.startAnimation(AnimationUtils.loadAnimation(
+                        getActivity(), android.R.anim.fade_out));
+            } else {
+                mProgressContainer.clearAnimation();
+                mContentContainer.clearAnimation();
+            }
+            mProgressContainer.setVisibility(View.VISIBLE);
+            mContentContainer.setVisibility(View.GONE);
+        }
+    }
+
+
 
 }

@@ -24,6 +24,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.animation.AnimationUtils;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
@@ -69,6 +70,10 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
     protected Button mDateButton;
     protected Button mTimeButton;
     protected EditText mNoteText;
+    protected View mProgressContainer;
+    protected View mContentContainer;
+    protected boolean mContentShown = true;
+
 
     protected Calendar mCalendar;
 
@@ -87,7 +92,12 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View v = inflater.inflate(R.layout.bp_record_editor_fragment, container, false);
+
+        mProgressContainer = v.findViewById(R.id.progress_container);
+        mContentContainer = v.findViewById(R.id.content_container);
+
         mCalendar = new GregorianCalendar();
         mDateButton = (Button) v.findViewById(R.id.date_button);
         mDateButton.setOnClickListener(new OnClickListener() {
@@ -122,8 +132,6 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
         });
 
         mCancelButton = (Button) v.findViewById(R.id.revert_button);
-        if(mState == STATE_INSERT)
-            mCancelButton.setText(R.string.menu_discard);
         mCancelButton.setOnClickListener(new OnClickListener() {
             public void onClick(View arg0) {
                 cancelRecord();
@@ -173,8 +181,11 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
             this.getActivity().finish();
             return;
         }
+        if(mState == STATE_INSERT) {
+            mCancelButton.setText(R.string.menu_discard);
+        }
+        this.setShown(false, true);
         this.getActivity().getSupportLoaderManager().initLoader(EDITOR_LOADER_ID, null, this);
-
     }
 
     @Override
@@ -389,6 +400,11 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
             mCurrentValues.put(BPRecord.MODIFIED_DATE, cursor.getLong(BPTrackerFree.COLUMN_MODIFIED_AT_INDEX));
             mCurrentValues.put(BPRecord.NOTE, cursor.getString(BPTrackerFree.COLUMN_NOTE_INDEX));
             setUIState();
+            if (this.isResumed()) {
+                this.setShown(true, true);
+            } else {
+                this.setShown(true, false);
+            }
 
             // If we hadn't previously retrieved the original values, do so
             // now. This allows the user to revert their changes.
@@ -413,4 +429,50 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
         mOriginalValues.putLong(BPRecord.CREATED_DATE, mCurrentValues.getAsLong(BPRecord.CREATED_DATE));
         mOriginalValues.putLong(BPRecord.MODIFIED_DATE, mCurrentValues.getAsLong(BPRecord.MODIFIED_DATE));
     }
+
+    /**
+     * Control whether the content is being displayed.  You can make it not
+     * displayed if you are waiting for the initial data to show in it.  During
+     * this time an indeterminant progress indicator will be shown instead.
+     *
+     * @param shown If true, the list view is shown; if false, the progress
+     * indicator.  The initial value is true.
+     * @param animate If true, an animation will be used to transition to the
+     * new state.
+     */
+    private void setShown(boolean shown, boolean animate) {
+        if (mProgressContainer == null) {
+            throw new IllegalStateException("Can't be used with a custom content view");
+        }
+        if (mContentShown == shown) {
+            return;
+        }
+        mContentShown = shown;
+        if (shown) {
+            if (animate) {
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(
+                        getActivity(), android.R.anim.fade_out));
+                mContentContainer.startAnimation(AnimationUtils.loadAnimation(
+                        getActivity(), android.R.anim.fade_in));
+            } else {
+                mProgressContainer.clearAnimation();
+                mContentContainer.clearAnimation();
+            }
+            mProgressContainer.setVisibility(View.GONE);
+            mContentContainer.setVisibility(View.VISIBLE);
+        } else {
+            if (animate) {
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(
+                        getActivity(), android.R.anim.fade_in));
+                mContentContainer.startAnimation(AnimationUtils.loadAnimation(
+                        getActivity(), android.R.anim.fade_out));
+            } else {
+                mProgressContainer.clearAnimation();
+                mContentContainer.clearAnimation();
+            }
+            mProgressContainer.setVisibility(View.VISIBLE);
+            mContentContainer.setVisibility(View.GONE);
+        }
+    }
+
 }

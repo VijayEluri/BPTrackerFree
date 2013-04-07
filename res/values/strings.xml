@@ -99,9 +99,9 @@
     <string name="average_values">Average Readings</string>
     <string name="fixed_chosen">New records will use the fixed settings.</string>
     <string name="average_chosen">New records will use the average of previous readings, when possible.</string>
-    <string name="systolic_initial">Initial Systolic for new records</string>
-    <string name="diastolic_initial">Initial Diastolic for new records</string>
-    <string name="pulse_initial">Initial Pulse for new records</string>
+    <string name="systolic_initial_format">Initial Systolic: (%1$s)</string>
+    <string name="diastolic_initial_format">Initial Diastolic: (%1$s)</string>
+    <string name="pulse_initial_format">Initial Pulse: (%1$s)</string>
     <string name="icon_content_description">Icon</string>
     <string name="check_values">Please check your readings for accuracy.</string>
     <!-- New  VERSION_CODE (v1.3.5)-->

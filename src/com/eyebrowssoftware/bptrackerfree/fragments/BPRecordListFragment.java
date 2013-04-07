@@ -32,6 +32,7 @@ import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -137,7 +138,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
         // Inflate the layout for this fragment
         View layout = inflater.inflate(R.layout.bp_record_list_fragment, container, false);
         // The list group is visible by default
-        mProgressContainer = layout.findViewById(R.id.progressContainer);
+        mProgressContainer = layout.findViewById(R.id.progress_container);
         mListContainer = layout.findViewById(R.id.listContainer);
         mEmptyContent = layout.findViewById(R.id.empty_content);
         mEmptyContent.setOnClickListener(this);
@@ -300,6 +301,21 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
         ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(null);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.bp_list_fragment_options_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.menu_new) {
+            insertRecord();
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
