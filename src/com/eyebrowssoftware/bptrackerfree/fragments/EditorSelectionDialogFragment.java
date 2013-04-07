@@ -39,7 +39,7 @@ public class EditorSelectionDialogFragment extends DialogFragment {
         mIsText = prefs.getBoolean(BPTrackerFree.IS_TEXT_EDITOR_KEY, false);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.editor_selection);
+        builder.setTitle(R.string.editor_selection_title);
         builder.setSingleChoiceItems(R.array.editor_options, mIsText ? 1 : 0, new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
