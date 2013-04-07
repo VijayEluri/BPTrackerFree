@@ -22,7 +22,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.Log;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
@@ -100,16 +99,6 @@ public class BPTrackerFree extends Application {
 
     public void onCreate() {
         super.onCreate();
-    }
-
-    /**
-     * @param s
-     * @param value
-     */
-    public static void setSpinner(Spinner s, int value) {
-        RangeAdapter sa = (RangeAdapter) s.getAdapter();
-        s.setSelection(sa.getPosition(value));
-        sa.notifyDataSetChanged();
     }
 
     /**
