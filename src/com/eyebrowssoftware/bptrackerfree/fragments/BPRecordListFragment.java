@@ -61,7 +61,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
      * @author brionemde
      *
      */
-    public interface Listener {
+    public interface BPRecordListFragmentListener {
         /**
          * Insert a new item of the content uri
          * @param uri : Group content uri (BPRecords.CONTENT_URI for this app)
@@ -126,9 +126,9 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
     private View mEmptyContent;
     private Uri mStartUri;
     private boolean mListShown = true; // default state of list container is shown, progress hidden
-    private Listener mListener;
+    private BPRecordListFragmentListener mListener;
 
-    public Listener getListener() {
+    public BPRecordListFragmentListener getListener() {
         return mListener;
     }
 
@@ -169,8 +169,8 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
-        if (activity instanceof Listener) {
-            mListener = (Listener) activity;
+        if (activity instanceof BPRecordListFragmentListener) {
+            mListener = (BPRecordListFragmentListener) activity;
           } else {
             throw new ClassCastException(activity.toString()
                 + " must implemenet BPRecordListFragment.Listener");

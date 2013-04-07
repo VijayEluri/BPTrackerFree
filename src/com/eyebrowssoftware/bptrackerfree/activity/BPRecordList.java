@@ -32,7 +32,7 @@ import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordListFragment;
  * @author brionemde
  *
  */
-public class BPRecordList extends FragmentActivity implements BPRecordListFragment.Listener {
+public class BPRecordList extends FragmentActivity implements BPRecordListFragment.BPRecordListFragmentListener {
 
     @SuppressWarnings("unused")
     private static final String TAG = "BPRecordList";
