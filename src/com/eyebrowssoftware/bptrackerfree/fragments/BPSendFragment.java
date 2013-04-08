@@ -45,6 +45,7 @@ import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -58,8 +59,7 @@ import com.eyebrowssoftware.bptrackerfree.R;
  * @author brionemde
  *
  */
-public class BPSendFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
-    CompoundButton.OnCheckedChangeListener {
+public class BPSendFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private static final String TAG = "BPSend";
 
@@ -107,8 +107,24 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
         mMsgView = (TextView) v.findViewById(R.id.message);
 
         mSendText = (CheckBox) v.findViewById(R.id.text);
+        mSendText.setOnCheckedChangeListener(new OnCheckedChangeListener() {
 
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                mSendButton.setEnabled(isChecked || mSendFile.isChecked());
+            }
+
+        });
         mSendFile = (CheckBox) v.findViewById(R.id.attach);
+        mSendFile.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,
+                    boolean isChecked) {
+                mSendButton.setEnabled(isChecked || mSendText.isChecked());
+            }
+
+        });
 
         mSendButton = (Button) v.findViewById(R.id.send);
         mSendButton.setOnClickListener(new OnClickListener() {
@@ -163,16 +179,12 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onResume() {
         super.onResume();
-        mSendFile.setOnCheckedChangeListener(this);
-        mSendText.setOnCheckedChangeListener(this);
+        this.mSendButton.setEnabled(this.mSendFile.isChecked() || this.mSendText.isChecked());
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        mSendFile.setOnCheckedChangeListener(null);
-        mSendText.setOnCheckedChangeListener(null);
-
     }
 
 
@@ -186,7 +198,7 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        (new CreateMessageTask(this.getActivity())).execute(cursor);
+        (new CreateMessageTask(this)).execute(cursor);
     }
 
     @Override
@@ -195,51 +207,59 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
         mMsgView.setText("");
     }
 
-    private void sendData() {
-        Void[] params = new Void[0];
-        (new SendDataTask()).execute(params);
+    public void onCheckedChanged(CompoundButton check_box, boolean checked) {
+        Activity activity = this.getActivity();
+        if (check_box.equals(mSendText) && !checked && !mSendFile.isChecked()) {
+            Toast.makeText(activity, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
+        } else if (check_box.equals(mSendFile) && !checked && !mSendText.isChecked()) {
+            Toast.makeText(activity, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
+        }
     }
 
-    private class SendDataTask extends AsyncTask<Void, Void, Boolean> {
+    private void sendData() {
+        Void[] params = new Void[0];
+        (new SendDataTask(this, mMsgView.getText().toString(), mSendText.isChecked(), mSendFile.isChecked())).execute(params);
+    }
+
+    static class SendDataTask extends AsyncTask<Void, Void, Intent> {
 
         String mMsg;
         int mToastMessageResource = -1;
-        Activity mActivity;
+        BPSendFragment mFragment;
+        boolean mAsText;
+        boolean mAsAttachment;
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mMsg = mMsgView.getText().toString();
-            // We're going to send the data as message text and/or as an attachment
-            if (mMsg == null || !(mSendText.isChecked() || mSendFile.isChecked())) {
-                Toast.makeText(BPSendFragment.this.getActivity(), R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
-                this.cancel(true);
-            }
-            mActivity = BPSendFragment.this.getActivity();
+        public SendDataTask(BPSendFragment fragment, String msg, boolean asText, boolean asAttachment) {
+            super();
+            mFragment = fragment;
+            mMsg = msg;
+            mAsText = asText;
+            mAsAttachment = asAttachment;
         }
 
         @Override
-        protected Boolean doInBackground(Void... params) {
+        protected Intent doInBackground(Void... params) {
             if (this.isCancelled()) {
-                return false;
+                return null;
             }
             try {
                 Intent sendIntent = new Intent(Intent.ACTION_SEND);
                 sendIntent.setType("text/plain");
                 sendIntent.putExtra(Intent.EXTRA_TITLE, MSGNAME);
                 sendIntent.putExtra(Intent.EXTRA_SUBJECT, MSGNAME);
-                if (mSendText.isChecked())
+                if (mAsText)
                     sendIntent.putExtra(Intent.EXTRA_TEXT, mMsg);
-                if (mSendFile.isChecked()) {
-                    File fileDir = mActivity.getFilesDir();
+                if (mAsAttachment) {
+                    File fileDir = mFragment.getActivity().getFilesDir();
                     if(fileDir.exists()) {
-                        FileOutputStream fos = mActivity.openFileOutput(FILENAME, Context.MODE_PRIVATE);
+                        FileOutputStream fos = mFragment.getActivity().openFileOutput(FILENAME, Context.MODE_PRIVATE);
                         fos.write(mMsg.getBytes());
                         fos.close();
-                        File streamPath = mActivity.getFileStreamPath(FILENAME);
+                        File streamPath = mFragment.getActivity().getFileStreamPath(FILENAME);
                         if(streamPath != null && streamPath.exists() && streamPath.length() > 0) {
                             sendIntent.setType("text/csv");
                             sendIntent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(streamPath));
+                            return sendIntent;
                         } else if (streamPath == null) {
                             mToastMessageResource = R.string.msg_null_file_error;
                         } else if (!streamPath.exists()) {
@@ -254,8 +274,7 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
                         mToastMessageResource = R.string.msg_directory_error;
                     }
                 }
-                startActivity(Intent.createChooser(sendIntent, getString(R.string.msg_choose_send_method)));
-                return true;
+                return null;
             } catch (FileNotFoundException e) {
                 mToastMessageResource = R.string.msg_file_not_found_error;
                 e.printStackTrace();
@@ -263,36 +282,31 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
                 mToastMessageResource = R.string.msg_io_exception_error;
                 e.printStackTrace();
             }
-            return false;
+            return null;
         }
 
         @Override
-        protected void onPostExecute(Boolean result) {
-            super.onPostExecute(result);
-            if (!result && this.mToastMessageResource > 0) {
-                BPTrackerFree.logErrorAndToast(BPSendFragment.this.getActivity(), TAG, R.string.msg_null_file_error);
+        protected void onPostExecute(Intent sendIntent) {
+            super.onPostExecute(sendIntent);
+            if (sendIntent != null) {
+                mFragment.startActivity(Intent.createChooser(sendIntent, mFragment.getString(R.string.msg_choose_send_method)));
+            } else if (this.mToastMessageResource > 0) {
+                BPTrackerFree.logErrorAndToast(mFragment.getActivity(), TAG, R.string.msg_null_file_error);
             }
         }
 
     }
 
 
-    public void onCheckedChanged(CompoundButton check_box, boolean checked) {
-        Activity activity = this.getActivity();
-        if (check_box.equals(mSendText) && !checked && !mSendFile.isChecked()) {
-            Toast.makeText(activity, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
-        } else if (check_box.equals(mSendFile) && !checked && !mSendText.isChecked()) {
-            Toast.makeText(activity, R.string.msg_nothing_to_send, Toast.LENGTH_SHORT).show();
-        }
-    }
+    private static class CreateMessageTask extends AsyncTask<Cursor, Void, String > {
 
-    private class CreateMessageTask extends AsyncTask<Cursor, Void, String > {
-
+        BPSendFragment mFragment;
         Context mContext;
 
-        public CreateMessageTask(Context context) {
+        public CreateMessageTask(BPSendFragment fragment) {
             super();
-            mContext = context;
+            mFragment = fragment;
+            mContext = fragment.getActivity();
         }
 
         @Override
@@ -374,13 +388,17 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
 
         @Override
         protected void onPostExecute(String msg) {
-            mMsgLabelView.setText(String.format(mMsgLabelString, msg.length()));
-            mMsgView.setText(msg);
-            if (BPSendFragment.this.isResumed()) {
-                BPSendFragment.this.setShown(true,  true);
-            } else {
-                BPSendFragment.this.setShown(true, false);
-            }
+            mFragment.updateUI(msg);
+        }
+    }
+
+    private void updateUI(String msg) {
+        mMsgLabelView.setText(String.format(mMsgLabelString, msg.length()));
+        mMsgView.setText(msg);
+        if (BPSendFragment.this.isResumed()) {
+            BPSendFragment.this.setShown(true,  true);
+        } else {
+            BPSendFragment.this.setShown(true, false);
         }
     }
 
