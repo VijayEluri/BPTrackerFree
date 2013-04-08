@@ -335,10 +335,9 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
                     int columns = cnames.length;
 
                     for (int j = 0; j < columns; ++j) {
-                        if (j == BPTrackerFree.COLUMN_ID_INDEX) {
+                        if (j == BPTrackerFree.COLUMN_ID_INDEX
+                                || j == BPTrackerFree.COLUMN_MODIFIED_AT_INDEX) {
                             // put out nothing for certain columns
-                            continue;
-                        } else if (j == BPTrackerFree.COLUMN_MODIFIED_AT_INDEX) {
                             continue;
                         } else if (j == BPTrackerFree.COLUMN_SYSTOLIC_INDEX) {
                             csvw.write(sys_localized);
@@ -359,9 +358,8 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
                     do {
                         // the final separator of each field is put on at the end.
                         for (int j = 0; j < columns; ++j) {
-                            if (j == BPTrackerFree.COLUMN_ID_INDEX) {
-                                continue;
-                            } else if (j == BPTrackerFree.COLUMN_MODIFIED_AT_INDEX) {
+                            if (j == BPTrackerFree.COLUMN_ID_INDEX
+                                    || j == BPTrackerFree.COLUMN_MODIFIED_AT_INDEX) {
                                 continue;
                             } else if (j == BPTrackerFree.COLUMN_CREATED_AT_INDEX) {
                                 String date = BPTrackerFree
