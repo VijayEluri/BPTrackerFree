@@ -1,4 +1,4 @@
-package com.eyebrowssoftware.bptrackerfree.activity;
+package com.eyebrowssoftware.bptrackerfree.fragments;
 
 import java.text.DateFormat;
 import java.util.Calendar;
@@ -12,16 +12,20 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -30,28 +34,21 @@ import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
-import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment;
-import com.eyebrowssoftware.bptrackerfree.fragments.BPDialogFragment;
-import com.eyebrowssoftware.bptrackerfree.fragments.DatePickerFragment;
-import com.eyebrowssoftware.bptrackerfree.fragments.TimePickerFragment;
+import com.eyebrowssoftware.bptrackerfree.activity.BPPreferenceActivity;
 
 /**
  * @author brionemde
- *
+ * 
  */
-public abstract class BPRecordEditorBase extends FragmentActivity
-    implements LoaderManager.LoaderCallbacks<Cursor>, BPDialogFragment.Callback,
-        TimePickerFragment.Callbacks, DatePickerFragment.Callbacks {
+public abstract class BPRecordEditorBaseFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+    AlertDialogFragment.AlertDialogListener, TimePickerFragment.Callbacks, DatePickerFragment.Callbacks {
 
     // Static constants
 
     protected static final String TAG = "BPRecordEditorBase";
 
-    private static final String[] AVERAGE_PROJECTION = {
-        BPRecord.AVERAGE_SYSTOLIC,
-        BPRecord.AVERAGE_DIASTOLIC,
-        BPRecord.AVERAGE_PULSE
-    };
+    private static final String[] AVERAGE_PROJECTION = { BPRecord.AVERAGE_SYSTOLIC, BPRecord.AVERAGE_DIASTOLIC,
+        BPRecord.AVERAGE_PULSE };
 
     // The different distinct states the activity can be run in.
     protected static final int STATE_EDIT = 0;
@@ -61,14 +58,6 @@ public abstract class BPRecordEditorBase extends FragmentActivity
     protected static final int TIME_DIALOG_ID = 1;
     protected static final int DELETE_DIALOG_ID = 2;
 
-    protected static final int SYS_IDX = 0;
-    protected static final int DIA_IDX = 1;
-    protected static final int PLS_IDX = 2;
-    protected static final int SPINNER_ARRAY_SIZE  = PLS_IDX + 1;
-
-    protected static final int SPINNER_ITEM_RESOURCE_ID = R.layout.bp_spinner_item;
-    protected static final int SPINNER_ITEM_TEXT_VIEW_ID = android.R.id.text1;
-
     // Member Variables
     protected int mState;
 
@@ -77,6 +66,9 @@ public abstract class BPRecordEditorBase extends FragmentActivity
     protected Button mDateButton;
     protected Button mTimeButton;
     protected EditText mNoteText;
+    protected View mProgressContainer;
+    protected View mContentContainer;
+    protected boolean mContentShown = true;
 
     protected Calendar mCalendar;
 
@@ -94,46 +86,17 @@ public abstract class BPRecordEditorBase extends FragmentActivity
     private static final int EDITOR_LOADER_ID = 1;
 
     @Override
-    protected void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        setContentView(R.layout.bp_record_editor);
+        View v = inflater.inflate(R.layout.bp_record_editor_fragment, container, false);
 
-        final Intent intent = getIntent();
-        final String action = intent.getAction();
-
-        if (icicle != null) {
-            mOriginalValues = new Bundle(icicle);
-        }
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
-
-        if (Intent.ACTION_EDIT.equals(action)) {
-            mState = STATE_EDIT;
-            mUri = intent.getData();
-        } else if (Intent.ACTION_INSERT.equals(action)) {
-            mState = STATE_INSERT;
-            if (icicle != null)
-                mUri = Uri.parse(icicle.getString(BPTrackerFree.MURI));
-            else {
-                ContentValues cv = null;
-                if (mSharedPreferences.getBoolean(BPTrackerFree.AVERAGE_VALUES_KEY, false)) {
-                    cv = setAverageValues(mSharedPreferences);
-                } else {
-                    cv = setDefaultValues(mSharedPreferences);
-                }
-                cv.put(BPRecord.CREATED_DATE, GregorianCalendar.getInstance().getTimeInMillis());
-                mUri = this.getContentResolver().insert(intent.getData(), cv);
-            }
-        } else {
-            Log.e(TAG, "Unknown action, exiting");
-            finish();
-            return;
-        }
-        this.getSupportLoaderManager().initLoader(EDITOR_LOADER_ID, null, this);
+        mProgressContainer = v.findViewById(R.id.progress_container);
+        mContentContainer = v.findViewById(R.id.content_container);
 
         mCalendar = new GregorianCalendar();
-        mDateButton = (Button) findViewById(R.id.date_button);
+        mDateButton = (Button) v.findViewById(R.id.date_button);
         mDateButton.setOnClickListener(new OnClickListener() {
+            @Override
             public void onClick(View arg0) {
                 DatePickerFragment dateFrag = new DatePickerFragment();
                 Bundle b = new Bundle();
@@ -141,69 +104,121 @@ public abstract class BPRecordEditorBase extends FragmentActivity
                 b.putInt(DatePickerFragment.MONTH_KEY, mCalendar.get(Calendar.MONTH));
                 b.putInt(DatePickerFragment.DAY_KEY, mCalendar.get(Calendar.DAY_OF_MONTH));
                 dateFrag.setArguments(b);
-                dateFrag.show(BPRecordEditorBase.this.getSupportFragmentManager(), "date");
+                dateFrag.show(BPRecordEditorBaseFragment.this.getActivity().getSupportFragmentManager(), "date");
             }
         });
 
-        mTimeButton = (Button) findViewById(R.id.time_button);
+        mTimeButton = (Button) v.findViewById(R.id.time_button);
         mTimeButton.setOnClickListener(new OnClickListener() {
+            @Override
             public void onClick(View arg0) {
                 TimePickerFragment timeFrag = new TimePickerFragment();
                 Bundle b = new Bundle();
                 b.putInt(TimePickerFragment.HOUR_KEY, mCalendar.get(Calendar.HOUR));
                 b.putInt(TimePickerFragment.MINUTE_KEY, mCalendar.get(Calendar.MINUTE));
                 timeFrag.setArguments(b);
-                timeFrag.show(BPRecordEditorBase.this.getSupportFragmentManager(), "time");
+                timeFrag.show(BPRecordEditorBaseFragment.this.getActivity().getSupportFragmentManager(), "time");
             }
         });
 
-        mDoneButton = (Button) findViewById(R.id.done_button);
+        mDoneButton = (Button) v.findViewById(R.id.done_button);
         mDoneButton.setOnClickListener(new OnClickListener() {
+            @Override
             public void onClick(View arg0) {
-                finish();
+                BPRecordEditorBaseFragment.this.getActivity().finish();
             }
         });
 
-        mCancelButton = (Button) findViewById(R.id.revert_button);
-        if(mState == STATE_INSERT)
-            mCancelButton.setText(R.string.menu_discard);
+        mCancelButton = (Button) v.findViewById(R.id.revert_button);
         mCancelButton.setOnClickListener(new OnClickListener() {
+            @Override
             public void onClick(View arg0) {
                 cancelRecord();
             }
         });
 
-        mNoteText = (EditText) findViewById(R.id.note);
+        mNoteText = (EditText) v.findViewById(R.id.note);
+        return v;
     }
 
     @Override
-    protected void onResume() {
+    public void onCreate(Bundle icicle) {
+        super.onCreate(icicle);
+        this.setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle icicle) {
+        super.onActivityCreated(icicle);
+        final Intent intent = this.getActivity().getIntent();
+        final String action = intent.getAction();
+
+        if (icicle != null) {
+            mOriginalValues = new Bundle(icicle);
+        }
+        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
+
+        if (Intent.ACTION_EDIT.equals(action)) {
+            mState = STATE_EDIT;
+            mUri = intent.getData();
+        }
+        else if (Intent.ACTION_INSERT.equals(action)) {
+            mState = STATE_INSERT;
+            if (icicle != null)
+                mUri = Uri.parse(icicle.getString(BPTrackerFree.MURI));
+            else {
+                ContentValues cv = null;
+                if (mSharedPreferences.getBoolean(BPTrackerFree.AVERAGE_VALUES_KEY, false)) {
+                    cv = setAverageValues(mSharedPreferences);
+                }
+                else {
+                    cv = setDefaultValues(mSharedPreferences);
+                }
+                cv.put(BPRecord.CREATED_DATE, GregorianCalendar.getInstance().getTimeInMillis());
+                mUri = this.getActivity().getContentResolver().insert(intent.getData(), cv);
+            }
+        }
+        else {
+            Log.e(TAG, "Unknown action, exiting");
+            this.getActivity().finish();
+            return;
+        }
+        if (mState == STATE_INSERT) {
+            mCancelButton.setText(R.string.menu_discard);
+        }
+        this.setShown(false, true);
+        this.getActivity().getSupportLoaderManager().initLoader(EDITOR_LOADER_ID, null, this);
+    }
+
+    @Override
+    public void onResume() {
         super.onResume();
         // Modify our overall title depending on the mode we are running in.
         if (mState == STATE_EDIT) {
-            setTitle(getText(R.string.title_edit));
-        } else if (mState == STATE_INSERT) {
-            setTitle(getText(R.string.title_create));
+            this.getActivity().setTitle(getText(R.string.title_edit));
+        }
+        else if (mState == STATE_INSERT) {
+            this.getActivity().setTitle(getText(R.string.title_create));
         }
         setUIState();
     }
 
     @Override
-    protected void onSaveInstanceState(Bundle outState) {
+    public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putAll(mOriginalValues);
         outState.putString(BPTrackerFree.MURI, mUri.toString());
     }
 
     @Override
-    protected void onPause() {
+    public void onPause() {
         super.onPause();
 
         // The user is going somewhere else, so make sure their current
         // changes are safely saved away in the provider.
         //
         // The leaf subclass is responsible for persisting the current values
-        if(mCurrentValues != null) {
+        if (mCurrentValues != null) {
             mCurrentValues.put(BPRecord.CREATED_DATE, mCalendar.getTimeInMillis());
             mCurrentValues.put(BPRecord.MODIFIED_DATE, System.currentTimeMillis());
             mCurrentValues.put(BPRecord.NOTE, mNoteText.getText().toString());
@@ -211,15 +226,17 @@ public abstract class BPRecordEditorBase extends FragmentActivity
     }
 
     protected void updateFromCurrentValues() {
-        getContentResolver().update(mUri, mCurrentValues, null, null);
+        this.getActivity().getContentResolver().update(mUri, mCurrentValues, null, null);
     }
 
     private ContentValues setAverageValues(SharedPreferences prefs) {
-        Cursor c = this.getContentResolver().query(BPRecords.CONTENT_URI, AVERAGE_PROJECTION, null, null, null);
+        Cursor c = this.getActivity().getContentResolver()
+            .query(BPRecords.CONTENT_URI, AVERAGE_PROJECTION, null, null, null);
         ContentValues cv = new ContentValues();
         if (c != null && c.moveToFirst() && !c.isNull(0) && !c.isNull(1) && !c.isNull(2)) {
             cv = setContentValues((int) c.getFloat(0), (int) c.getFloat(1), (int) c.getFloat(2));
-        } else {
+        }
+        else {
             cv = setDefaultValues(mSharedPreferences);
         }
         c.close();
@@ -227,10 +244,13 @@ public abstract class BPRecordEditorBase extends FragmentActivity
     }
 
     private ContentValues setDefaultValues(SharedPreferences prefs) {
-        return setContentValues(
-            Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_SYSTOLIC_KEY, BPTrackerFree.SYSTOLIC_DEFAULT_STRING)),
-            Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_DIASTOLIC_KEY, BPTrackerFree.DIASTOLIC_DEFAULT_STRING)),
-            Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_PULSE_KEY, BPTrackerFree.PULSE_DEFAULT_STRING)));
+        return setContentValues(Integer.valueOf(prefs.getString(
+            BPTrackerFree.DEFAULT_SYSTOLIC_KEY,
+            BPTrackerFree.SYSTOLIC_DEFAULT_STRING)), Integer.valueOf(prefs.getString(
+            BPTrackerFree.DEFAULT_DIASTOLIC_KEY,
+            BPTrackerFree.DIASTOLIC_DEFAULT_STRING)), Integer.valueOf(prefs.getString(
+            BPTrackerFree.DEFAULT_PULSE_KEY,
+            BPTrackerFree.PULSE_DEFAULT_STRING)));
     }
 
     private ContentValues setContentValues(int systolic, int diastolic, int pulse) {
@@ -242,8 +262,8 @@ public abstract class BPRecordEditorBase extends FragmentActivity
     }
 
     /**
-    * Update the date and time
-    */
+     * Update the date and time
+     */
     private void updateDateTimeDisplay() {
         Date date = mCalendar.getTime();
         mDateButton.setText(BPTrackerFree.getDateString(date, DateFormat.MEDIUM));
@@ -251,74 +271,74 @@ public abstract class BPRecordEditorBase extends FragmentActivity
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        MenuInflater inflater = this.getMenuInflater();
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.bp_record_editor_options_menu, menu);
-        return true;
     }
 
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
+    public void onPrepareOptionsMenu(Menu menu) {
         // Build the menus that are shown when editing.
         if (mState == STATE_EDIT) {
             menu.setGroupVisible(R.id.edit_menu_group, true);
             menu.setGroupVisible(R.id.create_menu_group, false);
-            return true;
-        } else if (mState == STATE_INSERT){
+        }
+        else if (mState == STATE_INSERT) {
             menu.setGroupVisible(R.id.edit_menu_group, false);
             menu.setGroupVisible(R.id.create_menu_group, true);
-            return true;
         }
-        return false;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle all of the possible menu actions.
         switch (item.getItemId()) {
-        case R.id.menu_delete:
-            showDeleteConfirmationDialog();
-            return true;
-        case R.id.menu_discard:
-            cancelRecord();
-            return true;
-        case R.id.menu_revert:
-            cancelRecord();
-            return true;
-        case R.id.menu_done:
-            finish();
-            return true;
-        case R.id.menu_settings:
-            startActivity(new Intent(this, BPPreferenceActivity.class));
-            return true;
+            case R.id.menu_delete:
+                showDeleteConfirmationDialog();
+                return true;
+            case R.id.menu_discard:
+                cancelRecord();
+                return true;
+            case R.id.menu_revert:
+                cancelRecord();
+                return true;
+            case R.id.menu_done:
+                this.getActivity().finish();
+                return true;
+            case R.id.menu_settings:
+                this.startActivity(new Intent(this.getActivity(), BPPreferenceActivity.class));
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void showDeleteConfirmationDialog() {
-        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
-        diagFrag.show(this.getSupportFragmentManager(), "delete");
+        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(
+            R.string.msg_delete,
+            R.string.label_yes,
+            R.string.label_no,
+            this);
+        diagFrag.show(this.getActivity().getSupportFragmentManager(), "delete");
     }
 
     @Override
-    public void onNegativeButtonClicked() {
+    public void onNegativeButtonClicked(AlertDialogFragment dialog) {
         // nothing to do, dialog is cancelled already
     }
 
     @Override
-    public void onPositiveButtonClicked() {
-        getContentResolver().delete(mUri, null, null);
-        setResult(RESULT_OK);
-        finish();
+    public void onPositiveButtonClicked(AlertDialogFragment dialog) {
+        this.getActivity().getContentResolver().delete(mUri, null, null);
+        this.getActivity().setResult(FragmentActivity.RESULT_OK);
+        this.getActivity().finish();
     }
 
-
     /**
-    * Take care of canceling work on a BPRecord. Deletes the record if we had created
-    * it, otherwise reverts to the original record data.
-    */
+     * Take care of canceling work on a BPRecord. Deletes the record if we had created it, otherwise reverts to the
+     * original record data.
+     */
     protected final void cancelRecord() {
+        FragmentActivity activity = this.getActivity();
         if (mState == STATE_EDIT) {
             // Restore the original information we loaded at first.
             ContentValues cv = new ContentValues();
@@ -328,13 +348,14 @@ public abstract class BPRecordEditorBase extends FragmentActivity
             cv.put(BPRecord.NOTE, mOriginalValues.getString(BPRecord.NOTE));
             cv.put(BPRecord.CREATED_DATE, mOriginalValues.getLong(BPRecord.CREATED_DATE));
             cv.put(BPRecord.MODIFIED_DATE, mOriginalValues.getLong(BPRecord.MODIFIED_DATE));
-            getContentResolver().update(mUri, cv, null, null);
-        } else if (mState == STATE_INSERT) {
-            // We inserted an empty record, make sure to delete it
-            getContentResolver().delete(mUri, null, null);
+            activity.getContentResolver().update(mUri, cv, null, null);
         }
-        setResult(RESULT_CANCELED);
-        finish();
+        else if (mState == STATE_INSERT) {
+            // We inserted an empty record, make sure to delete it
+            activity.getContentResolver().delete(mUri, null, null);
+        }
+        activity.setResult(FragmentActivity.RESULT_CANCELED);
+        activity.finish();
     }
 
     @Override
@@ -342,7 +363,10 @@ public abstract class BPRecordEditorBase extends FragmentActivity
         mCalendar.set(year, month, day);
         long now = new GregorianCalendar().getTimeInMillis();
         if (mCalendar.getTimeInMillis() > now) {
-            Toast.makeText(BPRecordEditorBase.this, getString(R.string.msg_future_date), Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                BPRecordEditorBaseFragment.this.getActivity(),
+                getString(R.string.msg_future_date),
+                Toast.LENGTH_LONG).show();
             mCalendar.setTimeInMillis(now);
         }
         updateDateTimeDisplay();
@@ -354,7 +378,10 @@ public abstract class BPRecordEditorBase extends FragmentActivity
         mCalendar.set(Calendar.MINUTE, minute);
         long now = new GregorianCalendar().getTimeInMillis();
         if (mCalendar.getTimeInMillis() > now) {
-            Toast.makeText(BPRecordEditorBase.this, getString(R.string.msg_future_date), Toast.LENGTH_LONG).show();
+            Toast.makeText(
+                BPRecordEditorBaseFragment.this.getActivity(),
+                getString(R.string.msg_future_date),
+                Toast.LENGTH_LONG).show();
             mCalendar.setTimeInMillis(now);
         }
         updateDateTimeDisplay();
@@ -376,10 +403,12 @@ public abstract class BPRecordEditorBase extends FragmentActivity
         }
     }
 
+    @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
-        return new CursorLoader(this, mUri, BPTrackerFree.PROJECTION, null, null, null);
+        return new CursorLoader(this.getActivity(), mUri, BPTrackerFree.PROJECTION, null, null, null);
     }
 
+    @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (cursor != null && cursor.moveToFirst()) {
             if (mCurrentValues == null) {
@@ -392,10 +421,16 @@ public abstract class BPRecordEditorBase extends FragmentActivity
             mCurrentValues.put(BPRecord.MODIFIED_DATE, cursor.getLong(BPTrackerFree.COLUMN_MODIFIED_AT_INDEX));
             mCurrentValues.put(BPRecord.NOTE, cursor.getString(BPTrackerFree.COLUMN_NOTE_INDEX));
             setUIState();
+            if (this.isResumed()) {
+                this.setShown(true, true);
+            }
+            else {
+                this.setShown(true, false);
+            }
 
             // If we hadn't previously retrieved the original values, do so
             // now. This allows the user to revert their changes.
-            if(mOriginalValues == null) {
+            if (mOriginalValues == null) {
                 setOriginalValuesBundle();
             }
         }
@@ -416,4 +451,48 @@ public abstract class BPRecordEditorBase extends FragmentActivity
         mOriginalValues.putLong(BPRecord.CREATED_DATE, mCurrentValues.getAsLong(BPRecord.CREATED_DATE));
         mOriginalValues.putLong(BPRecord.MODIFIED_DATE, mCurrentValues.getAsLong(BPRecord.MODIFIED_DATE));
     }
+
+    /**
+     * Control whether the content is being displayed. You can make it not displayed if you are waiting for the initial
+     * data to show in it. During this time an indeterminant progress indicator will be shown instead.
+     * 
+     * @param shown
+     *            If true, the list view is shown; if false, the progress indicator. The initial value is true.
+     * @param animate
+     *            If true, an animation will be used to transition to the new state.
+     */
+    private void setShown(boolean shown, boolean animate) {
+        if (mProgressContainer == null) {
+            throw new IllegalStateException("Can't be used with a custom content view");
+        }
+        if (mContentShown == shown) {
+            return;
+        }
+        mContentShown = shown;
+        if (shown) {
+            if (animate) {
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out));
+                mContentContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in));
+            }
+            else {
+                mProgressContainer.clearAnimation();
+                mContentContainer.clearAnimation();
+            }
+            mProgressContainer.setVisibility(View.GONE);
+            mContentContainer.setVisibility(View.VISIBLE);
+        }
+        else {
+            if (animate) {
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in));
+                mContentContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out));
+            }
+            else {
+                mProgressContainer.clearAnimation();
+                mContentContainer.clearAnimation();
+            }
+            mProgressContainer.setVisibility(View.VISIBLE);
+            mContentContainer.setVisibility(View.GONE);
+        }
+    }
+
 }

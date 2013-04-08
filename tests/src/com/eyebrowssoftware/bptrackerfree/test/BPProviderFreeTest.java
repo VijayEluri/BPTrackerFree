@@ -19,8 +19,7 @@ import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
  *
  */
 public class BPProviderFreeTest extends ProviderTestCase2<BPProviderFree> {
-    @SuppressWarnings("javadoc")
-    public static final String TAG = "BPProviderTest";
+    static final String TAG = "BPProviderTest";
 
     private static final String[] PROJECTION = {
             BPRecord._ID,

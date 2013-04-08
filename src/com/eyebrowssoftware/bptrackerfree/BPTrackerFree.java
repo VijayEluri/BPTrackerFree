@@ -22,7 +22,6 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.util.Log;
-import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
@@ -36,80 +35,34 @@ public class BPTrackerFree extends Application {
     @SuppressWarnings("unused")
     private static final String TAG = "BPTrackerFree";
 
-    /**
-     *
-     */
     public static final boolean FREE_VERSION = true;
 
-    /**
-     *
-     */
     public static final String MURI = "sUri";
 
-    /**
-     *
-     */
     public static final int SYSTOLIC_MAX_DEFAULT = 280;
-    /**
-     *
-     */
     public static final int SYSTOLIC_DEFAULT = 120;
-    /**
-     *
-     */
     public static final int SYSTOLIC_MIN_DEFAULT = 20;
-    /**
-     *
-     */
+
     public static final int DIASTOLIC_MAX_DEFAULT = 280;
-    /**
-     *
-     */
     public static final int DIASTOLIC_DEFAULT = 70;
-    /**
-     *
-     */
     public static final int DIASTOLIC_MIN_DEFAULT = 20;
-    /**
-     *
-     */
+
     public static final int PULSE_MAX_DEFAULT = 200;
-    /**
-     *
-     */
     public static final int PULSE_DEFAULT = 75;
-    /**
-     *
-     */
     public static final int PULSE_MIN_DEFAULT = 40;
 
-    /**
-     *
-     */
     public static final String SYSTOLIC_DEFAULT_STRING = Integer.valueOf(SYSTOLIC_DEFAULT).toString();
-    /**
-     *
-     */
+
     public static final String DIASTOLIC_DEFAULT_STRING = Integer.valueOf(DIASTOLIC_DEFAULT).toString();
-    /**
-     *
-     */
+
     public static final String PULSE_DEFAULT_STRING = Integer.valueOf(PULSE_DEFAULT).toString();
 
-    /**
-     * Min difference between Systolic and Diastolic or between Max and Min
-     * values of anything
-     */
-    public static final int MIN_RANGE = 5;
-
-    private static DateFormat mShortDateFormat = DateFormat
-            .getDateInstance(DateFormat.SHORT);
-    private static DateFormat mMediumDateFormat = DateFormat
-            .getDateInstance(DateFormat.MEDIUM);
-    private static DateFormat mShortTimeFormat = DateFormat
-            .getTimeInstance(DateFormat.SHORT);
-    private static DateFormat mMediumTimeFormat = DateFormat
-            .getTimeInstance(DateFormat.MEDIUM);
+    public static final String DEFAULT_SYSTOLIC_KEY = "systolic_default";
+    public static final String DEFAULT_DIASTOLIC_KEY = "diastolic_default";
+    public static final String DEFAULT_PULSE_KEY = "pulse_default";
+    public static final String AVERAGE_VALUES_KEY = "average_values_checkbox";
+    public static final String IS_TEXT_EDITOR_KEY = "is_text_editor";
+    public static final String USER_SELECTED_EDITOR_KEY = "user_selected_editor";
 
     /**
      * Standard query projection for most activities
@@ -124,48 +77,28 @@ public class BPTrackerFree extends Application {
         BPRecord.NOTE
     };
 
-    // BP Record Indices
-    /**
-     * _ID column index in the projection
-     */
+    // Indices into the projectionn array
     public static final int COLUMN_ID_INDEX = 0;
-    /**
-     * Systolic column index in the projection
-     */
     public static final int COLUMN_SYSTOLIC_INDEX = 1;
-        /**
-         * Diastolic column index in the projection
-         */
     public static final int COLUMN_DIASTOLIC_INDEX = 2;
-        /**
-         * Pulse column index in the projection
-         */
     public static final int COLUMN_PULSE_INDEX = 3;
-        /**
-         * Created At column index in the projection
-         */
     public static final int COLUMN_CREATED_AT_INDEX = 4;
-        /**
-         * Modified At column index in the projection
-         */
     public static final int COLUMN_MODIFIED_AT_INDEX = 5;
-        /**
-         * Note column index in the projection
-         */
     public static final int COLUMN_NOTE_INDEX = 6;
+
+    private static DateFormat mShortDateFormat = DateFormat
+            .getDateInstance(DateFormat.SHORT);
+    private static DateFormat mMediumDateFormat = DateFormat
+            .getDateInstance(DateFormat.MEDIUM);
+    private static DateFormat mShortTimeFormat = DateFormat
+            .getTimeInstance(DateFormat.SHORT);
+    private static DateFormat mMediumTimeFormat = DateFormat
+            .getTimeInstance(DateFormat.MEDIUM);
+
+
 
     public void onCreate() {
         super.onCreate();
-    }
-
-    /**
-     * @param s
-     * @param value
-     */
-    public static void setSpinner(Spinner s, int value) {
-        RangeAdapter sa = (RangeAdapter) s.getAdapter();
-        s.setSelection(sa.getPosition(value));
-        sa.notifyDataSetChanged();
     }
 
     /**
@@ -269,20 +202,4 @@ public class BPTrackerFree extends Application {
         Log.e(tag, msg);
     }
 
-    /**
-     * Shared Preferences Key
-     */
-    public static final String DEFAULT_SYSTOLIC_KEY = "systolic_default";
-    /**
-     * Shared Preferences Key
-     */
-    public static final String DEFAULT_DIASTOLIC_KEY = "diastolic_default";
-    /**
-     * Shared Preferences Key
-     */
-    public static final String DEFAULT_PULSE_KEY = "pulse_default";
-    /**
-     * Shared Preferences Key
-     */
-    public static final String AVERAGE_VALUES_KEY = "average_values_checkbox";
 }

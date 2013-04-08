@@ -18,7 +18,6 @@
         android:key="systolic_default"
         android:title="@string/label_systolic"
         android:defaultValue="@integer/systolic_default"
-        android:summary="@string/systolic_initial"
         android:inputType="number"
         android:persistent="true"
     />
@@ -26,7 +25,6 @@
         android:key="diastolic_default"
         android:title="@string/label_diastolic"
         android:defaultValue="@integer/diastolic_default"
-        android:summary="@string/diastolic_initial"
         android:inputType="number"
         android:persistent="true"
     />
@@ -34,7 +32,6 @@
         android:key="pulse_default"
         android:title="@string/label_pulse"
         android:defaultValue="@integer/pulse_default"
-        android:summary="@string/pulse_initial"
         android:inputType="number"
         android:persistent="true"
     />
@@ -45,5 +42,23 @@
         android:summaryOn="@string/average_chosen"
         android:summaryOff="@string/fixed_chosen"
         android:persistent="true"
+    />
+    <SwitchPreference
+        android:key="is_text_editor"
+        android:title="@string/editor_selection_title"
+        android:summaryOff="@string/spinner_based_editor"
+        android:summaryOn="@string/text_based_editor"
+        android:switchTextOff="@string/editor_switch_off"
+        android:switchTextOn="@string/editor_switch_on"
+        android:defaultValue="false"
+    />
+    <SwitchPreference
+        android:key="user_selected_editor"
+        android:title="@string/editor_lock_title"
+        android:summaryOff="@string/editor_unlocked_summary"
+        android:summaryOn="@string/editor_locked_summary"
+        android:switchTextOff="@string/editor_lock_off"
+        android:switchTextOn="@string/editor_lock_on"
+        android:defaultValue="false"
     />
 </PreferenceScreen>

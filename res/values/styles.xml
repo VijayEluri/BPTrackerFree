@@ -14,7 +14,8 @@
      limitations under the License.
 -->
 <resources xmlns:android="http://schemas.android.com/apk/res/android">
-    <style name="bp_default_theme" parent="android:Theme.Light">
+    <style name="AppBaseTheme" parent="android:Theme.Light">
+        <!-- Customizations to pre V11 go here -->
     </style>
 
     <!-- Used for list text and editor text -->

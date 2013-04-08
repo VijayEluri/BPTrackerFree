@@ -52,6 +52,8 @@
     <string name="list_label_pulse">Pouls:</string>
     <string name="msg_add">Cliquez sur Ajouter</string>
     <string name="bp_separator">/</string>
+    <string name="menu_new">Nouveau</string>
+    <string name="msg_loading">Chargement en cours&#8230;</string>
     <!-- These strings are used on the BPSend Activity layout -->
     <string name="title_send">@string/label_send</string>
     <string name="label_send">Envoyer</string>

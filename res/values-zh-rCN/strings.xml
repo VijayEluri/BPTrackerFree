@@ -52,6 +52,8 @@
     <string name="list_label_pulse">脉搏：</string>
     <string name="msg_add">点击以添加</string>
     <string name="bp_separator">/</string>
+    <string name="menu_new">新</string>
+    <string name="msg_loading">载入中&#8230;</string>
     <!-- These strings are used on the BPSend Activity layout -->
     <string name="title_send">@string/label_send</string>
     <string name="label_send">发送</string>

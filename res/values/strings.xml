@@ -24,7 +24,7 @@
     <string name="title_provider">BP Provider</string>
     <string name="title_edit">Edit Readings</string>
     <string name="title_create">Add New Reading</string>
-    <!-- These strings appear in the BPRecordEditor activity -->
+    <!-- These strings appear in the BPRecordEditor fragments -->
     <string name="menu_done">Done</string>
     <string name="menu_revert">Revert</string>
     <string name="menu_cancel">Cancel</string>
@@ -43,7 +43,7 @@
     <string name="label_pls_spinner">Pick Pulse Value</string>
     <string name="msg_future_date">Future date!</string>
     <string name="hint_note_entry">Write something here</string>
-    <!-- These values are for the BPRecordList activity -->
+    <!-- These values are for the BPRecordList fragment -->
     <string name="menu_edit">Edit</string>
     <string name="menu_send">@string/label_send</string>
     <string name="list_label_date">Date:</string>
@@ -52,6 +52,8 @@
     <string name="list_label_pulse">Pulse:</string>
     <string name="msg_add">Click to Add</string>
     <string name="bp_separator">/</string>
+    <string name="menu_new">New</string>
+    <string name="msg_loading">Loading&#8230;</string>
     <!-- These strings are used on the BPSend Activity layout -->
     <string name="title_send">@string/label_send</string>
     <string name="label_send">Send</string>
@@ -97,9 +99,26 @@
     <string name="average_values">Average Readings</string>
     <string name="fixed_chosen">New records will use the fixed settings.</string>
     <string name="average_chosen">New records will use the average of previous readings, when possible.</string>
-    <string name="systolic_initial">Initial Systolic for new records</string>
-    <string name="diastolic_initial">Initial Diastolic for new records</string>
-    <string name="pulse_initial">Initial Pulse for new records</string>
+    <string name="systolic_initial_format">Initial Systolic: (%1$s)</string>
+    <string name="diastolic_initial_format">Initial Diastolic: (%1$s)</string>
+    <string name="pulse_initial_format">Initial Pulse: (%1$s)</string>
     <string name="icon_content_description">Icon</string>
     <string name="check_values">Please check your readings for accuracy.</string>
+    <!-- New  VERSION_CODE (v1.3.5)-->
+    <string name="editor_selection_title">Editor selection</string>
+    <string name="spinner_based_editor">Using spinner-based editor</string>
+    <string name="text_based_editor">Using keyboard-based editor</string>
+    <string name="editor_switch_off">Spinner</string>
+    <string name="editor_switch_on">Keyboard</string>
+    <string-array name="editor_options">
+        <item>@string/title_edit</item>
+        <item>@string/title_alternate_edit</item>
+    </string-array>
+    <string name="now">Now</string>
+    <string name="forever">Forever</string>
+    <string name="editor_lock_title">Editor Lock</string>
+    <string name="editor_unlocked_summary">Ask Me</string>
+    <string name="editor_locked_summary">Do not ask me</string>
+    <string name="editor_lock_on">Locked</string>
+    <string name="editor_lock_off">Open</string>
 </resources>
