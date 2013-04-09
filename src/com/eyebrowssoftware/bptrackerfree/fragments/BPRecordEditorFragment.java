@@ -46,7 +46,7 @@ import com.eyebrowssoftware.bptrackerfree.fragments.TimePickerFragment.TimePicke
  * @author brionemde
  *
  */
-public abstract class BPRecordEditorFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+public class BPRecordEditorFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
         AlertDialogListener, TimePickerListener, DatePickerListener, EditorSelectionDialogListener {
 
     public interface EditorPlugin {
@@ -56,11 +56,8 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
 
     private static final String TAG = "BPRecordEditorBase";
 
-    private static final String[] AVERAGE_PROJECTION = {
-        BPRecord.AVERAGE_SYSTOLIC,
-        BPRecord.AVERAGE_DIASTOLIC,
-        BPRecord.AVERAGE_PULSE
-    };
+    private static final String[] AVERAGE_PROJECTION = { BPRecord.AVERAGE_SYSTOLIC, BPRecord.AVERAGE_DIASTOLIC,
+        BPRecord.AVERAGE_PULSE };
 
     // The different distinct states the activity can be run in.
     public static final int STATE_EDIT = 0;
@@ -103,6 +100,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
         mCalendar = new GregorianCalendar();
         mDateButton = (Button) v.findViewById(R.id.date_button);
         mDateButton.setOnClickListener(new OnClickListener() {
+            @Override
             public void onClick(View arg0) {
                 DatePickerFragment dateFrag = new DatePickerFragment();
                 Bundle b = new Bundle();
@@ -116,6 +114,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
 
         mTimeButton = (Button) v.findViewById(R.id.time_button);
         mTimeButton.setOnClickListener(new OnClickListener() {
+            @Override
             public void onClick(View arg0) {
                 TimePickerFragment timeFrag = new TimePickerFragment();
                 Bundle b = new Bundle();
@@ -128,6 +127,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
 
         mDoneButton = (Button) v.findViewById(R.id.done_button);
         mDoneButton.setOnClickListener(new OnClickListener() {
+            @Override
             public void onClick(View arg0) {
                 BPRecordEditorFragment.this.getActivity().finish();
             }
@@ -135,6 +135,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
 
         mCancelButton = (Button) v.findViewById(R.id.revert_button);
         mCancelButton.setOnClickListener(new OnClickListener() {
+            @Override
             public void onClick(View arg0) {
                 cancelRecord();
             }
@@ -168,7 +169,8 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
         if (Intent.ACTION_EDIT.equals(action)) {
             mState = STATE_EDIT;
             mUri = intent.getData();
-        } else if (Intent.ACTION_INSERT.equals(action)) {
+        }
+        else if (Intent.ACTION_INSERT.equals(action)) {
             mState = STATE_INSERT;
             if (icicle != null)
                 mUri = Uri.parse(icicle.getString(BPTrackerFree.MURI));
@@ -176,18 +178,20 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
                 ContentValues cv = null;
                 if (mSharedPreferences.getBoolean(BPTrackerFree.AVERAGE_VALUES_KEY, false)) {
                     cv = setAverageValues(mSharedPreferences);
-                } else {
+                }
+                else {
                     cv = setDefaultValues(mSharedPreferences);
                 }
                 cv.put(BPRecord.CREATED_DATE, GregorianCalendar.getInstance().getTimeInMillis());
                 mUri = this.getActivity().getContentResolver().insert(intent.getData(), cv);
             }
-        } else {
+        }
+        else {
             Log.e(TAG, "Unknown action, exiting");
             this.getActivity().finish();
             return;
         }
-        if(mState == STATE_INSERT) {
+        if (mState == STATE_INSERT) {
             mCancelButton.setText(R.string.menu_discard);
         }
         this.setShown(false, true);
@@ -200,7 +204,8 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
         // Modify our overall title depending on the mode we are running in.
         if (mState == STATE_EDIT) {
             this.getActivity().setTitle(getText(R.string.title_edit));
-        } else if (mState == STATE_INSERT) {
+        }
+        else if (mState == STATE_INSERT) {
             this.getActivity().setTitle(getText(R.string.title_create));
         }
         setUIState();
@@ -221,7 +226,7 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
         // changes are safely saved away in the provider.
         //
         // The leaf subclass is responsible for persisting the current values
-        if(mCurrentValues != null) {
+        if (mCurrentValues != null) {
             mCurrentValues.put(BPRecord.CREATED_DATE, mCalendar.getTimeInMillis());
             mCurrentValues.put(BPRecord.MODIFIED_DATE, System.currentTimeMillis());
             mCurrentValues.put(BPRecord.NOTE, mNoteText.getText().toString());
@@ -275,11 +280,13 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
     }
 
     private ContentValues setAverageValues(SharedPreferences prefs) {
-        Cursor c = this.getActivity().getContentResolver().query(BPRecords.CONTENT_URI, AVERAGE_PROJECTION, null, null, null);
+        Cursor c = this.getActivity().getContentResolver()
+            .query(BPRecords.CONTENT_URI, AVERAGE_PROJECTION, null, null, null);
         ContentValues cv = new ContentValues();
         if (c != null && c.moveToFirst() && !c.isNull(0) && !c.isNull(1) && !c.isNull(2)) {
             cv = setContentValues((int) c.getFloat(0), (int) c.getFloat(1), (int) c.getFloat(2));
-        } else {
+        }
+        else {
             cv = setDefaultValues(mSharedPreferences);
         }
         c.close();
@@ -287,10 +294,13 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
     }
 
     private ContentValues setDefaultValues(SharedPreferences prefs) {
-        return setContentValues(
-            Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_SYSTOLIC_KEY, BPTrackerFree.SYSTOLIC_DEFAULT_STRING)),
-            Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_DIASTOLIC_KEY, BPTrackerFree.DIASTOLIC_DEFAULT_STRING)),
-            Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_PULSE_KEY, BPTrackerFree.PULSE_DEFAULT_STRING)));
+        return setContentValues(Integer.valueOf(prefs.getString(
+            BPTrackerFree.DEFAULT_SYSTOLIC_KEY,
+            BPTrackerFree.SYSTOLIC_DEFAULT_STRING)), Integer.valueOf(prefs.getString(
+            BPTrackerFree.DEFAULT_DIASTOLIC_KEY,
+            BPTrackerFree.DIASTOLIC_DEFAULT_STRING)), Integer.valueOf(prefs.getString(
+            BPTrackerFree.DEFAULT_PULSE_KEY,
+            BPTrackerFree.PULSE_DEFAULT_STRING)));
     }
 
     private ContentValues setContentValues(int systolic, int diastolic, int pulse) {
@@ -302,8 +312,8 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
     }
 
     /**
-    * Update the date and time
-    */
+     * Update the date and time
+     */
     private void updateDateTimeDisplay() {
         Date date = mCalendar.getTime();
         mDateButton.setText(BPTrackerFree.getDateString(date, DateFormat.MEDIUM));
@@ -322,7 +332,8 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
         if (mState == STATE_EDIT) {
             menu.setGroupVisible(R.id.edit_menu_group, true);
             menu.setGroupVisible(R.id.create_menu_group, false);
-        } else if (mState == STATE_INSERT){
+        }
+        else if (mState == STATE_INSERT) {
             menu.setGroupVisible(R.id.edit_menu_group, false);
             menu.setGroupVisible(R.id.create_menu_group, true);
         }
@@ -332,27 +343,31 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle all of the possible menu actions.
         switch (item.getItemId()) {
-        case R.id.menu_delete:
-            showDeleteConfirmationDialog();
-            return true;
-        case R.id.menu_discard:
-            cancelRecord();
-            return true;
-        case R.id.menu_revert:
-            cancelRecord();
-            return true;
-        case R.id.menu_done:
-            this.getActivity().finish();
-            return true;
-        case R.id.menu_settings:
-            this.startActivity(new Intent(this.getActivity(), BPPreferenceActivity.class));
-            return true;
+            case R.id.menu_delete:
+                showDeleteConfirmationDialog();
+                return true;
+            case R.id.menu_discard:
+                cancelRecord();
+                return true;
+            case R.id.menu_revert:
+                cancelRecord();
+                return true;
+            case R.id.menu_done:
+                this.getActivity().finish();
+                return true;
+            case R.id.menu_settings:
+                this.startActivity(new Intent(this.getActivity(), BPPreferenceActivity.class));
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
     private void showDeleteConfirmationDialog() {
-        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no, this);
+        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(
+            R.string.msg_delete,
+            R.string.label_yes,
+            R.string.label_no,
+            this);
         diagFrag.show(this.getActivity().getSupportFragmentManager(), "delete");
     }
 
@@ -367,7 +382,6 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
         this.getActivity().setResult(FragmentActivity.RESULT_OK);
         this.getActivity().finish();
     }
-
 
     /**
     * Take care of canceling work on a BPRecord. Deletes the record if we had created
@@ -385,7 +399,8 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
             cv.put(BPRecord.CREATED_DATE, mOriginalValues.getLong(BPRecord.CREATED_DATE));
             cv.put(BPRecord.MODIFIED_DATE, mOriginalValues.getLong(BPRecord.MODIFIED_DATE));
             activity.getContentResolver().update(mUri, cv, null, null);
-        } else if (mState == STATE_INSERT) {
+        }
+        else if (mState == STATE_INSERT) {
             // We inserted an empty record, make sure to delete it
             activity.getContentResolver().delete(mUri, null, null);
         }
@@ -432,10 +447,12 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
         }
     }
 
+    @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
         return new CursorLoader(this.getActivity(), mUri, BPTrackerFree.PROJECTION, null, null, null);
     }
 
+    @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (cursor != null && cursor.moveToFirst()) {
             if (mCurrentValues == null) {
@@ -450,13 +467,14 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
             setUIState();
             if (this.isResumed()) {
                 this.setShown(true, true);
-            } else {
+            }
+            else {
                 this.setShown(true, false);
             }
 
             // If we hadn't previously retrieved the original values, do so
             // now. This allows the user to revert their changes.
-            if(mOriginalValues == null) {
+            if (mOriginalValues == null) {
                 setOriginalValuesBundle();
             }
         }
@@ -479,14 +497,13 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
     }
 
     /**
-     * Control whether the content is being displayed.  You can make it not
-     * displayed if you are waiting for the initial data to show in it.  During
-     * this time an indeterminant progress indicator will be shown instead.
+     * Control whether the content is being displayed. You can make it not displayed if you are waiting for the initial
+     * data to show in it. During this time an indeterminant progress indicator will be shown instead.
      *
-     * @param shown If true, the list view is shown; if false, the progress
-     * indicator.  The initial value is true.
-     * @param animate If true, an animation will be used to transition to the
-     * new state.
+     * @param shown
+     *            If true, the list view is shown; if false, the progress indicator. The initial value is true.
+     * @param animate
+     *            If true, an animation will be used to transition to the new state.
      */
     private void setShown(boolean shown, boolean animate) {
         if (mProgressContainer == null) {
@@ -498,23 +515,22 @@ public abstract class BPRecordEditorFragment extends Fragment implements LoaderM
         mContentShown = shown;
         if (shown) {
             if (animate) {
-                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(
-                        getActivity(), android.R.anim.fade_out));
-                mContentContainer.startAnimation(AnimationUtils.loadAnimation(
-                        getActivity(), android.R.anim.fade_in));
-            } else {
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out));
+                mContentContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in));
+            }
+            else {
                 mProgressContainer.clearAnimation();
                 mContentContainer.clearAnimation();
             }
             mProgressContainer.setVisibility(View.GONE);
             mContentContainer.setVisibility(View.VISIBLE);
-        } else {
+        }
+        else {
             if (animate) {
-                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(
-                        getActivity(), android.R.anim.fade_in));
-                mContentContainer.startAnimation(AnimationUtils.loadAnimation(
-                        getActivity(), android.R.anim.fade_out));
-            } else {
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in));
+                mContentContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out));
+            }
+            else {
                 mProgressContainer.clearAnimation();
                 mContentContainer.clearAnimation();
             }

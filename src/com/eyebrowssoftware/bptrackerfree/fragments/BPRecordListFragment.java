@@ -49,48 +49,104 @@ import com.eyebrowssoftware.bptrackerfree.R;
 
 /**
  * Main Fragment for the list view
- *
+ * 
  * @author brione
- *
+ * 
  */
 public class BPRecordListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>,
     AlertDialogFragment.AlertDialogListener, View.OnClickListener {
 
     /**
      * Hosting activities must provide this interface
-     *
+     * 
      * @author brionemde
-     *
+     * 
      */
     public interface BPRecordListFragmentListener {
         /**
          * Insert a new item of the content uri
-         * @param uri : Group content uri (BPRecords.CONTENT_URI for this app)
-         *
+         * 
+         * @param uri
+         *            : Group content uri (BPRecords.CONTENT_URI for this app)
+         * 
          */
         public void newItem(Uri uri);
 
         /**
          * Inform the host activity that the user has elected to delete the item with _id == id
-         * @param uri : the content uri of the item to delete
+         * 
+         * @param uri
+         *            : the content uri of the item to delete
          */
         public void deleteItem(Uri uri);
 
         /**
          * Inform the host activity that the user has elected to send the item with _id == id
-         * @param uri : the content uri of the item to be sent
+         * 
+         * @param uri
+         *            : the content uri of the item to be sent
          */
         public void sendItem(Uri uri);
 
         /**
          * Inform the host activity that the user has elected to edit the item with _id == id
-         * @param uri : the content uri of the item to be edited
+         * 
+         * @param uri
+         *            : the content uri of the item to be edited
          */
         public void editItem(Uri uri);
 
         /**
          * Interrogate the host activity whether we're in dual-pane mode or not
-         *
+         * 
+         * @return true if dual-pane, false if single-pane
+         */
+        public boolean isDualPane();
+    };
+
+    /**
+     * Hosting activities must provide this interface
+     * 
+     * @author brionemde
+     * 
+     */
+    public interface Listener {
+        /**
+         * Insert a new item of the content uri
+         * 
+         * @param uri
+         *            : Group content uri (BPRecords.CONTENT_URI for this app)
+         * 
+         */
+        public void newItem(Uri uri);
+
+        /**
+         * Inform the host activity that the user has elected to delete the item with _id == id
+         * 
+         * @param uri
+         *            : the content uri of the item to delete
+         */
+        public void deleteItem(Uri uri);
+
+        /**
+         * Inform the host activity that the user has elected to send the item with _id == id
+         * 
+         * @param uri
+         *            : the content uri of the item to be sent
+         */
+        public void sendItem(Uri uri);
+
+        /**
+         * Inform the host activity that the user has elected to edit the item with _id == id
+         * 
+         * @param uri
+         *            : the content uri of the item to be edited
+         */
+        public void editItem(Uri uri);
+
+        /**
+         * Interrogate the host activity whether we're in dual-pane mode or not
+         * 
          * @return true if dual-pane, false if single-pane
          */
         public boolean isDualPane();
@@ -98,23 +154,11 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
 
     private static final String TAG = "BPListFragment";
 
-    private static final String[] VALS = {
-        BPRecord.CREATED_DATE,
-        BPRecord.CREATED_DATE,
-        BPRecord.SYSTOLIC,
-        BPRecord.DIASTOLIC,
-        BPRecord.PULSE,
-        BPRecord.NOTE
-    };
+    private static final String[] VALS = { BPRecord.CREATED_DATE, BPRecord.CREATED_DATE, BPRecord.SYSTOLIC,
+        BPRecord.DIASTOLIC, BPRecord.PULSE, BPRecord.NOTE };
 
-    private static final int[] IDS = {
-        R.id.date,
-        R.id.time,
-        R.id.sys_value,
-        R.id.dia_value,
-        R.id.pulse_value,
-        R.id.note
-    };
+    private static final int[] IDS = { R.id.date, R.id.time, R.id.sys_value, R.id.dia_value, R.id.pulse_value,
+        R.id.note };
     private static final int LIST_LOADER_ID = 0;
     private static final String CONTEXT_URI = "context_uri";
     private static final String SELECTION = "selection";
@@ -172,10 +216,10 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
         super.onAttach(activity);
         if (activity instanceof BPRecordListFragmentListener) {
             mListener = (BPRecordListFragmentListener) activity;
-          } else {
-            throw new ClassCastException(activity.toString()
-                + " must implemenet BPRecordListFragment.Listener");
-          }
+        }
+        else {
+            throw new ClassCastException(activity.toString() + " must implemenet BPRecordListFragment.Listener");
+        }
     }
 
     @Override
@@ -188,14 +232,14 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        if(savedInstanceState != null) {
+        if (savedInstanceState != null) {
             mContextMenuRecordId = savedInstanceState.getLong(CONTEXT_URI);
             mCurrentCheckPosition = savedInstanceState.getInt(SELECTION);
         }
         Activity hostActivity = this.getActivity();
         Intent intent = hostActivity.getIntent();
         mStartUri = intent.getData();
-        if(mStartUri == null) {
+        if (mStartUri == null) {
             mStartUri = BPRecords.CONTENT_URI;
         }
         ListView lv = this.getListView();
@@ -207,8 +251,8 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
         lv.addHeaderView(this.getLayoutInflater(null).inflate(R.layout.bp_record_list_header, null), null, true);
 
         // No cursor yet. Will be assigned when the CursorLoader query is complete
-        SimpleCursorAdapter adapter = new SimpleCursorAdapter(hostActivity,
-                R.layout.bp_record_list_item, null, VALS, IDS, 0);
+        SimpleCursorAdapter adapter = new SimpleCursorAdapter(hostActivity, R.layout.bp_record_list_item, null, VALS,
+            IDS, 0);
         adapter.setViewBinder(new MyViewBinder());
         this.setListAdapter(adapter);
         this.setListShown(false);
@@ -231,7 +275,8 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
         Log.i(TAG, "Got a click at position: " + position + " id: " + id);
         if (id < 0) {
             mListener.newItem(BPRecords.CONTENT_URI);
-        } else {
+        }
+        else {
             mListener.editItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, id));
         }
     }
@@ -244,29 +289,30 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
             int id = view.getId();
 
             switch (id) {
-            case R.id.sys_value:
-            case R.id.dia_value:
-            case R.id.pulse_value: // Pulse
-                ((TextView) view).setText(String.valueOf(cursor.getInt(columnIndex)));
-                return true;
-            case R.id.date: // Date
-            case R.id.time: // Time -- these use the same cursor column
-                long datetime = cursor.getLong(columnIndex);
-                val = (id == R.id.date) ? BPTrackerFree.getDateString(datetime, DateFormat.SHORT)
-                    : BPTrackerFree.getTimeString(datetime, DateFormat.SHORT);
-                ((TextView)view).setText(val);
-                return true;
-            case R.id.note:
-                String note = cursor.getString(columnIndex);
-                if(note != null && note.length() > 0) {
-                    ((TextView)view).setText(note);
-                    view.setVisibility(View.VISIBLE);
-                } else {
-                    view.setVisibility(View.GONE);
-                }
-                return true;
-            default:
-                return false;
+                case R.id.sys_value:
+                case R.id.dia_value:
+                case R.id.pulse_value: // Pulse
+                    ((TextView) view).setText(String.valueOf(cursor.getInt(columnIndex)));
+                    return true;
+                case R.id.date: // Date
+                case R.id.time: // Time -- these use the same cursor column
+                    long datetime = cursor.getLong(columnIndex);
+                    val = (id == R.id.date) ? BPTrackerFree.getDateString(datetime, DateFormat.SHORT) : BPTrackerFree
+                        .getTimeString(datetime, DateFormat.SHORT);
+                    ((TextView) view).setText(val);
+                    return true;
+                case R.id.note:
+                    String note = cursor.getString(columnIndex);
+                    if (note != null && note.length() > 0) {
+                        ((TextView) view).setText(note);
+                        view.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        view.setVisibility(View.GONE);
+                    }
+                    return true;
+                default:
+                    return false;
             }
         }
     }
@@ -277,8 +323,8 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
     @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
         // Create a CursorLoader that will take care of creating a cursor for the data
-        CursorLoader loader = new CursorLoader(getActivity(), mStartUri,
-                BPTrackerFree.PROJECTION, null, null, BPRecord.DEFAULT_SORT_ORDER);
+        CursorLoader loader = new CursorLoader(getActivity(), mStartUri, BPTrackerFree.PROJECTION, null, null,
+            BPRecord.DEFAULT_SORT_ORDER);
         return loader;
     }
 
@@ -287,9 +333,10 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        if(this.isResumed()) {
+        if (this.isResumed()) {
             this.setListShown(true);
-        } else {
+        }
+        else {
             this.setListShownNoAnimation(true);
         }
         ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(cursor);
@@ -325,7 +372,8 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
 
         try {
             info = (AdapterView.AdapterContextMenuInfo) menuInfo;
-        } catch (ClassCastException e) {
+        }
+        catch (ClassCastException e) {
             Log.e(TAG, "bad menuInfo", e);
             return;
         }
@@ -349,24 +397,26 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
             // Get the Uri of the record we're intending to operate on
             mContextMenuRecordId = info.id;
             switch (item.getItemId()) {
-            case R.id.menu_delete:
-                mListener.deleteItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
-                //----
-                // Code to be moved to parent activity
-                showDeleteConfirmationDialog();
-                return true;
-            case R.id.menu_edit:
-                mListener.editItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
-                return true;
-            case R.id.menu_send:
-                mListener.sendItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
-                return true;
+                case R.id.menu_delete:
+                    mListener.deleteItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
+                    // ----
+                    // Code to be moved to parent activity
+                    showDeleteConfirmationDialog();
+                    return true;
+                case R.id.menu_edit:
+                    mListener.editItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
+                    return true;
+                case R.id.menu_send:
+                    mListener.sendItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
+                    return true;
             }
-        } catch (ClassCastException e) {
+        }
+        catch (ClassCastException e) {
             Log.e(TAG, "bad menuInfo", e);
         }
         return super.onContextItemSelected(item);
     }
+
     private void insertRecord() {
         Uri data = BPRecords.CONTENT_URI;
         Intent intent = new Intent(Intent.ACTION_INSERT, data);
@@ -374,7 +424,11 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
     }
 
     private void showDeleteConfirmationDialog() {
-        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no, this);
+        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(
+            R.string.msg_delete,
+            R.string.label_yes,
+            R.string.label_no,
+            this);
         diagFrag.show(this.getFragmentManager(), "delete");
     }
 
@@ -389,14 +443,13 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
     }
 
     /**
-     * Control whether the list is being displayed.  You can make it not
-     * displayed if you are waiting for the initial data to show in it.  During
-     * this time an indeterminant progress indicator will be shown instead.
-     *
-     * @param shown If true, the list view is shown; if false, the progress
-     * indicator.  The initial value is true.
-     * @param animate If true, an animation will be used to transition to the
-     * new state.
+     * Control whether the list is being displayed. You can make it not displayed if you are waiting for the initial
+     * data to show in it. During this time an indeterminant progress indicator will be shown instead.
+     * 
+     * @param shown
+     *            If true, the list view is shown; if false, the progress indicator. The initial value is true.
+     * @param animate
+     *            If true, an animation will be used to transition to the new state.
      */
     private void setListShown(boolean shown, boolean animate) {
         if (mProgressContainer == null) {
@@ -408,23 +461,22 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
         mListShown = shown;
         if (shown) {
             if (animate) {
-                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(
-                        getActivity(), android.R.anim.fade_out));
-                mListContainer.startAnimation(AnimationUtils.loadAnimation(
-                        getActivity(), android.R.anim.fade_in));
-            } else {
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out));
+                mListContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in));
+            }
+            else {
                 mProgressContainer.clearAnimation();
                 mListContainer.clearAnimation();
             }
             mProgressContainer.setVisibility(View.GONE);
             mListContainer.setVisibility(View.VISIBLE);
-        } else {
+        }
+        else {
             if (animate) {
-                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(
-                        getActivity(), android.R.anim.fade_in));
-                mListContainer.startAnimation(AnimationUtils.loadAnimation(
-                        getActivity(), android.R.anim.fade_out));
-            } else {
+                mProgressContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in));
+                mListContainer.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out));
+            }
+            else {
                 mProgressContainer.clearAnimation();
                 mListContainer.clearAnimation();
             }

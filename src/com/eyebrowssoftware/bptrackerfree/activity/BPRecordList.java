@@ -30,7 +30,7 @@ import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordListFragment;
 
 /**
  * @author brionemde
- *
+ * 
  */
 public class BPRecordList extends FragmentActivity implements BPRecordListFragment.BPRecordListFragmentListener {
 
@@ -38,7 +38,6 @@ public class BPRecordList extends FragmentActivity implements BPRecordListFragme
     private static final String TAG = "BPRecordList";
 
     public static final String DUAL_PANE_TAG = "dual_pane";
-
 
     @SuppressWarnings("unused")
     private BPRecordListFragment mListFragment;
@@ -63,6 +62,7 @@ public class BPRecordList extends FragmentActivity implements BPRecordListFragme
         mDualPane = mDetailsLayout != null && mDetailsLayout.getVisibility() == View.VISIBLE;
     }
 
+    @Override
     public boolean isDualPane() {
         return mDualPane;
     }
@@ -101,32 +101,29 @@ public class BPRecordList extends FragmentActivity implements BPRecordListFragme
     public boolean onOptionsItemSelected(MenuItem item) {
 
         switch (item.getItemId()) {
-        case R.id.menu_send:
-            doSendAction();
-            return true;
-        case R.id.menu_data:
-            doDataManagerAction();
-            return true;
-        case R.id.menu_settings:
-            doSettingsAction();
-            return true;
-        default:
-            return false;
+            case R.id.menu_send:
+                doSendAction();
+                return true;
+            case R.id.menu_data:
+                doDataManagerAction();
+                return true;
+            case R.id.menu_settings:
+                doSettingsAction();
+                return true;
+            default:
+                return false;
         }
     }
-
 
     @Override
     public void newItem(Uri uri) {
         startActivity(new Intent(Intent.ACTION_INSERT, uri));
     }
 
-
     @Override
     public void deleteItem(Uri uri) {
         getContentResolver().delete(uri, null, null);
     }
-
 
     @Override
     public void sendItem(Uri uri) {
@@ -134,11 +131,9 @@ public class BPRecordList extends FragmentActivity implements BPRecordListFragme
         // End of code to be moved
     }
 
-
     @Override
     public void editItem(Uri uri) {
         startActivity(new Intent(Intent.ACTION_EDIT, uri));
     }
-
 
 }
