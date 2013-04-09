@@ -36,7 +36,6 @@ import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
-import com.eyebrowssoftware.bptrackerfree.activity.BPPreferenceActivity;
 import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment.AlertDialogListener;
 import com.eyebrowssoftware.bptrackerfree.fragments.DatePickerFragment.DatePickerListener;
 import com.eyebrowssoftware.bptrackerfree.fragments.TimePickerFragment.TimePickerListener;
@@ -230,7 +229,6 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
         // The user is going somewhere else, so make sure their current
         // changes are safely saved away in the provider.
         //
-        // The leaf subclass is responsible for persisting the current values
         if (mCurrentValues != null && mEditorPlugin != null) {
             mCurrentValues.put(BPRecord.CREATED_DATE, mCalendar.getTimeInMillis());
             mCurrentValues.put(BPRecord.MODIFIED_DATE, System.currentTimeMillis());
@@ -352,11 +350,9 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
             case R.id.menu_done:
                 this.getActivity().finish();
                 return true;
-            case R.id.menu_settings:
-                this.startActivity(new Intent(this.getActivity(), BPPreferenceActivity.class));
-                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
     }
 
     private void showDeleteConfirmationDialog() {
