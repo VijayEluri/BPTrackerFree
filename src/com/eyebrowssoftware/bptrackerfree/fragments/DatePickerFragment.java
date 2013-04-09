@@ -31,7 +31,7 @@ public class DatePickerFragment extends DialogFragment
      * @author brionemde
      *
      */
-    public interface Callbacks {
+    public interface DatePickerListener {
         /**
          * Callback for time has been set
          * @param year
@@ -50,6 +50,6 @@ public class DatePickerFragment extends DialogFragment
     }
 
     public void onDateSet(DatePicker view, int year, int month, int day) {
-        ((Callbacks) this.getActivity()).setDate(year, month, day);
+        ((DatePickerListener) this.getActivity()).setDate(year, month, day);
     }
 }

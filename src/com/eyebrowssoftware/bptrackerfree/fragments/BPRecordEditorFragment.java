@@ -14,6 +14,8 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -24,8 +26,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.animation.AnimationUtils;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -35,18 +37,24 @@ import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.activity.BPPreferenceActivity;
+import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment.AlertDialogListener;
+import com.eyebrowssoftware.bptrackerfree.fragments.DatePickerFragment.DatePickerListener;
+import com.eyebrowssoftware.bptrackerfree.fragments.EditorSelectionDialogFragment.EditorSelectionDialogListener;
+import com.eyebrowssoftware.bptrackerfree.fragments.TimePickerFragment.TimePickerListener;
 
 /**
  * @author brionemde
  *
  */
-public abstract class BPRecordEditorBaseFragment extends Fragment
-    implements LoaderManager.LoaderCallbacks<Cursor>, AlertDialogFragment.AlertDialogListener,
-        TimePickerFragment.Callbacks, DatePickerFragment.Callbacks {
+public abstract class BPRecordEditorFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
+        AlertDialogListener, TimePickerListener, DatePickerListener, EditorSelectionDialogListener {
 
-    // Static constants
+    public interface EditorPlugin {
+        public void setCurrentValues(ContentValues values);
+        public ContentValues getCurrentValues();
+    }
 
-    protected static final String TAG = "BPRecordEditorBase";
+    private static final String TAG = "BPRecordEditorBase";
 
     private static final String[] AVERAGE_PROJECTION = {
         BPRecord.AVERAGE_SYSTOLIC,
@@ -55,38 +63,32 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
     };
 
     // The different distinct states the activity can be run in.
-    protected static final int STATE_EDIT = 0;
-    protected static final int STATE_INSERT = 1;
-
-    protected static final int DATE_DIALOG_ID = 0;
-    protected static final int TIME_DIALOG_ID = 1;
-    protected static final int DELETE_DIALOG_ID = 2;
+    public static final int STATE_EDIT = 0;
+    public static final int STATE_INSERT = 1;
 
     // Member Variables
-    protected int mState;
+    private int mState;
 
-    protected Uri mUri;
+    private Uri mUri;
 
-    protected Button mDateButton;
-    protected Button mTimeButton;
-    protected EditText mNoteText;
-    protected View mProgressContainer;
-    protected View mContentContainer;
-    protected boolean mContentShown = true;
+    private Button mDateButton;
+    private Button mTimeButton;
+    private EditText mNoteText;
+    private View mProgressContainer;
+    private View mContentContainer;
+    private boolean mContentShown = true;
 
+    private Calendar mCalendar;
 
-    protected Calendar mCalendar;
+    private Bundle mOriginalValues = null;
 
-    protected Bundle mOriginalValues = null;
-    protected ContentValues mCurrentValues;
+    private ContentValues mCurrentValues;
 
-    protected Button mDoneButton;
+    private Button mDoneButton;
 
-    protected Button mCancelButton;
+    private Button mCancelButton;
 
-    protected static final int BPRECORDS_TOKEN = 0;
-
-    protected SharedPreferences mSharedPreferences;
+    private SharedPreferences mSharedPreferences;
 
     private static final int EDITOR_LOADER_ID = 1;
 
@@ -108,7 +110,7 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
                 b.putInt(DatePickerFragment.MONTH_KEY, mCalendar.get(Calendar.MONTH));
                 b.putInt(DatePickerFragment.DAY_KEY, mCalendar.get(Calendar.DAY_OF_MONTH));
                 dateFrag.setArguments(b);
-                dateFrag.show(BPRecordEditorBaseFragment.this.getActivity().getSupportFragmentManager(), "date");
+                dateFrag.show(BPRecordEditorFragment.this.getActivity().getSupportFragmentManager(), "date");
             }
         });
 
@@ -120,14 +122,14 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
                 b.putInt(TimePickerFragment.HOUR_KEY, mCalendar.get(Calendar.HOUR));
                 b.putInt(TimePickerFragment.MINUTE_KEY, mCalendar.get(Calendar.MINUTE));
                 timeFrag.setArguments(b);
-                timeFrag.show(BPRecordEditorBaseFragment.this.getActivity().getSupportFragmentManager(), "time");
+                timeFrag.show(BPRecordEditorFragment.this.getActivity().getSupportFragmentManager(), "time");
             }
         });
 
         mDoneButton = (Button) v.findViewById(R.id.done_button);
         mDoneButton.setOnClickListener(new OnClickListener() {
             public void onClick(View arg0) {
-                BPRecordEditorBaseFragment.this.getActivity().finish();
+                BPRecordEditorFragment.this.getActivity().finish();
             }
         });
 
@@ -159,6 +161,10 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
         }
         mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(this.getActivity());
 
+        boolean isText = mSharedPreferences.getBoolean(BPTrackerFree.IS_TEXT_EDITOR_KEY, false);
+        Log.d(TAG, "onCreate: isText: " + (isText ? "true" : "false"));
+        boolean isUserSet = mSharedPreferences.getBoolean(BPTrackerFree.USER_SELECTED_EDITOR_KEY, false);
+        Log.d(TAG, "onCreate: isUserSet: " + (isUserSet ? "true" : "false"));
         if (Intent.ACTION_EDIT.equals(action)) {
             mState = STATE_EDIT;
             mUri = intent.getData();
@@ -222,7 +228,49 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
         }
     }
 
-    protected void updateFromCurrentValues() {
+    private void lockEditor(boolean locked) {
+        if (locked) {
+            SharedPreferences.Editor editor = mSharedPreferences.edit();
+            editor.putBoolean(BPTrackerFree.USER_SELECTED_EDITOR_KEY, true);
+            editor.commit();
+        }
+    }
+
+    private void loadEditorFragment(boolean isText) {
+        FragmentManager fm = this.getFragmentManager();
+        String key = isText ? "text" : "spinner";
+        Fragment current = fm.findFragmentByTag(key);
+        if (current != null) {
+            Log.i(TAG, "There is a fragment of tag: " + key);
+        } else {
+            Fragment fragment = (isText) ? new EditorTextFragment()
+                    : new EditorSpinnerFragment();
+
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.replace(R.id.editor, fragment, key);
+            ft.commit();
+        }
+    }
+
+    @Override
+    public void onNegativeButtonClicked(EditorSelectionDialogFragment dialog) {
+        loadEditorFragment(dialog.getIsText());
+        lockEditor(false);
+    }
+
+    @Override
+    public void onPositiveButtonClicked(EditorSelectionDialogFragment dialog) {
+        loadEditorFragment(dialog.getIsText());
+        lockEditor(true);
+    }
+
+    @Override
+    public void onIsTextChanged(EditorSelectionDialogFragment dialog) {
+        boolean isText = dialog.getIsText();
+        loadEditorFragment(isText);
+    }
+
+    public void updateFromCurrentValues() {
         this.getActivity().getContentResolver().update(mUri, mCurrentValues, null, null);
     }
 
@@ -325,7 +373,7 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
     * Take care of canceling work on a BPRecord. Deletes the record if we had created
     * it, otherwise reverts to the original record data.
     */
-    protected final void cancelRecord() {
+    private final void cancelRecord() {
         FragmentActivity activity = this.getActivity();
         if (mState == STATE_EDIT) {
             // Restore the original information we loaded at first.
@@ -350,7 +398,7 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
         mCalendar.set(year, month, day);
         long now = new GregorianCalendar().getTimeInMillis();
         if (mCalendar.getTimeInMillis() > now) {
-            Toast.makeText(BPRecordEditorBaseFragment.this.getActivity(), getString(R.string.msg_future_date), Toast.LENGTH_LONG).show();
+            Toast.makeText(BPRecordEditorFragment.this.getActivity(), getString(R.string.msg_future_date), Toast.LENGTH_LONG).show();
             mCalendar.setTimeInMillis(now);
         }
         updateDateTimeDisplay();
@@ -362,21 +410,21 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
         mCalendar.set(Calendar.MINUTE, minute);
         long now = new GregorianCalendar().getTimeInMillis();
         if (mCalendar.getTimeInMillis() > now) {
-            Toast.makeText(BPRecordEditorBaseFragment.this.getActivity(), getString(R.string.msg_future_date), Toast.LENGTH_LONG).show();
+            Toast.makeText(BPRecordEditorFragment.this.getActivity(), getString(R.string.msg_future_date), Toast.LENGTH_LONG).show();
             mCalendar.setTimeInMillis(now);
         }
         updateDateTimeDisplay();
     }
 
-    protected Bundle getOriginalValues() {
+    public Bundle getOriginalValues() {
         return mOriginalValues;
     }
 
-    protected ContentValues getCurrentValues() {
+    public ContentValues getCurrentValues() {
         return mCurrentValues;
     }
 
-    protected void setUIState() {
+    public void setUIState() {
         if (mCurrentValues != null) {
             mCalendar.setTimeInMillis(mCurrentValues.getAsLong(BPRecord.CREATED_DATE));
             mNoteText.setText(mCurrentValues.getAsString(BPRecord.NOTE));
@@ -474,5 +522,4 @@ public abstract class BPRecordEditorBaseFragment extends Fragment
             mContentContainer.setVisibility(View.GONE);
         }
     }
-
 }

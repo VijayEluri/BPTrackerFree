@@ -53,19 +53,10 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
             >
-                <ViewStub
-                    android:id="@+id/spinners_stub"
-                    android:inflatedId="@+id/spinners"
+                <FrameLayout
+                    android:id="@+id/editor"
                     android:layout_height="wrap_content"
                     android:layout_width="fill_parent"
-                    android:layout="@layout/bp_edit_spinners"
-                />
-                <ViewStub
-                    android:id="@+id/edit_texts_stub"
-                    android:inflatedId="@+id/edit_texts"
-                    android:layout_height="wrap_content"
-                    android:layout_width="fill_parent"
-                    android:layout="@layout/bp_edit_texts"
                 />
                 <EditText
                     android:id="@+id/note"

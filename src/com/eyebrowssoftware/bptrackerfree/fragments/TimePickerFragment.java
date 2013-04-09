@@ -26,7 +26,7 @@ public class TimePickerFragment extends DialogFragment
      * @author brionemde
      *
      */
-    public interface Callbacks {
+    public interface TimePickerListener {
         /**
          * Callback for time has been set
          * @param hours
@@ -45,6 +45,6 @@ public class TimePickerFragment extends DialogFragment
     }
 
     public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-        ((Callbacks) this.getActivity()).setTime(hourOfDay, minute);
+        ((TimePickerListener) this.getActivity()).setTime(hourOfDay, minute);
     }
 }
