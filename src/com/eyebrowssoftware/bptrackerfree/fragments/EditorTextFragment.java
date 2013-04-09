@@ -39,20 +39,16 @@ public class EditorTextFragment extends Fragment implements EditorPlugin {
     private EditText mDiastolic;
     private EditText mPulse;
 
-    private ContentValues mCurrentValues;
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View myEditTexts = inflater.inflate(R.layout.spinners_fragment, container, false);
+        View v = inflater.inflate(R.layout.text_fragment, container, false);
 
-        mSystolic = (EditText) myEditTexts.findViewById(R.id.systolic_edit_text);
+        mSystolic = (EditText) v.findViewById(R.id.systolic_edit_text);
+        mDiastolic = (EditText) v.findViewById(R.id.diastolic_edit_text);
+        mPulse = (EditText) v.findViewById(R.id.pulse_edit_text);
 
-        mDiastolic = (EditText) myEditTexts.findViewById(R.id.diastolic_edit_text);
-
-        mPulse = (EditText) myEditTexts.findViewById(R.id.pulse_edit_text);
-
-        return myEditTexts;
+        return v;
     }
 
     @Override
@@ -69,26 +65,21 @@ public class EditorTextFragment extends Fragment implements EditorPlugin {
     @Override
     public void onPause() {
         super.onPause();
-
-        // The user is going somewhere else, so make sure their current
-        // changes are safely saved away cache object
-        if (mCurrentValues != null) {
-            mCurrentValues.put(BPRecord.SYSTOLIC, Integer.valueOf(mSystolic.getText().toString()));
-            mCurrentValues.put(BPRecord.DIASTOLIC, Integer.valueOf(mDiastolic.getText().toString()));
-            mCurrentValues.put(BPRecord.PULSE, Integer.valueOf(mPulse.getText().toString()));
-        }
     }
 
     @Override
     public void setCurrentValues(ContentValues values) {
-        mCurrentValues = new ContentValues(values);
-        mSystolic.setText(String.valueOf(mCurrentValues.getAsInteger(BPRecord.SYSTOLIC)));
-        mDiastolic.setText(String.valueOf(mCurrentValues.getAsInteger(BPRecord.DIASTOLIC)));
-        mPulse.setText(String.valueOf(mCurrentValues.getAsInteger(BPRecord.PULSE)));
+        mSystolic.setText(String.valueOf(values.getAsInteger(BPRecord.SYSTOLIC)));
+        mDiastolic.setText(String.valueOf(values.getAsInteger(BPRecord.DIASTOLIC)));
+        mPulse.setText(String.valueOf(values.getAsInteger(BPRecord.PULSE)));
     }
 
     @Override
     public ContentValues getCurrentValues() {
-        return mCurrentValues;
+        ContentValues values = new ContentValues();
+        values.put(BPRecord.SYSTOLIC, Integer.valueOf(mSystolic.getText().toString()));
+        values.put(BPRecord.DIASTOLIC, Integer.valueOf(mDiastolic.getText().toString()));
+        values.put(BPRecord.PULSE, Integer.valueOf(mPulse.getText().toString()));
+        return values;
     }
 }

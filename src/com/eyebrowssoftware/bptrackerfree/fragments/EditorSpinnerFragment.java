@@ -36,10 +36,7 @@ import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment.Edito
  *
  */
 public class EditorSpinnerFragment extends Fragment implements EditorPlugin{
-
-    // Static constants
-
-    protected static final String TAG = "BPRecordEditor";
+    static final String TAG = "BPRecordEditor";
 
     private static final int[] SYSTOLIC_RANGE_SETUP = {
         BPTrackerFree.SYSTOLIC_MAX_DEFAULT,
@@ -68,7 +65,6 @@ public class EditorSpinnerFragment extends Fragment implements EditorPlugin{
     private Spinner mSystolic;
     private Spinner mDiastolic;
     private Spinner mPulse;
-    private ContentValues mCurrentValues;
 
     protected static final int SPINNER_ITEM_RESOURCE_ID = R.layout.bp_spinner_item;
     protected static final int SPINNER_ITEM_TEXT_VIEW_ID = android.R.id.text1;
@@ -111,14 +107,6 @@ public class EditorSpinnerFragment extends Fragment implements EditorPlugin{
     @Override
     public void onPause() {
         super.onPause();
-        // The user is going somewhere else, so make sure their current
-        // changes are safely saved away in the provider. We don't need
-        // to do this if only editing.
-        if (mCurrentValues != null) {
-            mCurrentValues.put(BPRecord.SYSTOLIC, (Integer) mSystolic.getSelectedItem());
-            mCurrentValues.put(BPRecord.DIASTOLIC, (Integer) mDiastolic.getSelectedItem());
-            mCurrentValues.put(BPRecord.PULSE, (Integer) mPulse.getSelectedItem());
-        }
     }
 
     private void setSpinner(Spinner s, int value) {
@@ -130,15 +118,18 @@ public class EditorSpinnerFragment extends Fragment implements EditorPlugin{
 
     @Override
     public void setCurrentValues(ContentValues values) {
-        mCurrentValues = new ContentValues(values);
-        this.setSpinner(mSystolic, mCurrentValues.getAsInteger(BPRecord.SYSTOLIC));
-        this.setSpinner(mDiastolic, mCurrentValues.getAsInteger(BPRecord.DIASTOLIC));
-        this.setSpinner(mPulse, mCurrentValues.getAsInteger(BPRecord.PULSE));
+        this.setSpinner(mSystolic, values.getAsInteger(BPRecord.SYSTOLIC));
+        this.setSpinner(mDiastolic, values.getAsInteger(BPRecord.DIASTOLIC));
+        this.setSpinner(mPulse, values.getAsInteger(BPRecord.PULSE));
     }
 
     @Override
     public ContentValues getCurrentValues() {
-        return mCurrentValues;
+        ContentValues values = new ContentValues();
+        values.put(BPRecord.SYSTOLIC, (Integer) mSystolic.getSelectedItem());
+        values.put(BPRecord.DIASTOLIC, (Integer) mDiastolic.getSelectedItem());
+        values.put(BPRecord.PULSE, (Integer) mPulse.getSelectedItem());
+        return values;
     }
 
 }

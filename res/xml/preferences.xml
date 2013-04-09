@@ -52,13 +52,4 @@
         android:switchTextOn="@string/editor_switch_on"
         android:defaultValue="false"
     />
-    <SwitchPreference
-        android:key="user_selected_editor"
-        android:title="@string/editor_lock_title"
-        android:summaryOff="@string/editor_unlocked_summary"
-        android:summaryOn="@string/editor_locked_summary"
-        android:switchTextOff="@string/editor_lock_off"
-        android:switchTextOn="@string/editor_lock_on"
-        android:defaultValue="false"
-    />
 </PreferenceScreen>

@@ -39,7 +39,6 @@ import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.activity.BPPreferenceActivity;
 import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment.AlertDialogListener;
 import com.eyebrowssoftware.bptrackerfree.fragments.DatePickerFragment.DatePickerListener;
-import com.eyebrowssoftware.bptrackerfree.fragments.EditorSelectionDialogFragment.EditorSelectionDialogListener;
 import com.eyebrowssoftware.bptrackerfree.fragments.TimePickerFragment.TimePickerListener;
 
 /**
@@ -47,14 +46,17 @@ import com.eyebrowssoftware.bptrackerfree.fragments.TimePickerFragment.TimePicke
  *
  */
 public class BPRecordEditorFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
-        AlertDialogListener, TimePickerListener, DatePickerListener, EditorSelectionDialogListener {
+        AlertDialogListener, TimePickerListener, DatePickerListener {
+    static final String TAG = "BPRecordEditorBase";
 
+    /**
+     * All Editor Plugins must comply
+     *
+     */
     public interface EditorPlugin {
         public void setCurrentValues(ContentValues values);
         public ContentValues getCurrentValues();
     }
-
-    private static final String TAG = "BPRecordEditorBase";
 
     private static final String[] AVERAGE_PROJECTION = { BPRecord.AVERAGE_SYSTOLIC, BPRecord.AVERAGE_DIASTOLIC,
         BPRecord.AVERAGE_PULSE };
@@ -88,6 +90,8 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
     private SharedPreferences mSharedPreferences;
 
     private static final int EDITOR_LOADER_ID = 1;
+
+    private EditorPlugin mEditorPlugin;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -164,8 +168,6 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
 
         boolean isText = mSharedPreferences.getBoolean(BPTrackerFree.IS_TEXT_EDITOR_KEY, false);
         Log.d(TAG, "onCreate: isText: " + (isText ? "true" : "false"));
-        boolean isUserSet = mSharedPreferences.getBoolean(BPTrackerFree.USER_SELECTED_EDITOR_KEY, false);
-        Log.d(TAG, "onCreate: isUserSet: " + (isUserSet ? "true" : "false"));
         if (Intent.ACTION_EDIT.equals(action)) {
             mState = STATE_EDIT;
             mUri = intent.getData();
@@ -208,6 +210,9 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
         else if (mState == STATE_INSERT) {
             this.getActivity().setTitle(getText(R.string.title_create));
         }
+        boolean isText = mSharedPreferences.getBoolean(BPTrackerFree.IS_TEXT_EDITOR_KEY, false);
+        Log.d(TAG, "onResume: isText: " + (isText ? "true" : "false"));
+        loadEditorFragment(isText);
         setUIState();
     }
 
@@ -226,53 +231,45 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
         // changes are safely saved away in the provider.
         //
         // The leaf subclass is responsible for persisting the current values
-        if (mCurrentValues != null) {
+        if (mCurrentValues != null && mEditorPlugin != null) {
             mCurrentValues.put(BPRecord.CREATED_DATE, mCalendar.getTimeInMillis());
             mCurrentValues.put(BPRecord.MODIFIED_DATE, System.currentTimeMillis());
             mCurrentValues.put(BPRecord.NOTE, mNoteText.getText().toString());
-        }
-    }
-
-    private void lockEditor(boolean locked) {
-        if (locked) {
-            SharedPreferences.Editor editor = mSharedPreferences.edit();
-            editor.putBoolean(BPTrackerFree.USER_SELECTED_EDITOR_KEY, true);
-            editor.commit();
+            ContentValues pluginValues = mEditorPlugin.getCurrentValues();
+            mCurrentValues.put(BPRecord.SYSTOLIC, pluginValues.getAsInteger(BPRecord.SYSTOLIC));
+            mCurrentValues.put(BPRecord.DIASTOLIC, pluginValues.getAsInteger(BPRecord.DIASTOLIC));
+            mCurrentValues.put(BPRecord.PULSE, pluginValues.getAsInteger(BPRecord.PULSE));
+            this.updateFromCurrentValues();
+        } else {
+            // This means the query never returned before we're pausing
+            // Some might think this cause for celebration; methinks it means
+            // things are happening a might too quickly.
+            if (mCurrentValues == null) {
+                Log.e(TAG, "onPause() called with no mCurrentValues returned from query");
+            }
+            if (mEditorPlugin == null) {
+                Log.e(TAG, "onPause() called with no editor plugin present");
+            }
         }
     }
 
     private void loadEditorFragment(boolean isText) {
+
         FragmentManager fm = this.getFragmentManager();
         String key = isText ? "text" : "spinner";
         Fragment current = fm.findFragmentByTag(key);
+
         if (current != null) {
             Log.i(TAG, "There is a fragment of tag: " + key);
+            this.mEditorPlugin = null;
         } else {
             Fragment fragment = (isText) ? new EditorTextFragment()
                     : new EditorSpinnerFragment();
-
+            this.mEditorPlugin = (EditorPlugin) fragment;
             FragmentTransaction ft = fm.beginTransaction();
             ft.replace(R.id.editor, fragment, key);
             ft.commit();
         }
-    }
-
-    @Override
-    public void onNegativeButtonClicked(EditorSelectionDialogFragment dialog) {
-        loadEditorFragment(dialog.getIsText());
-        lockEditor(false);
-    }
-
-    @Override
-    public void onPositiveButtonClicked(EditorSelectionDialogFragment dialog) {
-        loadEditorFragment(dialog.getIsText());
-        lockEditor(true);
-    }
-
-    @Override
-    public void onIsTextChanged(EditorSelectionDialogFragment dialog) {
-        boolean isText = dialog.getIsText();
-        loadEditorFragment(isText);
     }
 
     public void updateFromCurrentValues() {
@@ -441,6 +438,9 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
 
     public void setUIState() {
         if (mCurrentValues != null) {
+            if (mEditorPlugin != null) {
+                mEditorPlugin.setCurrentValues(mCurrentValues);
+            }
             mCalendar.setTimeInMillis(mCurrentValues.getAsLong(BPRecord.CREATED_DATE));
             mNoteText.setText(mCurrentValues.getAsString(BPRecord.NOTE));
             updateDateTimeDisplay();

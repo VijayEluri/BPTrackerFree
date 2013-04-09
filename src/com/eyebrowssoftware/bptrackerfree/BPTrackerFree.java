@@ -39,13 +39,13 @@ public class BPTrackerFree extends Application {
 
     public static final String MURI = "sUri";
 
-    public static final int SYSTOLIC_MAX_DEFAULT = 280;
+    public static final int SYSTOLIC_MAX_DEFAULT = 220;
     public static final int SYSTOLIC_DEFAULT = 120;
-    public static final int SYSTOLIC_MIN_DEFAULT = 20;
+    public static final int SYSTOLIC_MIN_DEFAULT = 60;
 
-    public static final int DIASTOLIC_MAX_DEFAULT = 280;
+    public static final int DIASTOLIC_MAX_DEFAULT = 180;
     public static final int DIASTOLIC_DEFAULT = 70;
-    public static final int DIASTOLIC_MIN_DEFAULT = 20;
+    public static final int DIASTOLIC_MIN_DEFAULT = 50;
 
     public static final int PULSE_MAX_DEFAULT = 200;
     public static final int PULSE_DEFAULT = 75;
@@ -62,7 +62,6 @@ public class BPTrackerFree extends Application {
     public static final String DEFAULT_PULSE_KEY = "pulse_default";
     public static final String AVERAGE_VALUES_KEY = "average_values_checkbox";
     public static final String IS_TEXT_EDITOR_KEY = "is_text_editor";
-    public static final String USER_SELECTED_EDITOR_KEY = "user_selected_editor";
 
     /**
      * Standard query projection for most activities
