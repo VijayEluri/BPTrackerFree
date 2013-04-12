@@ -4,12 +4,13 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment.BPEditorListener;
 
 /**
  * @author brionemde
  *
  */
-public class BPRecordEditor extends FragmentActivity {
+public class BPRecordEditor extends FragmentActivity implements BPEditorListener {
 
     // Static constants
 
@@ -36,6 +37,11 @@ public class BPRecordEditor extends FragmentActivity {
     @Override
     protected void onPause() {
         super.onPause();
+    }
+
+    @Override
+    public void finishing() {
+        finish();
     }
 
 }

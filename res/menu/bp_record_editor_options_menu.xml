@@ -15,10 +15,6 @@
 -->
 <menu xmlns:android="http://schemas.android.com/apk/res/android" >
     <group android:id="@+id/edit_menu_group">
-      <item android:id="@+id/menu_done"
-          android:title="@string/menu_done"
-          android:showAsAction="ifRoom"
-      />
       <item android:id="@+id/menu_revert"
           android:title="@string/menu_revert"
           android:showAsAction="ifRoom"
@@ -29,10 +25,6 @@
       />
     </group>
     <group android:id="@+id/create_menu_group">
-        <item android:id="@id/menu_done"
-            android:title="@string/menu_done"
-            android:showAsAction="ifRoom"
-        />
         <item android:id="@+id/menu_discard"
             android:title="@string/menu_discard"
             android:showAsAction="ifRoom"

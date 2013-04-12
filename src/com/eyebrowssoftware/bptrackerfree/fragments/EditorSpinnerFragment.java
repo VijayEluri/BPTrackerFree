@@ -35,7 +35,7 @@ import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment.Edito
  * @author brionemde
  *
  */
-public class EditorSpinnerFragment extends Fragment implements EditorPlugin{
+public class EditorSpinnerFragment extends Fragment implements EditorPlugin {
     static final String TAG = "BPRecordEditor";
 
     private static final int[] SYSTOLIC_RANGE_SETUP = {
@@ -124,12 +124,10 @@ public class EditorSpinnerFragment extends Fragment implements EditorPlugin{
     }
 
     @Override
-    public ContentValues getCurrentValues() {
-        ContentValues values = new ContentValues();
+    public void updateCurrentValues(ContentValues values) {
         values.put(BPRecord.SYSTOLIC, (Integer) mSystolic.getSelectedItem());
         values.put(BPRecord.DIASTOLIC, (Integer) mDiastolic.getSelectedItem());
         values.put(BPRecord.PULSE, (Integer) mPulse.getSelectedItem());
-        return values;
     }
 
 }

@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -30,22 +31,18 @@ import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment.AlertDialogListener;
-import com.eyebrowssoftware.bptrackerfree.fragments.DatePickerFragment.DatePickerListener;
-import com.eyebrowssoftware.bptrackerfree.fragments.TimePickerFragment.TimePickerListener;
 
 /**
  * @author brionemde
  *
  */
-public class BPRecordEditorFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>,
-        AlertDialogListener, TimePickerListener, DatePickerListener {
+public class BPRecordEditorFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AlertDialogListener {
     static final String TAG = "BPRecordEditorBase";
 
     /**
@@ -54,10 +51,19 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
      */
     public interface EditorPlugin {
         public void setCurrentValues(ContentValues values);
-        public ContentValues getCurrentValues();
+        public void updateCurrentValues(ContentValues currentValues);
     }
 
-    private static final String[] AVERAGE_PROJECTION = { BPRecord.AVERAGE_SYSTOLIC, BPRecord.AVERAGE_DIASTOLIC,
+    /**
+     * All hosting activities must comply
+     */
+    public interface BPEditorListener {
+        public void finishing();
+    }
+
+    private static final String[] AVERAGE_PROJECTION = {
+        BPRecord.AVERAGE_SYSTOLIC,
+        BPRecord.AVERAGE_DIASTOLIC,
         BPRecord.AVERAGE_PULSE };
 
     // The different distinct states the activity can be run in.
@@ -80,17 +86,15 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
 
     private Bundle mOriginalValues = null;
 
-    private ContentValues mCurrentValues;
-
-    private Button mDoneButton;
-
-    private Button mCancelButton;
+    private ContentValues mCurrentValues = new ContentValues();
 
     private SharedPreferences mSharedPreferences;
 
     private static final int EDITOR_LOADER_ID = 1;
 
     private EditorPlugin mEditorPlugin;
+
+    private BPEditorListener mListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -128,30 +132,22 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
             }
         });
 
-        mDoneButton = (Button) v.findViewById(R.id.done_button);
-        mDoneButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                BPRecordEditorFragment.this.getActivity().finish();
-            }
-        });
-
-        mCancelButton = (Button) v.findViewById(R.id.revert_button);
-        mCancelButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View arg0) {
-                cancelRecord();
-            }
-        });
-
         mNoteText = (EditText) v.findViewById(R.id.note);
         return v;
     }
+
+
 
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
         this.setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mListener = (BPEditorListener) getActivity();
     }
 
     @Override
@@ -189,11 +185,7 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
         }
         else {
             Log.e(TAG, "Unknown action, exiting");
-            this.getActivity().finish();
-            return;
-        }
-        if (mState == STATE_INSERT) {
-            mCancelButton.setText(R.string.menu_discard);
+            throw new IllegalArgumentException("Unknown editor action: " + action);
         }
         this.setShown(false, true);
         this.getActivity().getSupportLoaderManager().initLoader(EDITOR_LOADER_ID, null, this);
@@ -212,7 +204,12 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
         boolean isText = mSharedPreferences.getBoolean(BPTrackerFree.IS_TEXT_EDITOR_KEY, false);
         Log.d(TAG, "onResume: isText: " + (isText ? "true" : "false"));
         loadEditorFragment(isText);
-        setUIState();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        saveUIState();
     }
 
     @Override
@@ -220,35 +217,6 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
         super.onSaveInstanceState(outState);
         outState.putAll(mOriginalValues);
         outState.putString(BPTrackerFree.MURI, mUri.toString());
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        // The user is going somewhere else, so make sure their current
-        // changes are safely saved away in the provider.
-        //
-        if (mCurrentValues != null && mEditorPlugin != null) {
-            mCurrentValues.put(BPRecord.CREATED_DATE, mCalendar.getTimeInMillis());
-            mCurrentValues.put(BPRecord.MODIFIED_DATE, System.currentTimeMillis());
-            mCurrentValues.put(BPRecord.NOTE, mNoteText.getText().toString());
-            ContentValues pluginValues = mEditorPlugin.getCurrentValues();
-            mCurrentValues.put(BPRecord.SYSTOLIC, pluginValues.getAsInteger(BPRecord.SYSTOLIC));
-            mCurrentValues.put(BPRecord.DIASTOLIC, pluginValues.getAsInteger(BPRecord.DIASTOLIC));
-            mCurrentValues.put(BPRecord.PULSE, pluginValues.getAsInteger(BPRecord.PULSE));
-            this.updateFromCurrentValues();
-        } else {
-            // This means the query never returned before we're pausing
-            // Some might think this cause for celebration; methinks it means
-            // things are happening a might too quickly.
-            if (mCurrentValues == null) {
-                Log.e(TAG, "onPause() called with no mCurrentValues returned from query");
-            }
-            if (mEditorPlugin == null) {
-                Log.e(TAG, "onPause() called with no editor plugin present");
-            }
-        }
     }
 
     private void loadEditorFragment(boolean isText) {
@@ -259,7 +227,7 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
 
         if (current != null) {
             Log.i(TAG, "There is a fragment of tag: " + key);
-            this.mEditorPlugin = null;
+            throw new IllegalStateException("Existing fragment of type: " + key);
         } else {
             Fragment fragment = (isText) ? new EditorTextFragment()
                     : new EditorSpinnerFragment();
@@ -268,10 +236,6 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
             ft.replace(R.id.editor, fragment, key);
             ft.commit();
         }
-    }
-
-    public void updateFromCurrentValues() {
-        this.getActivity().getContentResolver().update(mUri, mCurrentValues, null, null);
     }
 
     private ContentValues setAverageValues(SharedPreferences prefs) {
@@ -289,13 +253,10 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
     }
 
     private ContentValues setDefaultValues(SharedPreferences prefs) {
-        return setContentValues(Integer.valueOf(prefs.getString(
-            BPTrackerFree.DEFAULT_SYSTOLIC_KEY,
-            BPTrackerFree.SYSTOLIC_DEFAULT_STRING)), Integer.valueOf(prefs.getString(
-            BPTrackerFree.DEFAULT_DIASTOLIC_KEY,
-            BPTrackerFree.DIASTOLIC_DEFAULT_STRING)), Integer.valueOf(prefs.getString(
-            BPTrackerFree.DEFAULT_PULSE_KEY,
-            BPTrackerFree.PULSE_DEFAULT_STRING)));
+        return setContentValues(
+                Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_SYSTOLIC_KEY, BPTrackerFree.SYSTOLIC_DEFAULT_STRING)),
+                Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_DIASTOLIC_KEY, BPTrackerFree.DIASTOLIC_DEFAULT_STRING)),
+                Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_PULSE_KEY, BPTrackerFree.PULSE_DEFAULT_STRING)));
     }
 
     private ContentValues setContentValues(int systolic, int diastolic, int pulse) {
@@ -304,15 +265,6 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
         cv.put(BPRecord.DIASTOLIC, diastolic);
         cv.put(BPRecord.PULSE, pulse);
         return cv;
-    }
-
-    /**
-     * Update the date and time
-     */
-    private void updateDateTimeDisplay() {
-        Date date = mCalendar.getTime();
-        mDateButton.setText(BPTrackerFree.getDateString(date, DateFormat.MEDIUM));
-        mTimeButton.setText(BPTrackerFree.getTimeString(date, DateFormat.SHORT));
     }
 
     @Override
@@ -347,9 +299,6 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
             case R.id.menu_revert:
                 cancelRecord();
                 return true;
-            case R.id.menu_done:
-                this.getActivity().finish();
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -372,8 +321,7 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onPositiveButtonClicked(AlertDialogFragment dialog) {
         this.getActivity().getContentResolver().delete(mUri, null, null);
-        this.getActivity().setResult(FragmentActivity.RESULT_OK);
-        this.getActivity().finish();
+        mListener.finishing();
     }
 
     /**
@@ -398,49 +346,26 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
             activity.getContentResolver().delete(mUri, null, null);
         }
         activity.setResult(FragmentActivity.RESULT_CANCELED);
-        activity.finish();
+        mListener.finishing();
     }
 
-    @Override
-    public void setDate(int year, int month, int day) {
-        mCalendar.set(year, month, day);
-        long now = new GregorianCalendar().getTimeInMillis();
-        if (mCalendar.getTimeInMillis() > now) {
-            Toast.makeText(BPRecordEditorFragment.this.getActivity(), getString(R.string.msg_future_date), Toast.LENGTH_LONG).show();
-            mCalendar.setTimeInMillis(now);
+    private void saveUIState() {
+        mCurrentValues.put(BPRecord.CREATED_DATE, mCalendar.getTimeInMillis());
+        mCurrentValues.put(BPRecord.MODIFIED_DATE, System.currentTimeMillis());
+        mCurrentValues.put(BPRecord.NOTE, mNoteText.getText().toString());
+        if (mEditorPlugin != null) {
+            mEditorPlugin.updateCurrentValues(mCurrentValues);
         }
-        updateDateTimeDisplay();
-    }
-
-    @Override
-    public void setTime(int hour, int minute) {
-        mCalendar.set(Calendar.HOUR_OF_DAY, hour);
-        mCalendar.set(Calendar.MINUTE, minute);
-        long now = new GregorianCalendar().getTimeInMillis();
-        if (mCalendar.getTimeInMillis() > now) {
-            Toast.makeText(BPRecordEditorFragment.this.getActivity(), getString(R.string.msg_future_date), Toast.LENGTH_LONG).show();
-            mCalendar.setTimeInMillis(now);
-        }
-        updateDateTimeDisplay();
-    }
-
-    public Bundle getOriginalValues() {
-        return mOriginalValues;
-    }
-
-    public ContentValues getCurrentValues() {
-        return mCurrentValues;
+        this.getActivity().getContentResolver().update(mUri, mCurrentValues, null, null);
     }
 
     public void setUIState() {
-        if (mCurrentValues != null) {
-            if (mEditorPlugin != null) {
-                mEditorPlugin.setCurrentValues(mCurrentValues);
-            }
-            mCalendar.setTimeInMillis(mCurrentValues.getAsLong(BPRecord.CREATED_DATE));
-            mNoteText.setText(mCurrentValues.getAsString(BPRecord.NOTE));
-            updateDateTimeDisplay();
-        }
+        mEditorPlugin.setCurrentValues(mCurrentValues);
+        mCalendar.setTimeInMillis(mCurrentValues.getAsLong(BPRecord.CREATED_DATE));
+        mNoteText.setText(mCurrentValues.getAsString(BPRecord.NOTE));
+        Date date = mCalendar.getTime();
+        mDateButton.setText(BPTrackerFree.getDateString(date, DateFormat.MEDIUM));
+        mTimeButton.setText(BPTrackerFree.getTimeString(date, DateFormat.SHORT));
     }
 
     @Override
@@ -451,9 +376,6 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (cursor != null && cursor.moveToFirst()) {
-            if (mCurrentValues == null) {
-                mCurrentValues = new ContentValues();
-            }
             mCurrentValues.put(BPRecord.SYSTOLIC, cursor.getInt(BPTrackerFree.COLUMN_SYSTOLIC_INDEX));
             mCurrentValues.put(BPRecord.PULSE, cursor.getInt(BPTrackerFree.COLUMN_PULSE_INDEX));
             mCurrentValues.put(BPRecord.DIASTOLIC, cursor.getInt(BPTrackerFree.COLUMN_DIASTOLIC_INDEX));
