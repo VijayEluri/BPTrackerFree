@@ -20,12 +20,13 @@ import android.support.v4.app.FragmentActivity;
 
 import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPSendFragment;
+import com.eyebrowssoftware.bptrackerfree.fragments.BPSendFragment.BPSendListener;
 
 /**
  * @author brionemde
  *
  */
-public class BPSend extends FragmentActivity {
+public class BPSend extends FragmentActivity implements BPSendListener {
 
     static final String TAG = "BPSend";
     BPSendFragment mFragment;
@@ -42,5 +43,10 @@ public class BPSend extends FragmentActivity {
     @Override
     public void onSaveInstanceState(Bundle icicle) {
         super.onSaveInstanceState(icicle);
+    }
+
+    @Override
+    public void finishing() {
+        finish();
     }
 }

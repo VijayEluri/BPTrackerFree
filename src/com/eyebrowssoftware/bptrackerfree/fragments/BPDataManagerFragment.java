@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 - Brion Noble Emde
+ * Copyright 2013 - Brion Noble Emde
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,12 @@ import com.eyebrowssoftware.bptrackerfree.R;
  */
 public class BPDataManagerFragment extends Fragment implements OnClickListener, AlertDialogFragment.AlertDialogListener {
 
+    public interface BPDataListener {
+        public void finishing();
+    }
+
     private Button mDeleteButton;
+    private BPDataListener mListener;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle icicle) {
@@ -52,6 +57,12 @@ public class BPDataManagerFragment extends Fragment implements OnClickListener, 
 
     }
 
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mListener = (BPDataListener) activity;
+    }
+
     public void onClick(View v) {
         if(v.equals(mDeleteButton)) {
             showDeleteConfirmationDialog();
@@ -65,13 +76,13 @@ public class BPDataManagerFragment extends Fragment implements OnClickListener, 
 
     @Override
     public void onNegativeButtonClicked(AlertDialogFragment dialog) {
-        this.getActivity().finish();
+        mListener.finishing();
     }
 
     @Override
     public void onPositiveButtonClicked(AlertDialogFragment dialog) {
         deleteHistory();
-        this.getActivity().finish();
+        mListener.finishing();
     }
 
 

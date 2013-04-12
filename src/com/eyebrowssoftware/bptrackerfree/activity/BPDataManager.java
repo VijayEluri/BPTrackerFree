@@ -1,5 +1,5 @@
 /*
- * Copyright 2010 - Brion Noble Emde
+ * Copyright 2013 - Brion Noble Emde
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,22 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.fragments.BPDataManagerFragment.BPDataListener;
 
 /**
  * @author brionemde
  *
  */
-public class BPDataManager extends FragmentActivity {
+public class BPDataManager extends FragmentActivity implements BPDataListener {
 
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
         setContentView(R.layout.data_manager);
+    }
+
+    @Override
+    public void finishing() {
+        finish();
     }
 }

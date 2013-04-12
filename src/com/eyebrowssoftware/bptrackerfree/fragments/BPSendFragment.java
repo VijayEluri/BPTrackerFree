@@ -39,13 +39,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
-import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -61,16 +58,20 @@ import com.eyebrowssoftware.bptrackerfree.R;
  */
 public class BPSendFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final String TAG = "BPSend";
+    static final String TAG = BPSendFragment.class.toString();
+
+    public interface BPSendListener {
+        public void finishing();
+    }
 
     private Uri mUri;
+
+    private BPSendListener mListener;
 
     private TextView mMsgLabelView;
     private TextView mMsgView;
     private CheckBox mSendText;
     private CheckBox mSendFile;
-    private Button mSendButton;
-    private Button mCancelButton;
     private boolean mContentShown = true;
     private View mProgressContainer = null;
     private View mContentContainer = null;
@@ -107,43 +108,7 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
         mMsgView = (TextView) v.findViewById(R.id.message);
 
         mSendText = (CheckBox) v.findViewById(R.id.text);
-        mSendText.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                mSendButton.setEnabled(isChecked || mSendFile.isChecked());
-            }
-
-        });
         mSendFile = (CheckBox) v.findViewById(R.id.attach);
-        mSendFile.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView,
-                    boolean isChecked) {
-                mSendButton.setEnabled(isChecked || mSendText.isChecked());
-            }
-
-        });
-
-        mSendButton = (Button) v.findViewById(R.id.send);
-        mSendButton.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View v) {
-                sendData();
-            }
-        });
-
-        mCancelButton = (Button) v.findViewById(R.id.cancel);
-        mCancelButton.setOnClickListener(new OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                BPSendFragment.this.getActivity().finish();
-            }
-
-        });
-
         if(icicle != null) {
             mSendText.setChecked(icicle.getBoolean(SEND_TEXT));
             mSendFile.setChecked(icicle.getBoolean(SEND_FILE));
@@ -153,6 +118,12 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
         }
         return v;
 
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mListener = (BPSendListener) activity;
     }
 
     @Override
@@ -179,7 +150,6 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public void onResume() {
         super.onResume();
-        this.mSendButton.setEnabled(this.mSendFile.isChecked() || this.mSendText.isChecked());
     }
 
     @Override
@@ -320,6 +290,8 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
 
             Cursor cursor = cursors[0];
 
+            String[] localizedColumns = mContext.getResources().getStringArray(R.array.send_columns);
+
             date_localized = mContext.getString(R.string.bp_send_date);
             time_localized = mContext.getString(R.string.bp_send_time);
             sys_localized = mContext.getString(R.string.bp_send_sys);
@@ -409,10 +381,9 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Handle all of the possible menu actions.
-        Activity activity = this.getActivity();
         switch (item.getItemId()) {
         case R.id.menu_cancel:
-            activity.finish();
+            mListener.finishing();
             return true;
         case R.id.menu_send:
             sendData();

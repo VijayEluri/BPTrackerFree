@@ -110,10 +110,6 @@
     <string name="text_based_editor">Using keyboard-based editor</string>
     <string name="editor_switch_off">Spinner</string>
     <string name="editor_switch_on">Keyboard</string>
-    <string-array name="editor_options">
-        <item>@string/title_edit</item>
-        <item>@string/title_alternate_edit</item>
-    </string-array>
     <string name="now">Now</string>
     <string name="forever">Forever</string>
     <string name="editor_lock_title">Editor Lock</string>
@@ -121,4 +117,12 @@
     <string name="editor_locked_summary">Do not ask me</string>
     <string name="editor_lock_on">Locked</string>
     <string name="editor_lock_off">Open</string>
+    <string-array name="send_columns">
+        <item>@string/bp_send_date</item>
+        <item>@string/bp_send_time</item>
+        <item>@string/bp_send_sys</item>
+        <item>@string/bp_send_dia</item>
+        <item>@string/bp_send_pls</item>
+        <item>@string/bp_send_note</item>
+    </string-array>
 </resources>
