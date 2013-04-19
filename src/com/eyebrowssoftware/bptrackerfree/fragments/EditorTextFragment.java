@@ -76,8 +76,17 @@ public class EditorTextFragment extends Fragment implements EditorPlugin {
 
     @Override
     public void updateCurrentValues(ContentValues values) {
-        values.put(BPRecord.SYSTOLIC, Integer.valueOf(mSystolic.getText().toString()));
-        values.put(BPRecord.DIASTOLIC, Integer.valueOf(mDiastolic.getText().toString()));
-        values.put(BPRecord.PULSE, Integer.valueOf(mPulse.getText().toString()));
+        String textValue = mSystolic.getText().toString();
+        if (textValue.length() > 0) {
+            values.put(BPRecord.SYSTOLIC, Integer.valueOf(textValue));
+        }
+        textValue = mDiastolic.getText().toString();
+        if (textValue.length() > 0) {
+            values.put(BPRecord.DIASTOLIC, Integer.valueOf(mDiastolic.getText().toString()));
+        }
+        textValue = mPulse.getText().toString();
+        if (textValue.length() > 0) {
+            values.put(BPRecord.PULSE, Integer.valueOf(mPulse.getText().toString()));
+        }
     }
 }
