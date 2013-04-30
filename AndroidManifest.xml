@@ -20,6 +20,14 @@
         android:minSdkVersion="4"
         android:targetSdkVersion="17"
     />
+    <permission
+           android:protectionLevel="dangerous"
+           android:description="@string/bp_permission_description"
+           android:label="@string/bp_permission_label"
+           android:permissionGroup="android.permission-group.PERSONAL_INFO"
+           android:name="com.eyebrowssoftware.BPTracker.permission.MEDICAL"/>
+    <uses-permission
+            android:name="com.eyebrowssoftware.BPTracker.permission.MEDICAL"/>
     <application
         android:icon="@drawable/icon"
         android:label="@string/app_name"
