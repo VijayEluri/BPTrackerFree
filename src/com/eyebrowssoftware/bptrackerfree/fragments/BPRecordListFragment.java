@@ -2,12 +2,16 @@ package com.eyebrowssoftware.bptrackerfree.fragments;
 
 import java.text.DateFormat;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -43,7 +47,7 @@ import com.eyebrowssoftware.bptrackerfree.activity.BPSend;
  *
  */
 public class BPRecordListFragment extends ListFragment implements OnClickListener, LoaderManager.LoaderCallbacks<Cursor>,
-    AlertDialogFragment.Callback {
+    AlertDialogFragment.AlertDialogButtonListener {
 
     private static final String TAG = "BPListFragment";
 
@@ -345,10 +349,25 @@ public class BPRecordListFragment extends ListFragment implements OnClickListene
         startActivity(intent);
     }
 
-    private void showDeleteConfirmationDialog() {
-        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
-        diagFrag.setTargetFragment(this, 0);
-        diagFrag.show(this.getFragmentManager(), "delete");
+    // Lint is complaining, but according to the documentation, show() does a commit on the transaction
+    // http://developer.android.com/reference/android/app/DialogFragment.html#show(android.app.FragmentTransaction,%20java.lang.String)
+    @SuppressLint("CommitTransaction")
+    void showDeleteConfirmationDialog() {
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("delete");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack("delete");
+
+        // Create and show the dialog.
+        DialogFragment newFragment = AlertDialogFragment.getNewInstance(
+                R.string.label_delete_history, R.string.msg_delete, R.string.label_yes, R.string.label_no);
+        newFragment.setTargetFragment(this, 0);
+        newFragment.show(ft, "delete");
     }
 
     private void deleteRecord() {

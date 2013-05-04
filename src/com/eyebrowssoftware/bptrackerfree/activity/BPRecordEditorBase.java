@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import android.annotation.SuppressLint;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,8 +13,12 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
-import android.support.v4.app.LoaderManager;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.util.Log;
@@ -31,21 +36,26 @@ import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment;
-import com.eyebrowssoftware.bptrackerfree.fragments.BPDialogFragment;
+import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment.AlertDialogButtonListener;
 import com.eyebrowssoftware.bptrackerfree.fragments.DatePickerFragment;
+import com.eyebrowssoftware.bptrackerfree.fragments.DatePickerFragment.OnDateChangeListener;
 import com.eyebrowssoftware.bptrackerfree.fragments.TimePickerFragment;
+import com.eyebrowssoftware.bptrackerfree.fragments.TimePickerFragment.OnTimeChangeListener;
 
 /**
  * @author brionemde
  *
  */
 public class BPRecordEditorBase extends FragmentActivity
-    implements LoaderManager.LoaderCallbacks<Cursor>, BPDialogFragment.Callback,
-        TimePickerFragment.Callbacks, DatePickerFragment.Callbacks {
+    implements LoaderCallbacks<Cursor>, AlertDialogButtonListener, OnTimeChangeListener, OnDateChangeListener {
 
     // Static constants
 
     protected static final String TAG = "BPRecordEditorBase";
+
+    private static final String DELETE = "delete";
+    private static final String DATE = "date";
+    private static final String TIME = "time";
 
     private static final String[] AVERAGE_PROJECTION = {
         BPRecord.AVERAGE_SYSTOLIC,
@@ -53,8 +63,8 @@ public class BPRecordEditorBase extends FragmentActivity
         BPRecord.AVERAGE_PULSE
     };
 
-   // BP Record Indices
-    // protected static final int COLUMN_ID_INDEX = 0;
+    // BP Record Indices
+    protected static final int COLUMN_ID_INDEX = 0;
     protected static final int COLUMN_SYSTOLIC_INDEX = 1;
     protected static final int COLUMN_DIASTOLIC_INDEX = 2;
     protected static final int COLUMN_PULSE_INDEX = 3;
@@ -144,25 +154,14 @@ public class BPRecordEditorBase extends FragmentActivity
         mDateButton = (Button) findViewById(R.id.date_button);
         mDateButton.setOnClickListener(new OnClickListener() {
             public void onClick(View arg0) {
-                DatePickerFragment dateFrag = new DatePickerFragment();
-                Bundle b = new Bundle();
-                b.putInt(DatePickerFragment.YEAR_KEY, mCalendar.get(Calendar.YEAR));
-                b.putInt(DatePickerFragment.MONTH_KEY, mCalendar.get(Calendar.MONTH));
-                b.putInt(DatePickerFragment.DAY_KEY, mCalendar.get(Calendar.DAY_OF_MONTH));
-                dateFrag.setArguments(b);
-                dateFrag.show(BPRecordEditorBase.this.getSupportFragmentManager(), "date");
+                showDateDialog();
             }
         });
 
         mTimeButton = (Button) findViewById(R.id.time_button);
         mTimeButton.setOnClickListener(new OnClickListener() {
             public void onClick(View arg0) {
-                TimePickerFragment timeFrag = new TimePickerFragment();
-                Bundle b = new Bundle();
-                b.putInt(TimePickerFragment.HOUR_KEY, mCalendar.get(Calendar.HOUR));
-                b.putInt(TimePickerFragment.MINUTE_KEY, mCalendar.get(Calendar.MINUTE));
-                timeFrag.setArguments(b);
-                timeFrag.show(BPRecordEditorBase.this.getSupportFragmentManager(), "time");
+                showTimeDialog();
             }
         });
 
@@ -218,6 +217,53 @@ public class BPRecordEditorBase extends FragmentActivity
             mCurrentValues.put(BPRecord.NOTE, mNoteText.getText().toString());
         }
     }
+
+    // Lint is complaining, but according to the documentation, show() does a commit on the transaction
+    // http://developer.android.com/reference/android/app/DialogFragment.html#show(android.app.FragmentTransaction,%20java.lang.String)
+    @SuppressLint("CommitTransaction")
+    void showDateDialog() {
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        Fragment prev = fm.findFragmentByTag(DATE);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(DATE);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = DatePickerFragment.newInstance(
+                mCalendar.get(Calendar.DAY_OF_MONTH),
+                mCalendar.get(Calendar.MONTH),
+                mCalendar.get(Calendar.YEAR));
+        newFragment.show(ft, DATE);
+    }
+
+
+    // Lint is complaining, but according to the documentation, show() does a commit on the transaction
+    // http://developer.android.com/reference/android/app/DialogFragment.html#show(android.app.FragmentTransaction,%20java.lang.String)
+    @SuppressLint("CommitTransaction")
+    void showTimeDialog() {
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        Fragment prev = fm.findFragmentByTag(TIME);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(TIME);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = TimePickerFragment.newInstance(
+                mCalendar.get(Calendar.HOUR),
+                mCalendar.get(Calendar.MINUTE));
+        newFragment.show(ft, TIME);
+    }
+
 
     protected void updateFromCurrentValues() {
         getContentResolver().update(mUri, mCurrentValues, null, null);
@@ -305,9 +351,25 @@ public class BPRecordEditorBase extends FragmentActivity
         return super.onOptionsItemSelected(item);
     }
 
-    private void showDeleteConfirmationDialog() {
-        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no);
-        diagFrag.show(this.getSupportFragmentManager(), "delete");
+    // Lint is complaining, but according to the documentation, show() does a commit on the transaction
+    // http://developer.android.com/reference/android/app/DialogFragment.html#show(android.app.FragmentTransaction,%20java.lang.String)
+    @SuppressLint("CommitTransaction")
+    void showDeleteConfirmationDialog() {
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        Fragment prev = fm.findFragmentByTag(DELETE);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(DELETE);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = AlertDialogFragment.getNewInstance(
+                R.string.label_delete_history, R.string.msg_delete, R.string.label_yes, R.string.label_no);
+        newFragment.show(ft, DELETE);
     }
 
     @Override
