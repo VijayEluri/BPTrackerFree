@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Intent;
@@ -13,6 +14,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -36,12 +38,13 @@ import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment.AlertDialogButtonListener;
 
 /**
  * @author brionemde
  *
  */
-public class BPRecordEditorFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class BPRecordEditorFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AlertDialogButtonListener {
     static final String TAG = "BPRecordEditorBase";
 
     /**
@@ -108,12 +111,10 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
         mDateButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                DatePickerFragment dateFrag = new DatePickerFragment();
-                Bundle b = new Bundle();
-                b.putInt(DatePickerFragment.YEAR_KEY, mCalendar.get(Calendar.YEAR));
-                b.putInt(DatePickerFragment.MONTH_KEY, mCalendar.get(Calendar.MONTH));
-                b.putInt(DatePickerFragment.DAY_KEY, mCalendar.get(Calendar.DAY_OF_MONTH));
-                dateFrag.setArguments(b);
+                DatePickerFragment dateFrag = DatePickerFragment.newInstance(
+                        mCalendar.get(Calendar.DAY_OF_MONTH),
+                        mCalendar.get(Calendar.MONTH),
+                        mCalendar.get(Calendar.YEAR));
                 dateFrag.show(BPRecordEditorFragment.this.getActivity().getSupportFragmentManager(), "date");
             }
         });
@@ -122,11 +123,9 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
         mTimeButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View arg0) {
-                TimePickerFragment timeFrag = new TimePickerFragment();
-                Bundle b = new Bundle();
-                b.putInt(TimePickerFragment.HOUR_KEY, mCalendar.get(Calendar.HOUR));
-                b.putInt(TimePickerFragment.MINUTE_KEY, mCalendar.get(Calendar.MINUTE));
-                timeFrag.setArguments(b);
+                TimePickerFragment timeFrag = TimePickerFragment.newInstance(
+                        mCalendar.get(Calendar.HOUR),
+                        mCalendar.get(Calendar.MINUTE));
                 timeFrag.show(BPRecordEditorFragment.this.getActivity().getSupportFragmentManager(), "time");
             }
         });
@@ -290,7 +289,7 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
         // Handle all of the possible menu actions.
         switch (item.getItemId()) {
             case R.id.menu_delete:
-                // XXX BROKEN showDeleteConfirmationDialog();
+                showDeleteConfirmationDialog();
                 return true;
             case R.id.menu_discard:
                 cancelRecord();
@@ -302,6 +301,42 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    @Override
+    public void onNegativeButtonClicked() {
+        // nothing to do, dialog is cancelled already
+    }
+
+    @Override
+    public void onPositiveButtonClicked() {
+        // XXX Bad Mojo here
+        getActivity().getContentResolver().delete(mUri, null, null);
+        getActivity().setResult(Activity.RESULT_OK);
+        getActivity().finish();
+    }
+
+    // Lint is complaining, but according to the documentation, show() does a commit on the transaction
+    // http://developer.android.com/reference/android/app/DialogFragment.html#show(android.app.FragmentTransaction,%20java.lang.String)
+    @SuppressLint("CommitTransaction")
+    void showDeleteConfirmationDialog() {
+        final String DELETE = "delete";
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentManager fm = getFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        Fragment prev = fm.findFragmentByTag(DELETE);
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack(DELETE);
+
+        // Create and show the dialog.
+        DialogFragment newFragment = AlertDialogFragment.getNewInstance(
+                R.string.label_delete_history, R.string.msg_delete, R.string.label_yes, R.string.label_no);
+        newFragment.show(ft, DELETE);
+    }
+
 
     /**
     * Take care of canceling work on a BPRecord. Deletes the record if we had created
@@ -435,4 +470,5 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
             mContentContainer.setVisibility(View.GONE);
         }
     }
+
 }

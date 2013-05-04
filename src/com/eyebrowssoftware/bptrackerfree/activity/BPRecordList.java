@@ -27,12 +27,13 @@ import android.widget.FrameLayout;
 import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordListFragment;
+import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordListFragment.BPRecordListFragmentListener;
 
 /**
  * @author brionemde
- * 
+ *
  */
-public class BPRecordList extends FragmentActivity implements BPRecordListFragment.BPRecordListFragmentListener {
+public class BPRecordList extends FragmentActivity implements BPRecordListFragmentListener {
 
     @SuppressWarnings("unused")
     private static final String TAG = "BPRecordList";

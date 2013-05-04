@@ -33,6 +33,7 @@ public class BPDataManager extends FragmentActivity implements BPDataListener {
         setContentView(R.layout.data_manager);
     }
 
+
     @Override
     public void finishing() {
         finish();

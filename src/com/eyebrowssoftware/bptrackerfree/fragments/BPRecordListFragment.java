@@ -17,12 +17,16 @@ package com.eyebrowssoftware.bptrackerfree.fragments;
 
 import java.text.DateFormat;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.ContentUris;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
@@ -46,6 +50,7 @@ import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment.AlertDialogButtonListener;
 
 /**
  * Main Fragment for the list view
@@ -53,7 +58,9 @@ import com.eyebrowssoftware.bptrackerfree.R;
  * @author brione
  *
  */
-public class BPRecordListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
+public class BPRecordListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>,
+        AlertDialogButtonListener, View.OnClickListener {
+    static final String TAG = "BPListFragment";
 
     /**
      * Hosting activities must provide this interface
@@ -102,56 +109,6 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
          */
         public boolean isDualPane();
     };
-
-    /**
-     * Hosting activities must provide this interface
-     *
-     * @author brionemde
-     *
-     */
-    public interface Listener {
-        /**
-         * Insert a new item of the content uri
-         *
-         * @param uri
-         *            : Group content uri (BPRecords.CONTENT_URI for this app)
-         *
-         */
-        public void newItem(Uri uri);
-
-        /**
-         * Inform the host activity that the user has elected to delete the item with _id == id
-         *
-         * @param uri
-         *            : the content uri of the item to delete
-         */
-        public void deleteItem(Uri uri);
-
-        /**
-         * Inform the host activity that the user has elected to send the item with _id == id
-         *
-         * @param uri
-         *            : the content uri of the item to be sent
-         */
-        public void sendItem(Uri uri);
-
-        /**
-         * Inform the host activity that the user has elected to edit the item with _id == id
-         *
-         * @param uri
-         *            : the content uri of the item to be edited
-         */
-        public void editItem(Uri uri);
-
-        /**
-         * Interrogate the host activity whether we're in dual-pane mode or not
-         *
-         * @return true if dual-pane, false if single-pane
-         */
-        public boolean isDualPane();
-    };
-
-    private static final String TAG = "BPListFragment";
 
     private static final String[] VALS = { BPRecord.CREATED_DATE, BPRecord.CREATED_DATE, BPRecord.SYSTOLIC,
         BPRecord.DIASTOLIC, BPRecord.PULSE, BPRecord.NOTE };
@@ -400,7 +357,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
                     mListener.deleteItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
                     // ----
                     // Code to be moved to parent activity
-                    // XXX BROKEN showDeleteConfirmationDialog();
+                    showDeleteConfirmationDialog();
                     return true;
                 case R.id.menu_edit:
                     mListener.editItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
@@ -420,6 +377,42 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
         Uri data = BPRecords.CONTENT_URI;
         Intent intent = new Intent(Intent.ACTION_INSERT, data);
         startActivity(intent);
+    }
+
+    // Lint is complaining, but according to the documentation, show() does a commit on the transaction
+    // http://developer.android.com/reference/android/app/DialogFragment.html#show(android.app.FragmentTransaction,%20java.lang.String)
+    @SuppressLint("CommitTransaction")
+    void showDeleteConfirmationDialog() {
+        // DialogFragment.show() will take care of adding the fragment
+        // in a transaction.  We also want to remove any currently showing
+        // dialog, so make our own transaction and take care of that here.
+        FragmentTransaction ft = getFragmentManager().beginTransaction();
+        Fragment prev = getFragmentManager().findFragmentByTag("delete");
+        if (prev != null) {
+            ft.remove(prev);
+        }
+        ft.addToBackStack("delete");
+
+        // Create and show the dialog.
+        DialogFragment newFragment = AlertDialogFragment.getNewInstance(
+                R.string.label_delete_history, R.string.msg_delete, R.string.label_yes, R.string.label_no);
+        newFragment.setTargetFragment(this, 0);
+        newFragment.show(ft, "delete");
+    }
+
+    private void deleteRecord() {
+        Uri contextMenuUri = ContentUris.withAppendedId(mStartUri, mContextMenuRecordId);
+        getActivity().getContentResolver().delete(contextMenuUri, null, null);
+    }
+
+    @Override
+    public void onNegativeButtonClicked() {
+        // nothing to do, dialog is cancelled already
+    }
+
+    @Override
+    public void onPositiveButtonClicked() {
+        deleteRecord();
     }
 
     /**
