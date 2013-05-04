@@ -1,7 +1,5 @@
 package com.eyebrowssoftware.bptrackerfree.fragments;
 
-import com.eyebrowssoftware.bptrackerfree.fragments.TimePickerFragment.OnTimeChangeListener;
-
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.app.Dialog;

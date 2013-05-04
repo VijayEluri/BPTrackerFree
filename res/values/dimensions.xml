@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="bp_list_header_padding">10dp</dimen>
+    <dimen name="spinner_item_padding">5dp</dimen>
+    <dimen name="bp_list_item_padding">5dp</dimen>
+    <dimen name="bp_label_padding">5dp</dimen>
+    <dimen name="bp_list_view_padding">10dp</dimen>
+    <dimen name="bp_text_padding">5dp</dimen>
+    <dimen name="bp_send_group_padding">5dp</dimen>
+    
+</resources>
