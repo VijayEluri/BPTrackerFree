@@ -15,11 +15,11 @@
      limitations under the License.
 -->
 <TextView xmlns:android="http://schemas.android.com/apk/res/android"
-    style="@style/bp_list_header"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_gravity="center_vertical|left"
     android:drawableLeft="@android:drawable/ic_menu_add"
     android:gravity="center_vertical"
     android:text="@string/msg_add"
+    style="@style/bp_list_header"
 />

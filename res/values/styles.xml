@@ -19,44 +19,42 @@
 
     <!-- Used for list text and editor text -->
     <style name="bp_text">
-        <item name="android:padding">2dp</item>
+        <item name="android:padding">@dimen/bp_text_padding</item>
     </style>
 
     <!-- Used for label text -->
     <style name="bp_label">
         <item name="android:textStyle">bold</item>
-        <item name="android:padding">2dp</item>
+        <item name="android:padding">@dimen/bp_label_padding</item>
     </style>
 
     <!-- Style for the TextView that's shown when the list is empty  -->
     <style name="empty_list_view">
         <item name="android:gravity">center_vertical</item>
-        <item name="android:padding">6dp</item>
+        <item name="android:padding">@dimen/bp_list_view_padding</item>
     </style>
 
     <style name="bp_list_header" parent="bp_label">
-        <item name="android:paddingTop">10dp</item>
-        <item name="android:paddingBottom">10dp</item>
+        <item name="android:padding">@dimen/bp_list_header_padding</item>
     </style>
 
     <style name="bp_list_item">
-        <item name="android:padding">4dp</item>
+        <item name="android:padding">@dimen/bp_list_item_padding</item>
     </style>
 
     <style name="bp_spinner_item">
         <item name="android:singleLine">true</item>
-        <item name="android:padding">4dp</item>
+        <item name="android:padding">@dimen/spinner_item_padding</item>
     </style>
 
     <style name="bp_send_to_group">
-        <item name="android:padding">4dp</item>
+        <item name="android:padding">@dimen/bp_send_group_padding</item>
     </style>
 
     <style name="bp_send_from_group">
-        <item name="android:padding">4dp</item>
+        <item name="android:padding">@dimen/bp_send_group_padding</item>
     </style>
-    <style name="bp_item_note_text" parent="bp_text">
-        <item name="android:padding">5dp</item>
-    </style>
+
+    <style name="bp_item_note_text" parent="bp_text" />
 
 </resources>
