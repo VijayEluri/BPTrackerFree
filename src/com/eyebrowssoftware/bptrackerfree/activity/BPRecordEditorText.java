@@ -76,10 +76,18 @@ public class BPRecordEditorText extends BPRecordEditorBase {
         // changes are safely saved away in the provider. We don't need
         // to do this if only editing.
         if (mCurrentValues != null) {
-            mCurrentValues.put(BPRecord.SYSTOLIC, Integer.valueOf(mEditValues[SYS_IDX].getText().toString()));
-            mCurrentValues.put(BPRecord.DIASTOLIC, Integer.valueOf(mEditValues[DIA_IDX].getText().toString()));
-            mCurrentValues.put(BPRecord.PULSE, Integer.valueOf(mEditValues[PLS_IDX].getText().toString()));
-
+            String textValue = mEditValues[SYS_IDX].getText().toString();
+            if (textValue.length() > 0) {
+                mCurrentValues.put(BPRecord.SYSTOLIC, Integer.valueOf(textValue));
+            }
+            textValue = mEditValues[DIA_IDX].getText().toString();
+            if (textValue.length() > 0) {
+                mCurrentValues.put(BPRecord.DIASTOLIC, Integer.valueOf(textValue));
+            }
+            textValue = mEditValues[PLS_IDX].getText().toString();
+            if (textValue.length() > 0) {
+                mCurrentValues.put(BPRecord.PULSE, Integer.valueOf(textValue));
+            }
             updateFromCurrentValues();
         }
     }
