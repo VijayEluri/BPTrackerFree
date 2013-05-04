@@ -17,7 +17,7 @@ package com.eyebrowssoftware.bptrackerfree.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -32,7 +32,7 @@ import com.eyebrowssoftware.bptrackerfree.R;
  * @author brionemde
  *
  */
-public class BPDataManagerFragment extends Fragment implements OnClickListener, AlertDialogFragment.AlertDialogListener {
+public class BPDataManagerFragment extends DialogFragment implements OnClickListener {
 
     public interface BPDataListener {
         public void finishing();
@@ -65,27 +65,11 @@ public class BPDataManagerFragment extends Fragment implements OnClickListener, 
 
     public void onClick(View v) {
         if(v.equals(mDeleteButton)) {
-            showDeleteConfirmationDialog();
+            // XXX BROKEN showDeleteConfirmationDialog();
         }
     }
 
-    private void showDeleteConfirmationDialog() {
-        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(R.string.msg_delete, R.string.label_yes, R.string.label_no, this);
-        diagFrag.show(this.getFragmentManager(), "delete");
-    }
-
-    @Override
-    public void onNegativeButtonClicked(AlertDialogFragment dialog) {
-        mListener.finishing();
-    }
-
-    @Override
-    public void onPositiveButtonClicked(AlertDialogFragment dialog) {
-        deleteHistory();
-        mListener.finishing();
-    }
-
-
+    // XXX BROKEN
     private void deleteHistory() {
         Activity activity = this.getActivity();
         int deleted = activity.getContentResolver().delete(BPRecords.CONTENT_URI, null, null);

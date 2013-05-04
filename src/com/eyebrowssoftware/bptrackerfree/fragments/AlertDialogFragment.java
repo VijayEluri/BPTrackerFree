@@ -1,6 +1,6 @@
 package com.eyebrowssoftware.bptrackerfree.fragments;
 
-import junit.framework.Assert;
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -21,50 +21,48 @@ public class AlertDialogFragment extends DialogFragment {
      *
      **/
     public interface AlertDialogListener {
-        /**
-         * Callback for positive button clicked
-         */
         void onPositiveButtonClicked(AlertDialogFragment dialog);
-        /**
-         * Callback for negative button clicked
-         */
         void onNegativeButtonClicked(AlertDialogFragment dialog);
     }
 
     // private static final String TYPE_STRING = "type";
-    private static final String TITLE_STRING = "title";
-    private static final String POSITIVE_BUTTON_STRING = "positive";
-    private static final String NEGATIVE_BUTTON_STRING = "negative";
+    private static final String TITLE_KEY = "title";
+    private static final String MESSAGE_KEY = "message";
+    private static final String POSITIVE_BUTTON_KEY = "positive";
+    private static final String NEGATIVE_BUTTON_KEY = "negative";
     private AlertDialogListener mListener;
 
-    public static AlertDialogFragment getNewInstance(int title_res, int positive_res, int negative_res, AlertDialogListener listener) {
-        Assert.assertNotNull(listener);
+    public static AlertDialogFragment getNewInstance(int titleResource, int messageResource,
+            int positiveResource, int negativeResource) {
         AlertDialogFragment fragment = new AlertDialogFragment();
         Bundle args = new Bundle();
-        args.putInt(TITLE_STRING, title_res);
-        args.putInt(POSITIVE_BUTTON_STRING, positive_res);
-        args.putInt(NEGATIVE_BUTTON_STRING, negative_res);
+        args.putInt(TITLE_KEY, titleResource);
+        args.putInt(MESSAGE_KEY, messageResource);
+        args.putInt(POSITIVE_BUTTON_KEY, positiveResource);
+        args.putInt(NEGATIVE_BUTTON_KEY, negativeResource);
         fragment.setArguments(args);
-        fragment.setListener(listener);
         return fragment;
     }
 
-    public void setListener(AlertDialogListener listener) {
-        mListener = listener;
+    @Override
+    public void onAttach(Activity listener) {
+        mListener = (AlertDialogListener) listener;
     }
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceData) {
         Bundle args = this.getArguments();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setMessage(args.getInt(TITLE_STRING))
+        builder
+            .setTitle(args.getInt(TITLE_KEY))
+            .setMessage(args.getInt(MESSAGE_KEY))
             .setCancelable(false)
-            .setPositiveButton(args.getInt(POSITIVE_BUTTON_STRING), new DialogInterface.OnClickListener() {
+            .setPositiveButton(args.getInt(POSITIVE_BUTTON_KEY), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     mListener.onPositiveButtonClicked(AlertDialogFragment.this);
                 }
             })
-            .setNegativeButton(args.getInt(NEGATIVE_BUTTON_STRING), new DialogInterface.OnClickListener() {
+            .setNegativeButton(args.getInt(NEGATIVE_BUTTON_KEY), new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.cancel();
                     mListener.onNegativeButtonClicked(AlertDialogFragment.this);

@@ -49,32 +49,31 @@ import com.eyebrowssoftware.bptrackerfree.R;
 
 /**
  * Main Fragment for the list view
- * 
+ *
  * @author brione
- * 
+ *
  */
-public class BPRecordListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>,
-    AlertDialogFragment.AlertDialogListener, View.OnClickListener {
+public class BPRecordListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
 
     /**
      * Hosting activities must provide this interface
-     * 
+     *
      * @author brionemde
-     * 
+     *
      */
     public interface BPRecordListFragmentListener {
         /**
          * Insert a new item of the content uri
-         * 
+         *
          * @param uri
          *            : Group content uri (BPRecords.CONTENT_URI for this app)
-         * 
+         *
          */
         public void newItem(Uri uri);
 
         /**
          * Inform the host activity that the user has elected to delete the item with _id == id
-         * 
+         *
          * @param uri
          *            : the content uri of the item to delete
          */
@@ -82,7 +81,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
 
         /**
          * Inform the host activity that the user has elected to send the item with _id == id
-         * 
+         *
          * @param uri
          *            : the content uri of the item to be sent
          */
@@ -90,7 +89,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
 
         /**
          * Inform the host activity that the user has elected to edit the item with _id == id
-         * 
+         *
          * @param uri
          *            : the content uri of the item to be edited
          */
@@ -98,7 +97,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
 
         /**
          * Interrogate the host activity whether we're in dual-pane mode or not
-         * 
+         *
          * @return true if dual-pane, false if single-pane
          */
         public boolean isDualPane();
@@ -106,23 +105,23 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
 
     /**
      * Hosting activities must provide this interface
-     * 
+     *
      * @author brionemde
-     * 
+     *
      */
     public interface Listener {
         /**
          * Insert a new item of the content uri
-         * 
+         *
          * @param uri
          *            : Group content uri (BPRecords.CONTENT_URI for this app)
-         * 
+         *
          */
         public void newItem(Uri uri);
 
         /**
          * Inform the host activity that the user has elected to delete the item with _id == id
-         * 
+         *
          * @param uri
          *            : the content uri of the item to delete
          */
@@ -130,7 +129,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
 
         /**
          * Inform the host activity that the user has elected to send the item with _id == id
-         * 
+         *
          * @param uri
          *            : the content uri of the item to be sent
          */
@@ -138,7 +137,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
 
         /**
          * Inform the host activity that the user has elected to edit the item with _id == id
-         * 
+         *
          * @param uri
          *            : the content uri of the item to be edited
          */
@@ -146,7 +145,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
 
         /**
          * Interrogate the host activity whether we're in dual-pane mode or not
-         * 
+         *
          * @return true if dual-pane, false if single-pane
          */
         public boolean isDualPane();
@@ -401,7 +400,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
                     mListener.deleteItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
                     // ----
                     // Code to be moved to parent activity
-                    showDeleteConfirmationDialog();
+                    // XXX BROKEN showDeleteConfirmationDialog();
                     return true;
                 case R.id.menu_edit:
                     mListener.editItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, info.id));
@@ -423,29 +422,10 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
         startActivity(intent);
     }
 
-    private void showDeleteConfirmationDialog() {
-        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(
-            R.string.msg_delete,
-            R.string.label_yes,
-            R.string.label_no,
-            this);
-        diagFrag.show(this.getFragmentManager(), "delete");
-    }
-
-    @Override
-    public void onNegativeButtonClicked(AlertDialogFragment dialog) {
-        // nothing to do, dialog is cancelled already
-    }
-
-    @Override
-    public void onPositiveButtonClicked(AlertDialogFragment dialog) {
-        mListener.deleteItem(ContentUris.withAppendedId(BPRecords.CONTENT_URI, mContextMenuRecordId));
-    }
-
     /**
      * Control whether the list is being displayed. You can make it not displayed if you are waiting for the initial
      * data to show in it. During this time an indeterminant progress indicator will be shown instead.
-     * 
+     *
      * @param shown
      *            If true, the list view is shown; if false, the progress indicator. The initial value is true.
      * @param animate

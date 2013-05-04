@@ -36,13 +36,12 @@ import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
-import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment.AlertDialogListener;
 
 /**
  * @author brionemde
  *
  */
-public class BPRecordEditorFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, AlertDialogListener {
+public class BPRecordEditorFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     static final String TAG = "BPRecordEditorBase";
 
     /**
@@ -291,7 +290,7 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
         // Handle all of the possible menu actions.
         switch (item.getItemId()) {
             case R.id.menu_delete:
-                showDeleteConfirmationDialog();
+                // XXX BROKEN showDeleteConfirmationDialog();
                 return true;
             case R.id.menu_discard:
                 cancelRecord();
@@ -302,26 +301,6 @@ public class BPRecordEditorFragment extends Fragment implements LoaderManager.Lo
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void showDeleteConfirmationDialog() {
-        AlertDialogFragment diagFrag = AlertDialogFragment.getNewInstance(
-            R.string.msg_delete,
-            R.string.label_yes,
-            R.string.label_no,
-            this);
-        diagFrag.show(this.getActivity().getSupportFragmentManager(), "delete");
-    }
-
-    @Override
-    public void onNegativeButtonClicked(AlertDialogFragment dialog) {
-        // nothing to do, dialog is cancelled already
-    }
-
-    @Override
-    public void onPositiveButtonClicked(AlertDialogFragment dialog) {
-        this.getActivity().getContentResolver().delete(mUri, null, null);
-        mListener.finishing();
     }
 
     /**
