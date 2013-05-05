@@ -84,44 +84,29 @@ public class EditorSpinnerFragment extends Fragment implements EditorPlugin, Loa
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View mySpinners = inflater.inflate(R.layout.spinners_fragment, container, false);
-        Activity activity = this.getActivity();
+        View v = inflater.inflate(R.layout.spinners_fragment, container, false);
 
-        mSystolic = (Spinner) mySpinners.findViewById(R.id.systolic_spinner);
+        mSystolic = (Spinner) v.findViewById(R.id.systolic_spinner);
         mSystolic.setPromptId(R.string.label_sys_spinner);
-        mSystolic.setAdapter(new RangeAdapter(activity, SYSTOLIC_RANGE_SETUP, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
 
-        mDiastolic = (Spinner) mySpinners.findViewById(R.id.diastolic_spinner);
+        mDiastolic = (Spinner) v.findViewById(R.id.diastolic_spinner);
         mDiastolic.setPromptId(R.string.label_dia_spinner);
-        mDiastolic.setAdapter(new RangeAdapter(activity, DIASTOLIC_RANGE_SETUP, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
 
-        mPulse = (Spinner) mySpinners.findViewById(R.id.pulse_spinner);
+        mPulse = (Spinner) v.findViewById(R.id.pulse_spinner);
         mPulse.setPromptId(R.string.label_pls_spinner);
+
+        return v;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle icicle) {
+        super.onActivityCreated(icicle);
+
+        Activity activity = getActivity();
+        mSystolic.setAdapter(new RangeAdapter(activity, SYSTOLIC_RANGE_SETUP, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
+        mDiastolic.setAdapter(new RangeAdapter(activity, DIASTOLIC_RANGE_SETUP, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
         mPulse.setAdapter(new RangeAdapter(activity, PULSE_RANGE_SETUP, true, SPINNER_ITEM_RESOURCE_ID, SPINNER_ITEM_TEXT_VIEW_ID));
-
-        return mySpinners;
-    }
-
-    @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-
         this.getActivity().getSupportLoaderManager().initLoader(SPINNER_EDITOR_LOADER_ID, null, this);
-}
-
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     private void setSpinner(Spinner s, int value) {
@@ -156,5 +141,6 @@ public class EditorSpinnerFragment extends Fragment implements EditorPlugin, Loa
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
+        // Nada
     }
 }

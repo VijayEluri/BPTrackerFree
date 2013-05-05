@@ -68,8 +68,8 @@ public class EditorTextFragment extends Fragment implements EditorPlugin, Loader
     }
 
     @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
+    public void onActivityCreated(Bundle icicle) {
+        super.onActivityCreated(icicle);
 
         this.getActivity().getSupportLoaderManager().initLoader(TEXT_EDITOR_LOADER_ID, null, this);
         Log.d(TAG, "onCreate");
