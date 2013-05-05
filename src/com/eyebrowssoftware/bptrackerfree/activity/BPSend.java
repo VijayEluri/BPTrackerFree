@@ -17,15 +17,13 @@ package com.eyebrowssoftware.bptrackerfree.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 
 import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPSendFragment;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPSendFragment.BPSendListener;
 
-/**
- * @author brionemde
- *
- */
 public class BPSend extends FragmentActivity implements BPSendListener {
 
     static final String TAG = "BPSend";
@@ -36,13 +34,11 @@ public class BPSend extends FragmentActivity implements BPSendListener {
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        this.setContentView(R.layout.bp_send);
-        mFragment = (BPSendFragment) this.getSupportFragmentManager().findFragmentById(R.id.send_fragment);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle icicle) {
-        super.onSaveInstanceState(icicle);
+        this.setContentView(R.layout.bp_fragment_container);
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(R.id.editor_container, BPSendFragment.newInstance(getIntent().getData()));
+        ft.commit();
     }
 
     @Override

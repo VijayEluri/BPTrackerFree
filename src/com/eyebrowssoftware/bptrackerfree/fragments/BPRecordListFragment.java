@@ -60,7 +60,7 @@ import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment.AlertDia
  */
 public class BPRecordListFragment extends ListFragment implements LoaderManager.LoaderCallbacks<Cursor>,
         AlertDialogButtonListener, View.OnClickListener {
-    static final String TAG = "BPListFragment";
+    static final String TAG = "BPRecordListFragment";
 
     /**
      * Hosting activities must provide this interface

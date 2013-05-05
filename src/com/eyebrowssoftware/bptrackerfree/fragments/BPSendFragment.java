@@ -30,7 +30,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
@@ -56,9 +56,24 @@ import com.eyebrowssoftware.bptrackerfree.R;
  * @author brionemde
  *
  */
-public class BPSendFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-
+public class BPSendFragment extends DialogFragment implements LoaderManager.LoaderCallbacks<Cursor> {
     static final String TAG = BPSendFragment.class.toString();
+
+    private static final String URI_TAG = "uri_tag";
+
+    public static BPSendFragment newInstance() {
+        return newInstance(null);
+    }
+
+    public static BPSendFragment newInstance(Uri uri) {
+        BPSendFragment fragment = new BPSendFragment();
+        Bundle args = new Bundle();
+        if (uri != null) {
+            args.putString(URI_TAG, uri.toString());
+        }
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     public interface BPSendListener {
         public void finishing();
@@ -79,8 +94,6 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
 
     private static String mMsgLabelString;
 
-    private static final String REVERSE = "reverse";
-
     // These are key names for saving things in the icicle
     private static final String SEND_TEXT = "tsend";
     private static final String SEND_FILE = "fsend";
@@ -89,10 +102,6 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
 
     private static final String FILENAME = "data.csv";
     private static final String MSGNAME = "bpdata.csv";
-
-
-    // This may or may not be used
-    private boolean mReverse = true;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle icicle) {
@@ -126,44 +135,23 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
         mListener = (BPSendListener) activity;
     }
 
-    @Override
-    public void onActivityCreated(Bundle icicle) {
-        super.onActivityCreated(icicle);
-        Intent intent = this.getActivity().getIntent();
-        if (intent.getData() == null) {
-            intent.setData(BPRecords.CONTENT_URI);
+   @Override
+    public void onCreate(Bundle icicle) {
+        super.onCreate(icicle);
+        this.setHasOptionsMenu(true);
+        Bundle args = getArguments();
+        if (args.containsKey(URI_TAG)) {
+            mUri = Uri.parse(args.getString(URI_TAG));
+        } else {
+            mUri = BPRecords.CONTENT_URI;
         }
-        mReverse = intent.getBooleanExtra(REVERSE, true);
-
-        mUri = intent.getData();
-        this.setShown(false, true);
-        // Set up our cursor loader. It manages the cursors from now on
         this.getLoaderManager().initLoader(SEND_ID, null, this);
     }
 
     @Override
-    public void onCreate(Bundle icicle) {
-        super.onCreate(icicle);
-        this.setHasOptionsMenu(true);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-
-    @Override
     public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
         Activity activity = this.getActivity();
-        CursorLoader loader = new CursorLoader(activity, mUri, BPTrackerFree.PROJECTION, null, null,
-                        BPRecord.CREATED_DATE + ((mReverse) ? " DESC" : " ASC"));
-        return loader;
+        return new CursorLoader(activity, mUri, BPTrackerFree.PROJECTION, null, null, BPRecord.CREATED_DATE + " DESC");
     }
 
     @Override

@@ -37,7 +37,7 @@ import com.eyebrowssoftware.bptrackerfree.RangeAdapter;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment.EditorPlugin;
 
 public class EditorSpinnerFragment extends Fragment implements EditorPlugin, LoaderCallbacks<Cursor> {
-    static final String TAG = "BPRecordEditor";
+    static final String TAG = "EditorSpinnerFragment";
 
     private static final String URI_KEY = "uri_key";
 

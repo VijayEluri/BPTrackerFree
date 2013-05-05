@@ -17,8 +17,11 @@ package com.eyebrowssoftware.bptrackerfree.activity;
 
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 
 import com.eyebrowssoftware.bptrackerfree.R;
+import com.eyebrowssoftware.bptrackerfree.fragments.BPDataManagerFragment;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPDataManagerFragment.BPDataListener;
 
 /**
@@ -30,8 +33,13 @@ public class BPDataManager extends FragmentActivity implements BPDataListener {
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        setContentView(R.layout.data_manager);
-    }
+        setContentView(R.layout.bp_fragment_container);
+
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction ft = fm.beginTransaction();
+        ft.add(R.id.editor_container, BPDataManagerFragment.newInstance());
+        ft.commit();
+}
 
 
     @Override

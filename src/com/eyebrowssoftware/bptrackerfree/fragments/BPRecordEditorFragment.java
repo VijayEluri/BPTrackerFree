@@ -44,7 +44,7 @@ import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment.AlertDia
  *
  */
 public class BPRecordEditorFragment extends DialogFragment implements LoaderCallbacks<Cursor>, AlertDialogButtonListener {
-    static final String TAG = "BPRecordEditorBase";
+    static final String TAG = "BPRecordEditorFragment";
 
     public static final String URI_STRING_KEY = "uri_string_key";
 

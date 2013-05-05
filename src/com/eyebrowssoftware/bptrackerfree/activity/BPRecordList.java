@@ -34,9 +34,7 @@ import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordListFragment.BPRecor
  *
  */
 public class BPRecordList extends FragmentActivity implements BPRecordListFragmentListener {
-
-    @SuppressWarnings("unused")
-    private static final String TAG = "BPRecordList";
+    static final String TAG = "BPRecordList";
 
     public static final String DUAL_PANE_TAG = "dual_pane";
 

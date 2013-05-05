@@ -25,6 +25,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager.LoaderCallbacks;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,7 +37,7 @@ import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment.EditorPlugin;
 
 public class EditorTextFragment extends Fragment implements EditorPlugin, LoaderCallbacks<Cursor> {
-    static final String TAG = "BPRecordEditorText";
+    static final String TAG = "EditorTextFragment";
 
     private static final String URI_KEY = "uri_key";
     private static final int TEXT_EDITOR_LOADER_ID = 4782;
@@ -61,6 +62,7 @@ public class EditorTextFragment extends Fragment implements EditorPlugin, Loader
         mSystolic = (EditText) v.findViewById(R.id.systolic_edit_text);
         mDiastolic = (EditText) v.findViewById(R.id.diastolic_edit_text);
         mPulse = (EditText) v.findViewById(R.id.pulse_edit_text);
+        Log.d(TAG, "onCreateView");
 
         return v;
     }
@@ -70,17 +72,8 @@ public class EditorTextFragment extends Fragment implements EditorPlugin, Loader
         super.onCreate(icicle);
 
         this.getActivity().getSupportLoaderManager().initLoader(TEXT_EDITOR_LOADER_ID, null, this);
+        Log.d(TAG, "onCreate");
 
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
     }
 
     @Override
@@ -108,6 +101,7 @@ public class EditorTextFragment extends Fragment implements EditorPlugin, Loader
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (loader.getId() == TEXT_EDITOR_LOADER_ID && cursor.moveToFirst()) {
+            Log.d(TAG, "onLoadFinished");
             Assert.assertNotNull(cursor);
             Assert.assertNotNull(mSystolic);
             Assert.assertNotNull(mDiastolic);

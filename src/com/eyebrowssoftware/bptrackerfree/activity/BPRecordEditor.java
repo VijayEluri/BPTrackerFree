@@ -13,21 +13,14 @@ import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment.BPEditorListener;
 
-/**
- * @author brionemde
- *
- */
 public class BPRecordEditor extends FragmentActivity implements BPEditorListener {
-
-    // Static constants
-
-    static final String TAG = BPRecordEditor.class.toString();
+    static final String TAG = "BPRecordEditor";
 
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        setContentView(R.layout.bp_record_editor);
+        setContentView(R.layout.bp_fragment_container);
 
         Uri uri = null;
         Intent intent = getIntent();
@@ -36,23 +29,8 @@ public class BPRecordEditor extends FragmentActivity implements BPEditorListener
         }
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.replace(R.id.editor_container, BPRecordEditorFragment.newInstance(uri));
+        ft.add(R.id.editor_container, BPRecordEditorFragment.newInstance(uri));
         ft.commit();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
     }
 
     @Override
@@ -65,11 +43,6 @@ public class BPRecordEditor extends FragmentActivity implements BPEditorListener
         super.onCreateOptionsMenu(menu);
         this.getMenuInflater().inflate(R.menu.bp_record_editor_activity_options_menu, menu);
         return true;
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        return super.onPrepareOptionsMenu(menu);
     }
 
     @Override
