@@ -85,7 +85,7 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
     private static final String SEND_TEXT = "tsend";
     private static final String SEND_FILE = "fsend";
 
-    private static final int SEND_ID = 9;
+    private static final int SEND_ID = 998773;
 
     private static final String FILENAME = "data.csv";
     private static final String MSGNAME = "bpdata.csv";
@@ -168,7 +168,9 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        (new CreateMessageTask(this)).execute(cursor);
+        if (loader.getId() == SEND_ID) {
+            (new CreateMessageTask(this)).execute(cursor);
+        }
     }
 
     @Override
@@ -289,8 +291,6 @@ public class BPSendFragment extends Fragment implements LoaderManager.LoaderCall
             String note_localized;
 
             Cursor cursor = cursors[0];
-
-            String[] localizedColumns = mContext.getResources().getStringArray(R.array.send_columns);
 
             date_localized = mContext.getString(R.string.bp_send_date);
             time_localized = mContext.getString(R.string.bp_send_time);

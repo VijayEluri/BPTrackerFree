@@ -15,13 +15,7 @@
      limitations under the License.
 -->
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/editor_container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
->
-    <fragment
-        android:id="@+id/editor_fragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        class="com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment"
-    />
-</FrameLayout>
+/>

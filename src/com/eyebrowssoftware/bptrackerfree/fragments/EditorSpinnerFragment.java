@@ -18,8 +18,13 @@ package com.eyebrowssoftware.bptrackerfree.fragments;
 import junit.framework.Assert;
 import android.app.Activity;
 import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,12 +36,20 @@ import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.RangeAdapter;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment.EditorPlugin;
 
-/**
- * @author brionemde
- *
- */
-public class EditorSpinnerFragment extends Fragment implements EditorPlugin {
+public class EditorSpinnerFragment extends Fragment implements EditorPlugin, LoaderCallbacks<Cursor> {
     static final String TAG = "BPRecordEditor";
+
+    private static final String URI_KEY = "uri_key";
+
+    public static EditorSpinnerFragment newInstance(Uri uri) {
+        EditorSpinnerFragment fragment = new EditorSpinnerFragment();
+        Bundle args = new Bundle();
+        args.putString(URI_KEY, uri.toString());
+        fragment.setArguments(args);
+        return fragment;
+    }
+
+    private static final int SPINNER_EDITOR_LOADER_ID = 2356;
 
     private static final int[] SYSTOLIC_RANGE_SETUP = {
         BPTrackerFree.SYSTOLIC_MAX_DEFAULT,
@@ -92,7 +105,9 @@ public class EditorSpinnerFragment extends Fragment implements EditorPlugin {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-    }
+
+        this.getActivity().getSupportLoaderManager().initLoader(SPINNER_EDITOR_LOADER_ID, null, this);
+}
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -117,17 +132,29 @@ public class EditorSpinnerFragment extends Fragment implements EditorPlugin {
     }
 
     @Override
-    public void setCurrentValues(ContentValues values) {
-        this.setSpinner(mSystolic, values.getAsInteger(BPRecord.SYSTOLIC));
-        this.setSpinner(mDiastolic, values.getAsInteger(BPRecord.DIASTOLIC));
-        this.setSpinner(mPulse, values.getAsInteger(BPRecord.PULSE));
-    }
-
-    @Override
     public void updateCurrentValues(ContentValues values) {
         values.put(BPRecord.SYSTOLIC, (Integer) mSystolic.getSelectedItem());
         values.put(BPRecord.DIASTOLIC, (Integer) mDiastolic.getSelectedItem());
         values.put(BPRecord.PULSE, (Integer) mPulse.getSelectedItem());
     }
 
+    @Override
+    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+        Uri uri = Uri.parse(getArguments().getString(URI_KEY));
+        return new CursorLoader(this.getActivity(), uri, BPTrackerFree.PROJECTION, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        Assert.assertNotNull(cursor);
+        if (loader.getId() == SPINNER_EDITOR_LOADER_ID && cursor.moveToFirst()) {
+            this.setSpinner(mSystolic, cursor.getInt(BPTrackerFree.COLUMN_SYSTOLIC_INDEX));
+            this.setSpinner(mDiastolic, cursor.getInt(BPTrackerFree.COLUMN_DIASTOLIC_INDEX));
+            this.setSpinner(mPulse, cursor.getInt(BPTrackerFree.COLUMN_PULSE_INDEX));
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> arg0) {
+    }
 }

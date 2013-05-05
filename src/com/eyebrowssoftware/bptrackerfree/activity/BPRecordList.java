@@ -112,7 +112,7 @@ public class BPRecordList extends FragmentActivity implements BPRecordListFragme
                 doSettingsAction();
                 return true;
             default:
-                return false;
+                return super.onOptionsItemSelected(item);
         }
     }
 

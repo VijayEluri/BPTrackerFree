@@ -115,7 +115,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
 
     private static final int[] IDS = { R.id.date, R.id.time, R.id.sys_value, R.id.dia_value, R.id.pulse_value,
         R.id.note };
-    private static final int LIST_LOADER_ID = 0;
+    private static final int LIST_LOADER_ID = 1206;
     private static final String CONTEXT_URI = "context_uri";
     private static final String SELECTION = "selection";
 
@@ -289,13 +289,15 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
      */
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        if (this.isResumed()) {
-            this.setListShown(true);
+        if (loader.getId() == LIST_LOADER_ID) {
+            if (this.isResumed()) {
+                this.setListShown(true);
+            }
+            else {
+                this.setListShownNoAnimation(true);
+            }
+            ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(cursor);
         }
-        else {
-            this.setListShownNoAnimation(true);
-        }
-        ((SimpleCursorAdapter) this.getListAdapter()).swapCursor(cursor);
     }
 
     /**

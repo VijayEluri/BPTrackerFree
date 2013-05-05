@@ -16,24 +16,38 @@
 package com.eyebrowssoftware.bptrackerfree.fragments;
 
 
+import junit.framework.Assert;
 import android.content.ContentValues;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.LoaderManager.LoaderCallbacks;
+import android.support.v4.content.CursorLoader;
+import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
+import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
 import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment.EditorPlugin;
 
-/**
- * @author brionemde
- *
- */
-public class EditorTextFragment extends Fragment implements EditorPlugin {
+public class EditorTextFragment extends Fragment implements EditorPlugin, LoaderCallbacks<Cursor> {
     static final String TAG = "BPRecordEditorText";
+
+    private static final String URI_KEY = "uri_key";
+    private static final int TEXT_EDITOR_LOADER_ID = 4782;
+
+    public static EditorTextFragment newInstance(Uri uri) {
+        EditorTextFragment fragment = new EditorTextFragment();
+        Bundle args = new Bundle();
+        args.putString(URI_KEY, uri.toString());
+        fragment.setArguments(args);
+        return fragment;
+    }
 
     private EditText mSystolic;
     private EditText mDiastolic;
@@ -55,6 +69,8 @@ public class EditorTextFragment extends Fragment implements EditorPlugin {
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
+        this.getActivity().getSupportLoaderManager().initLoader(TEXT_EDITOR_LOADER_ID, null, this);
+
     }
 
     @Override
@@ -65,13 +81,6 @@ public class EditorTextFragment extends Fragment implements EditorPlugin {
     @Override
     public void onPause() {
         super.onPause();
-    }
-
-    @Override
-    public void setCurrentValues(ContentValues values) {
-        mSystolic.setText(String.valueOf(values.getAsInteger(BPRecord.SYSTOLIC)));
-        mDiastolic.setText(String.valueOf(values.getAsInteger(BPRecord.DIASTOLIC)));
-        mPulse.setText(String.valueOf(values.getAsInteger(BPRecord.PULSE)));
     }
 
     @Override
@@ -88,5 +97,28 @@ public class EditorTextFragment extends Fragment implements EditorPlugin {
         if (textValue.length() > 0) {
             values.put(BPRecord.PULSE, Integer.valueOf(mPulse.getText().toString()));
         }
+    }
+
+    @Override
+    public Loader<Cursor> onCreateLoader(int arg0, Bundle arg1) {
+        Uri uri = Uri.parse(getArguments().getString(URI_KEY));
+        return new CursorLoader(this.getActivity(), uri, BPTrackerFree.PROJECTION, null, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (loader.getId() == TEXT_EDITOR_LOADER_ID && cursor.moveToFirst()) {
+            Assert.assertNotNull(cursor);
+            Assert.assertNotNull(mSystolic);
+            Assert.assertNotNull(mDiastolic);
+            Assert.assertNotNull(mPulse);
+            mSystolic.setText(String.valueOf(cursor.getInt(BPTrackerFree.COLUMN_SYSTOLIC_INDEX)));
+            mDiastolic.setText(String.valueOf(cursor.getInt(BPTrackerFree.COLUMN_DIASTOLIC_INDEX)));
+            mPulse.setText(String.valueOf(cursor.getInt(BPTrackerFree.COLUMN_PULSE_INDEX)));
+        }
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> arg0) {
     }
 }
