@@ -46,14 +46,18 @@ import com.eyebrowssoftware.bptrackerfree.fragments.AlertDialogFragment.AlertDia
 public class BPRecordEditorFragment extends DialogFragment implements LoaderCallbacks<Cursor>, AlertDialogButtonListener {
     static final String TAG = "BPRecordEditorFragment";
 
-    public static final String URI_STRING_KEY = "uri_string_key";
+    // The different distinct states the activity can be run in.
+    public static final int STATE_EDIT = 0;
+    public static final int STATE_INSERT = 1;
 
-    public static BPRecordEditorFragment newInstance(Uri existingRecordUri) {
+    public static final String URI_STRING_KEY = "uri_string_key";
+    public static final String STATE_KEY = "mode_key";
+
+    public static BPRecordEditorFragment newInstance(Uri uri, int state) {
         BPRecordEditorFragment fragment = new BPRecordEditorFragment();
         Bundle args = new Bundle();
-        if (existingRecordUri != null) {
-            args.putString(URI_STRING_KEY, existingRecordUri.toString());
-        }
+        args.putString(URI_STRING_KEY, uri.toString());
+        args.putInt(STATE_KEY, state);
         fragment.setArguments(args);
         return fragment;
     }
@@ -73,19 +77,9 @@ public class BPRecordEditorFragment extends DialogFragment implements LoaderCall
         public void finishing();
     }
 
-    private static final String[] AVERAGE_PROJECTION = {
-        BPRecord.AVERAGE_SYSTOLIC,
-        BPRecord.AVERAGE_DIASTOLIC,
-        BPRecord.AVERAGE_PULSE };
-
-    // The different distinct states the activity can be run in.
-    public static final int STATE_EDIT = 0;
-    public static final int STATE_INSERT = 1;
-
-    // Member Variables
-    private int mState;
-
     private Uri mUri;
+
+    private int mState;
 
     private Button mDateButton;
     private Button mTimeButton;
@@ -180,30 +174,15 @@ public class BPRecordEditorFragment extends DialogFragment implements LoaderCall
         if (icicle != null) {
             mOriginalValues = new Bundle(icicle);
             Log.d(TAG, "onCreate: " + icicle.toString());
+            if (mOriginalValues.containsKey(BPTrackerFree.MURI)) {
+                mUri = Uri.parse(mOriginalValues.getString(BPTrackerFree.MURI));
+            }
         }
 
         Bundle args = this.getArguments();
-        if (args.containsKey(URI_STRING_KEY)) {
-            mUri = Uri.parse(args.getString(URI_STRING_KEY));
-            mState = STATE_EDIT;
-        } else {
-            mState = STATE_INSERT;
-            if (icicle != null)
-                mUri = Uri.parse(icicle.getString(BPTrackerFree.MURI));
-            else {
-                ContentValues cv = null;
-                if (mSharedPreferences.getBoolean(BPTrackerFree.AVERAGE_VALUES_KEY, false)) {
-                    cv = setAverageValues(mSharedPreferences);
-                }
-                else {
-                    cv = setDefaultValues(mSharedPreferences);
-                }
-                cv.put(BPRecord.CREATED_DATE, GregorianCalendar.getInstance().getTimeInMillis());
-                mUri = this.getActivity().getContentResolver().insert(BPRecords.CONTENT_URI, cv);
-            }
-        }
+        mUri = Uri.parse(args.getString(URI_STRING_KEY));
+        mState = args.getInt(STATE_KEY);
         this.getActivity().getSupportLoaderManager().initLoader(EDITOR_LOADER_ID, null, this);
-
         boolean isText = mSharedPreferences.getBoolean(BPTrackerFree.IS_TEXT_EDITOR_KEY, false);
         loadEditorFragment(isText);
     }
@@ -260,34 +239,6 @@ public class BPRecordEditorFragment extends DialogFragment implements LoaderCall
         ft.commit();
     }
 
-    private ContentValues setAverageValues(SharedPreferences prefs) {
-        Cursor c = this.getActivity().getContentResolver()
-            .query(BPRecords.CONTENT_URI, AVERAGE_PROJECTION, null, null, null);
-        ContentValues cv = new ContentValues();
-        if (c != null && c.moveToFirst() && !c.isNull(0) && !c.isNull(1) && !c.isNull(2)) {
-            cv = setContentValues((int) c.getFloat(0), (int) c.getFloat(1), (int) c.getFloat(2));
-        }
-        else {
-            cv = setDefaultValues(mSharedPreferences);
-        }
-        c.close();
-        return cv;
-    }
-
-    private ContentValues setDefaultValues(SharedPreferences prefs) {
-        return setContentValues(
-                Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_SYSTOLIC_KEY, BPTrackerFree.SYSTOLIC_DEFAULT_STRING)),
-                Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_DIASTOLIC_KEY, BPTrackerFree.DIASTOLIC_DEFAULT_STRING)),
-                Integer.valueOf(prefs.getString(BPTrackerFree.DEFAULT_PULSE_KEY, BPTrackerFree.PULSE_DEFAULT_STRING)));
-    }
-
-    private ContentValues setContentValues(int systolic, int diastolic, int pulse) {
-        ContentValues cv = new ContentValues();
-        cv.put(BPRecord.SYSTOLIC, systolic);
-        cv.put(BPRecord.DIASTOLIC, diastolic);
-        cv.put(BPRecord.PULSE, pulse);
-        return cv;
-    }
 
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {

@@ -29,8 +29,6 @@ public class BPSend extends FragmentActivity implements BPSendListener {
 
     static final String TAG = "BPSend";
 
-    private static final String FRAGMENT_TAG = "send_main_fragment";
-
     BPSendFragment mFragment;
 
 
@@ -39,14 +37,13 @@ public class BPSend extends FragmentActivity implements BPSendListener {
         super.onCreate(icicle);
 
         this.setContentView(R.layout.bp_fragment_container);
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        Fragment current = fm.findFragmentByTag(FRAGMENT_TAG);
-        if (current != null) {
-            ft.remove(current);
+
+        if (icicle == null) {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            ft.add(R.id.editor_container, BPSendFragment.newInstance(getIntent().getData()));
+            ft.commit();
         }
-        ft.add(R.id.editor_container, BPSendFragment.newInstance(getIntent().getData()), FRAGMENT_TAG);
-        ft.commit();
     }
 
     @Override
