@@ -37,7 +37,7 @@ public class BPDataManager extends FragmentActivity implements BPDataListener {
 
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.editor_container, BPDataManagerFragment.newInstance());
+        ft.replace(R.id.editor_container, BPDataManagerFragment.newInstance());
         ft.commit();
 }
 

@@ -3,6 +3,7 @@ package com.eyebrowssoftware.bptrackerfree.activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
@@ -16,6 +17,8 @@ import com.eyebrowssoftware.bptrackerfree.fragments.BPRecordEditorFragment.BPEdi
 public class BPRecordEditor extends FragmentActivity implements BPEditorListener {
     static final String TAG = "BPRecordEditor";
 
+    private static final String FRAGMENT_TAG = "main_editor_fragment";
+
     @Override
     protected void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -27,10 +30,16 @@ public class BPRecordEditor extends FragmentActivity implements BPEditorListener
         if (Intent.ACTION_EDIT.equals(intent.getAction())) {
             uri = intent.getData();
         }
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction ft = fm.beginTransaction();
-        ft.add(R.id.editor_container, BPRecordEditorFragment.newInstance(uri));
-        ft.commit();
+        if (icicle == null) {
+            FragmentManager fm = getSupportFragmentManager();
+            FragmentTransaction ft = fm.beginTransaction();
+            Fragment current = fm.findFragmentByTag(FRAGMENT_TAG);
+            if (current != null) {
+                ft.remove(current);
+            }
+            ft.add(R.id.editor_container, BPRecordEditorFragment.newInstance(uri), FRAGMENT_TAG);
+            ft.commit();
+        }
     }
 
     @Override

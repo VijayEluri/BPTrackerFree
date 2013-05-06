@@ -381,6 +381,8 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
         startActivity(intent);
     }
 
+    private static final String DIALOG_TAG = "bprecord_list_fragment_delete_tag";
+
     // Lint is complaining, but according to the documentation, show() does a commit on the transaction
     // http://developer.android.com/reference/android/app/DialogFragment.html#show(android.app.FragmentTransaction,%20java.lang.String)
     @SuppressLint("CommitTransaction")
@@ -389,17 +391,17 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
         // in a transaction.  We also want to remove any currently showing
         // dialog, so make our own transaction and take care of that here.
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        Fragment prev = getFragmentManager().findFragmentByTag("delete");
+        Fragment prev = getFragmentManager().findFragmentByTag(DIALOG_TAG);
         if (prev != null) {
             ft.remove(prev);
         }
-        ft.addToBackStack("delete");
+        ft.addToBackStack(DIALOG_TAG);
 
         // Create and show the dialog.
         DialogFragment newFragment = AlertDialogFragment.getNewInstance(
                 R.string.label_delete_history, R.string.msg_delete, R.string.label_yes, R.string.label_no);
         newFragment.setTargetFragment(this, 0);
-        newFragment.show(ft, "delete");
+        newFragment.show(ft, DIALOG_TAG);
     }
 
     private void deleteRecord() {

@@ -179,6 +179,7 @@ public class BPRecordEditorFragment extends DialogFragment implements LoaderCall
 
         if (icicle != null) {
             mOriginalValues = new Bundle(icicle);
+            Log.d(TAG, "onCreate: " + icicle.toString());
         }
 
         Bundle args = this.getArguments();
@@ -244,13 +245,18 @@ public class BPRecordEditorFragment extends DialogFragment implements LoaderCall
         FragmentTransaction ft = fm.beginTransaction();
         String key = isText ? TEXT_KEY : SPINNER_KEY;
 
-        Fragment current = fm.findFragmentByTag(key);
+        Fragment current;
+        current = fm.findFragmentByTag(TEXT_KEY);
+        if (current != null) {
+            ft.remove(current);
+        }
+        current = fm.findFragmentByTag(SPINNER_KEY);
         if (current != null) {
             ft.remove(current);
         }
         Fragment fragment = (isText) ? EditorTextFragment.newInstance(mUri) : EditorSpinnerFragment.newInstance(mUri);
         this.mEditorPlugin = (EditorPlugin) fragment;
-        ft.replace(R.id.editor, fragment, key);
+        ft.add(R.id.editor, fragment, key);
         ft.commit();
     }
 
