@@ -33,7 +33,6 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.eyebrowssoftware.bptrackerfree.BPRecords;
 import com.eyebrowssoftware.bptrackerfree.BPRecords.BPRecord;
 import com.eyebrowssoftware.bptrackerfree.BPTrackerFree;
 import com.eyebrowssoftware.bptrackerfree.R;
@@ -219,8 +218,8 @@ public class BPRecordEditorFragment extends DialogFragment implements LoaderCall
     }
 
     private void loadEditorFragment(boolean isText) {
-
-        FragmentManager fm = this.getFragmentManager();
+        // XXX : this is currently part of the breaking point
+        FragmentManager fm = this.getChildFragmentManager();
         FragmentTransaction ft = fm.beginTransaction();
         String key = isText ? TEXT_KEY : SPINNER_KEY;
 
