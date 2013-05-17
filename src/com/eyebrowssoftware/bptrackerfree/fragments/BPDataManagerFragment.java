@@ -108,6 +108,6 @@ public class BPDataManagerFragment extends DialogFragment implements AlertDialog
     private void deleteHistory() {
         Activity activity = this.getActivity();
         int deleted = activity.getContentResolver().delete(BPRecords.CONTENT_URI, null, null);
-        Toast.makeText(activity, String.format(getString(R.string.msg_deleted), deleted), Toast.LENGTH_LONG).show();
+        Toast.makeText(activity, getString(R.string.msg_deleted, deleted), Toast.LENGTH_LONG).show();
     }
 }

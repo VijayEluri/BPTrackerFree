@@ -340,8 +340,7 @@ public class BPRecordListFragment extends ListFragment implements LoaderManager.
             long datetime = cursor.getLong(BPTrackerFree.COLUMN_CREATED_AT_INDEX);
             String date = BPTrackerFree.getDateString(datetime, DateFormat.SHORT);
             String time = BPTrackerFree.getTimeString(datetime, DateFormat.SHORT);
-            String fmt = getString(R.string.datetime_format);
-            menu.setHeaderTitle(String.format(fmt, date, time));
+            menu.setHeaderTitle(getString(R.string.datetime_format, date, time));
         }
         MenuInflater inflater = getActivity().getMenuInflater();
         inflater.inflate(R.menu.bp_list_context_menu, menu);

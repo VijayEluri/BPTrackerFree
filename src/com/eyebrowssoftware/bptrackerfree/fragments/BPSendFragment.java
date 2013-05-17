@@ -163,7 +163,7 @@ public class BPSendFragment extends DialogFragment implements LoaderManager.Load
 
     @Override
     public void onLoaderReset(Loader<Cursor> arg0) {
-        mMsgLabelView.setText(String.format(mMsgLabelString, 0));
+        mMsgLabelView.setText(getString(R.string.label_message_format, 0));
         mMsgView.setText("");
     }
 
@@ -351,7 +351,7 @@ public class BPSendFragment extends DialogFragment implements LoaderManager.Load
     }
 
     private void updateUI(String msg) {
-        mMsgLabelView.setText(String.format(mMsgLabelString, msg.length()));
+        mMsgLabelView.setText(getString(R.string.label_message_format, msg.length()));
         mMsgView.setText(msg);
         if (BPSendFragment.this.isResumed()) {
             BPSendFragment.this.setShown(true,  true);

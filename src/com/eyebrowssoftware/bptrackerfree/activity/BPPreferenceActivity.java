@@ -64,19 +64,19 @@ public class BPPreferenceActivity extends PreferenceActivity implements SharedPr
 
     private void setSystolicSummary() {
         String string = mPreferences.getString(BPTrackerFree.DEFAULT_SYSTOLIC_KEY, BPTrackerFree.SYSTOLIC_DEFAULT_STRING);
-        String summary = String.format(this.getString(R.string.systolic_initial_format), string);
+        String summary = this.getString(R.string.systolic_initial_format, string);
         mSysETP.setSummary(summary);
     }
 
     private void setDiastolicSummary() {
         String string = mPreferences.getString(BPTrackerFree.DEFAULT_DIASTOLIC_KEY, BPTrackerFree.DIASTOLIC_DEFAULT_STRING);
-        String summary = String.format(this.getString(R.string.diastolic_initial_format), string);
+        String summary = this.getString(R.string.diastolic_initial_format, string);
         mDiaETP.setSummary(summary);
     }
 
     private void setPulseSummary() {
         String string = mPreferences.getString(BPTrackerFree.DEFAULT_PULSE_KEY, BPTrackerFree.PULSE_DEFAULT_STRING);
-        String summary = String.format(this.getString(R.string.pulse_initial_format), string);
+        String summary = this.getString(R.string.pulse_initial_format, string);
         mPlsETP.setSummary(summary);
     }
 
